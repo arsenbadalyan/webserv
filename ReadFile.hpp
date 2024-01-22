@@ -1,7 +1,9 @@
-#ifndef _RADFILE_HPP_
+#ifndef _READFILE_HPP_
 #define _READFILE_HPP_
 
 #include <string>
+#include <iostream>
+#include <fstream>
 
 class ReadFile{
 private:
@@ -11,14 +13,37 @@ private:
 
 public:
 
-	ReadFile(std::string filename);
+	ReadFile();
+	ReadFile(const std::string & filename);
+	ReadFile(const std::string & filename, const std::string & result);
 	ReadFile(const ReadFile & other);
+
 	ReadFile & operator=(const ReadFile & other);
+	ReadFile & operator<<(const std::string & resilt);
+	ReadFile & operator>>(std::string & result);
+	
 	~ReadFile();
 
-	bool start();
-	std::string Get();
+	std::string Read();
+	ReadFile & Write();
+	std::string getResult();
+	ReadFile & setResult(const std::string & result);
+	std::string getFilename();
+	ReadFile & setFilename(const std::string & filename);
+	ReadFile & cleanFile();
 
-}
+private:
+
+	class MyException : public std::exception
+	{
+	private:
+		std::string _error;
+	public:
+		MyException(const std::string & error);
+		~MyException() throw();
+
+		const char * what() const throw();
+	};
+};
 
 #endif

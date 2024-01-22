@@ -1,4 +1,4 @@
-#define _PARSINGCONFIGFILE_HPP_
+#ifndef _PARSINGCONFIGFILE_HPP_
 #define _PARSINGCONFIGFILE_HPP_
 
 #include <string>
@@ -18,6 +18,18 @@ public:
 	bool start();
 
 private:
+
+
+	class MyExeption : public std::exception
+	{
+	private:
+		std::string _error;
+	public:
+		MyExeption(const std::string & error);
+		~MyExeption() throw();
+
+		const char * what() const throw();
+	};
 
 };
 
