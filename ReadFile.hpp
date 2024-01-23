@@ -1,11 +1,12 @@
 #ifndef _READFILE_HPP_
 #define _READFILE_HPP_
 
-#include <string>
+#include "IReadFile.hpp"
 #include <iostream>
 #include <fstream>
 
-class ReadFile{
+class ReadFile : public IReadFile
+{
 private:
 
 	std::string _filename;
@@ -21,7 +22,7 @@ public:
 	ReadFile & operator=(const ReadFile & other);
 	ReadFile & operator<<(const std::string & resilt);
 	ReadFile & operator>>(std::string & result);
-	
+
 	~ReadFile();
 
 	std::string Read();
