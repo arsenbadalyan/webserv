@@ -1,32 +1,36 @@
 #ifndef _PARSINGCONFIGFILE_HPP_
 #define _PARSINGCONFIGFILE_HPP_
 
-#include <string>
+#include "ReadFile.hpp"
 
 class ParsingConfigFile {
 private:
 
-	std::string _filename;
+	// std::string	_filename;
+	ReadFile	_file;
+	std::string	_data;
 
 public:
 
-	ParsingConfigFile(std::string filename);
+	ParsingConfigFile(const std::string & filename);
 	ParsingConfigFile( const ParsingConfigFile & other);
 	ParsingConfigFile & operator=(const ParsingConfigFile & other);
 	~ParsingConfigFile();
 
-	bool start();
+	bool startPars();
 
 private:
 
+	bool CheckSintex();
+	bool CheckCoreckt();
 
-	class MyExeption : public std::exception
+	class MyException : public std::exception
 	{
 	private:
 		std::string _error;
 	public:
-		MyExeption(const std::string & error);
-		~MyExeption() throw();
+		MyException(const std::string & error);
+		~MyException() throw();
 
 		const char * what() const throw();
 	};

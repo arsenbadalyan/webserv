@@ -1,11 +1,10 @@
 #ifndef _READFILE_HPP_
 #define _READFILE_HPP_
 
-#include "IReadFile.hpp"
 #include <iostream>
 #include <fstream>
 
-class ReadFile : public IReadFile
+class ReadFile
 {
 private:
 
