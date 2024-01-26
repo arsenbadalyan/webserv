@@ -21,8 +21,10 @@ public:
 
 private:
 
-	bool CheckSintex();
-	bool CheckCoreckt();
+	bool	CheckSintex();
+	bool	CheckCorecktServer();
+	size_t	get_reng(size_t start);
+	bool	CheckCoreckt(size_t pos_start, size_t pos_end);
 
 	class MyException : public std::exception
 	{

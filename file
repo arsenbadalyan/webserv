@@ -51,4 +51,3 @@ server
 	client_max_body_size: Set the maximum allowed size of the client request body. --> 2MB ?? --> defold 1MB
 
 }
-

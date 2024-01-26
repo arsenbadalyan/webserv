@@ -41,7 +41,7 @@ ReadFile & ReadFile::operator>>(std::string & result)
 	return (*this);
 }
 
-ReadFile::~ReadFile() { std::cout << "Destruktor ReadFile\n";}
+ReadFile::~ReadFile() {}
 
 std::string ReadFile::Read()
 {
