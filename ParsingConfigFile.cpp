@@ -108,9 +108,41 @@ size_t ParsingConfigFile::get_reng(size_t start)
 	return (SIZE_MAX);
 }
 
+/*
+	server { lisen : 127.0.0.1:8080  }
+   pos_start^                 pos_end^
+*/
 bool ParsingConfigFile::CheckCoreckt(size_t pos_start, size_t pos_end)
 {
+	// std::string conf_name;
+
+	for (size_t i = pos_start, pos = 0; i < pos_end;)
+	{
+		if (this->_data[i] != '\n' && this->_data[i] != '\t' && this->_data[i] != ' ' )
+		{
+			pos = i;
+			for (; this->_data[i] != '\t' && this->_data[i] != ' ' && this->_data[i] != '}'; i++);
+			if (this->_data[i] == '}')
+				return (false);
+			i = CheckCorecktConfig(this->_data.substr(pos, i - pos), i, pos_end);
+			if (SIZE_MAX == i)
+				return (false);
+		}
+		else
+			++i;
+	}
+	
 	return (true);
+}
+
+/*
+	server {  lisen           : 127.0.0.1:8080  }
+         config ^  ^pos_start            pos_end^
+*/
+
+size_t	CheckCorecktConfig(std::string config, size_t pos_start, size_t pos_end)
+{
+	return (pos_end);
 }
 
 /////////////////

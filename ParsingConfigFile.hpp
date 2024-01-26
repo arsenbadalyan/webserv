@@ -25,6 +25,7 @@ private:
 	bool	CheckCorecktServer();
 	size_t	get_reng(size_t start);
 	bool	CheckCoreckt(size_t pos_start, size_t pos_end);
+	size_t	CheckCorecktConfig(std::string config, size_t pos_start, size_t pos_end);
 
 	class MyException : public std::exception
 	{
