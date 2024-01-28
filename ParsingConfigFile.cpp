@@ -60,7 +60,6 @@ bool ParsingConfigFile::CheckCorecktServer()
 	for (size_t pos_start = 0, pos_end = 0, pos = 0; \
 		pos_start < this->_data.size(); pos_start = pos_end + 1)
 	{
-		this->_serverList.push_back(Server());
 		pos_end = this->_data.find('{', pos_start);
 		if (SIZE_MAX == pos_end && pos_start == 0)
 			throw MyException("Suntexs Error");
@@ -121,6 +120,10 @@ size_t ParsingConfigFile::get_reng(size_t start)
 bool ParsingConfigFile::CheckCoreckt(size_t pos_start, size_t pos_end, bool controlFlag)
 {
 	// std::string conf_name;
+	if (!controlFlag)
+		this->_serverList.push_back(Server());
+	else
+		this->_serverList[this->_serverList.size() -1].getLocations().push_back(Config());
 	std::string cpy;
 	for (size_t i = pos_start, pos = 0; i < pos_end;)
 	{
@@ -235,6 +238,7 @@ size_t	ParsingConfigFile::CheckCorecktConfig(std::string config, size_t pos_star
 		if (SIZE_MAX != res)
 			return (res);
 	}
+	throw MyException("Error no config");
 	return (SIZE_MAX);
 }
 
