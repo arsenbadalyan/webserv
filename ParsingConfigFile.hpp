@@ -29,29 +29,29 @@ private:
 	size_t	get_reng(size_t start);
 	bool	CheckCoreckt(size_t pos_start, size_t pos_end, bool controlFlag);
 	size_t	CheckCorecktLocation(size_t pos_start, size_t pos_end);
-	size_t	CheckCorecktConfig(std::string config, size_t pos_start, size_t pos_end);
+	size_t	CheckCorecktConfig(std::string config, size_t pos_start, size_t pos_end, bool controlFlag);
 
-	size_t	checkListen(size_t pos_start, size_t pos_end);
+	size_t	checkListen(size_t pos_start, size_t pos_end, bool controlFlag);
 
-	size_t	checkServerName(size_t pos_start, size_t pos_end);
+	size_t	checkServerName(size_t pos_start, size_t pos_end, bool controlFlag);
 
-	size_t	checkRoot(size_t pos_start, size_t pos_end);
+	size_t	checkRoot(size_t pos_start, size_t pos_end, bool controlFlag);
 
-	size_t	checkAllowMethods(size_t pos_start, size_t pos_end);
+	size_t	checkAllowMethods(size_t pos_start, size_t pos_end, bool controlFlag);
 
-	size_t	checkUploadDir(size_t pos_start, size_t pos_end);
+	size_t	checkUploadDir(size_t pos_start, size_t pos_end, bool controlFlag);
 
-	size_t	checkErrorPage(size_t pos_start, size_t pos_end);
+	size_t	checkErrorPage(size_t pos_start, size_t pos_end, bool controlFlag);
 
-	size_t	checkReturn(size_t pos_start, size_t pos_end);
+	size_t	checkReturn(size_t pos_start, size_t pos_end, bool controlFlag);
 
-	size_t	checkCgi(size_t pos_start, size_t pos_end);
+	size_t	checkCgi(size_t pos_start, size_t pos_end, bool controlFlag);
 
-	size_t	checkIndex(size_t pos_start, size_t pos_end);
+	size_t	checkIndex(size_t pos_start, size_t pos_end, bool controlFlag);
 
-	size_t	checkAutoindex(size_t pos_start, size_t pos_end);
+	size_t	checkAutoindex(size_t pos_start, size_t pos_end, bool controlFlag);
 
-	size_t	checkClientMaxBodySize(size_t pos_start, size_t pos_end);
+	size_t	checkClientMaxBodySize(size_t pos_start, size_t pos_end, bool controlFlag);
 
 
 	size_t	runSpaceTab(size_t pos_start, size_t pos_end);
