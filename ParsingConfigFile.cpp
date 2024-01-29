@@ -206,12 +206,16 @@ size_t	ParsingConfigFile::CheckCorecktConfig(std::string config, size_t pos_star
 	size_t res = SIZE_MAX;
 	if (std::string("listen") == config)
 	{
+		if (controlFlag)
+			throw MyException("Error listen for location");
 		//res = checkListen(pos_start, pos_end, controlFlag);
 		if (SIZE_MAX != res)
 			return (res);
 	} 
 	else if (std::string("server_name") == config)
 	{
+		if (controlFlag)
+			throw MyException("Error server_name for location");
 		//res = checkServerName(pos_start, pos_end, controlFlag);
 		if (SIZE_MAX != res)
 			return (res);
@@ -283,7 +287,7 @@ size_t	ParsingConfigFile::CheckCorecktConfig(std::string config, size_t pos_star
 
 size_t ParsingConfigFile::checkListen(size_t pos_start, size_t pos_end, bool controlFlag)
 {
-	size_t end = 0;
+	size_t end = 0, start = pos_start;
 	// this->_data.find(';', pos_start);
 	size_t i = pos_start;
 	for (; i < pos_end; i++)
@@ -296,12 +300,19 @@ size_t ParsingConfigFile::checkListen(size_t pos_start, size_t pos_end, bool con
 		if (this->_data[i] == '\n')
 			throw MyException("Error Sintexsis Listen");
 	}
-	if (i == pos_end)
+	if (i >= pos_end)
 		throw MyException("Error Sintexsis Listen");
-	
-	// size_t pos = runSpaceTab(pos_start, end);
-	
-	return size_t();
+	pos_end = end;
+	for (; start < end && (this->_data[start] == '\t' || this->_data[start] != ' '); ++start);
+	if (start >= end)
+		throw MyException("Error Emty Listen");
+	for (end = start; end < pos_end && this->_data[end] != '\t' && this->_data[end] != ' '; ++end);
+	for (i = end; i < pos_end; ++i)
+		if (this->_data[i] != '\t' && this->_data[i] != ' ')
+			throw MyException("Error Sintexts Listen");
+	//if (!checCorectHostAndPort(start, end, controlFlag))
+		//throw MyException("Error Sintexts Listen");
+	return size_t(pos_end + 1);
 }
 
 size_t ParsingConfigFile::checkServerName(size_t pos_start, size_t pos_end, bool controlFlag)
@@ -364,11 +375,70 @@ size_t ParsingConfigFile::runSpaceTab(size_t pos_start, size_t pos_end)
 			return (i);
 		}
 	}
-	
 	return (SIZE_MAX);
 }
 
+/*
+	server {  lisen             127.0.0.1:8080   ;  }
+         		   				^pos_start    ^pos_end
 
+*/
+
+bool ParsingConfigFile::checCorectHostAndPort(size_t pos_start, size_t pos_end, bool controlFlag)
+{
+	size_t	pos_period = this->_data.find(":", pos_start, pos_end - pos_start);
+	if (pos_period == SIZE_MAX)
+		throw MyException("Error Sintexsis Listen -> :");
+	if (!chekAndSaveHost(std::string(this->_data.begin() + pos_start, this->_data.begin() + pos_period)))
+		throw MyException("Error Sintexsis Listen Host");
+	if (!chekAndSavePort(std::string(this->_data.begin() + pos_period + 1, this->_data.begin() + pos_end)))
+		throw MyException("Error Sintexsis Listen Host");
+	return (true);
+}
+
+bool ParsingConfigFile::chekAndSaveHost(std::string host)
+{
+	// poxel std::count ov 
+	int count = 0;
+	for (size_t i =0 ; i < host.size(); ++i)
+		if (host[i] == '.')
+			++count;
+	if (count == 3)
+	{
+		int start = 0, end = host.find('.');
+		// if (!chekHostNumber(std::string(host.begin() + start, host.begin() + end)))
+	}
+	else
+		throw MyException("Error Sintexsis Listen Host -> . <-");
+	return (true);
+}
+
+bool ParsingConfigFile::chekAndSavePort(std::string port)
+{
+	return (true);
+}
+
+bool ParsingConfigFile::chekHostNumber(std::string number)
+{
+	if (!number.size())
+		return (true);
+	for (size_t i = 0; i < number.size(); i++)
+	{
+		if (number[i] > 47 && number[i] < 58);
+		else if (i == 0 && number[i] == '-');
+		else
+			throw MyException("Error Sintexsis Listen Host");
+	}
+	try
+	{
+		std::stoi(number);
+	}
+	catch(...)
+	{
+		throw MyException("Error Sintexsis Listen Host");
+	}
+	return (true);
+}
 
 /////////////////
 

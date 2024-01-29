@@ -55,6 +55,10 @@ private:
 
 
 	size_t	runSpaceTab(size_t pos_start, size_t pos_end);
+	bool	checCorectHostAndPort(size_t pos_start, size_t pos_end, bool controlFlag);
+	bool	chekAndSaveHost(std::string host);
+	bool	chekAndSavePort(std::string port);
+	bool	chekHostNumber(std::string number);
 
 	class MyException : public std::exception
 	{
