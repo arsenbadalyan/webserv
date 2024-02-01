@@ -3,6 +3,7 @@
 
 #include "Server.hpp"
 #include "ReadFile.hpp"
+#include <sstream>
 
 class ParsingConfigFile {
 private:

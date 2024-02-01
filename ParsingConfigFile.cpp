@@ -396,47 +396,68 @@ bool ParsingConfigFile::checCorectHostAndPort(size_t pos_start, size_t pos_end, 
 	return (true);
 }
 
+bool u(char a)
+{
+	return (a == '.');
+}
+
 bool ParsingConfigFile::chekAndSaveHost(std::string host)
 {
-	// poxel std::count ov 
-	int count = 0;
-	for (size_t i =0 ; i < host.size(); ++i)
-		if (host[i] == '.')
-			++count;
+	size_t count = std::count_if(host.begin(), host.end(), u);
+	std::stringstream str(host);
+	std::string val;
 	if (count == 3)
 	{
-		int start = 0, end = host.find('.');
-		// if (!chekHostNumber(std::string(host.begin() + start, host.begin() + end)))
+		for (size_t i = 0; i < 4; i++)
+		{
+			val.clear();
+			std::getline(str, val, '.');
+			if (!chekHostNumber(val))
+				throw MyException("Error Sintexsis Listen Host");
+		}
 	}
 	else
 		throw MyException("Error Sintexsis Listen Host -> . <-");
+	this->_serverList[this->_serverList.size() - 1].setHost(host);
 	return (true);
 }
 
 bool ParsingConfigFile::chekAndSavePort(std::string port)
 {
-	return (true);
-}
-
-bool ParsingConfigFile::chekHostNumber(std::string number)
-{
-	if (!number.size())
-		return (true);
-	for (size_t i = 0; i < number.size(); i++)
-	{
-		if (number[i] > 47 && number[i] < 58);
-		else if (i == 0 && number[i] == '-');
-		else
-			throw MyException("Error Sintexsis Listen Host");
-	}
+	size_t  size = port.size();
+	int number;
+	if (!size)
+		return (false);
 	try
 	{
-		std::stoi(number);
+		number = std::stoi(port, &size);
 	}
 	catch(...)
 	{
 		throw MyException("Error Sintexsis Listen Host");
 	}
+	if (size != port.size() || number < 0)
+		throw MyException("Error Sintexsis Listen Host");
+	this->_serverList[this->_serverList.size()].setPort(number);
+	return (true);
+}
+
+bool ParsingConfigFile::chekHostNumber(std::string number)
+{
+	size_t  size = number.size();
+	int num;
+	if (!size)
+		return (false);
+	try
+	{
+		num = std::stoi(number, &size);
+	}
+	catch(...)
+	{
+		throw MyException("Error Sintexsis Listen Host");
+	}
+	if (size != number.size() || num < 0 || num > 255)
+		throw MyException("Error Sintexsis Listen Host");
 	return (true);
 }
 
