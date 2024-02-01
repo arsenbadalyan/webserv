@@ -20,7 +20,7 @@ public:
 	Server& operator= (const Server& other);
 	~Server();
 
-	const Config& getServerConfig() const;
+	Config& getServerConfig();
 	Server& setServerConfig(const Config& server_config);
 
 	std::string getServerName() const;

@@ -21,7 +21,7 @@ Server& Server::operator= (const Server& other)
 
 Server::~Server() {}
 
-const Config& Server::getServerConfig() const
+Config& Server::getServerConfig()
 {
 	return (this->_serverConfig);
 }

@@ -3,6 +3,7 @@
 
 #include "Server.hpp"
 #include "ReadFile.hpp"
+#include <dirent.h>
 #include <sstream>
 
 class ParsingConfigFile {
@@ -43,6 +44,7 @@ private:
 	size_t	checkUploadDir(size_t pos_start, size_t pos_end, bool controlFlag);
 
 	size_t	checkErrorPage(size_t pos_start, size_t pos_end, bool controlFlag);
+	int		statusCodes(std::string number);
 
 	size_t	checkReturn(size_t pos_start, size_t pos_end, bool controlFlag);
 
