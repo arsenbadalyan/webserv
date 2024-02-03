@@ -10,7 +10,7 @@ class Server
 {
 private:
 	Config _serverConfig;
-	std::string	 _serverName;
+	std::vector<std::string> _serverName;
 	std::string	_host;
 	unsigned int _port;
 	std::vector<Config> _locations;
@@ -20,11 +20,11 @@ public:
 	Server& operator= (const Server& other);
 	~Server();
 
-	const Config& getServerConfig() const;
+	Config& getServerConfig();
 	Server& setServerConfig(const Config& server_config);
 
-	std::string getServerName() const;
-	Server& setServerName(const std::string& server_name);
+	std::vector<std::string>& getServerName();
+	Server& setServerName(const std::vector<std::string>& server_name);
 
 	std::string getHost() const;
 	Server& setHost(const std::string& host);

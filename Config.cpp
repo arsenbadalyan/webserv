@@ -45,7 +45,7 @@ Config& Config::setRoot(const std::string& root)
 	return (*this);
 }
 
-const ActiveMetods& Config::getAllow_methods() const
+ActiveMetods& Config::getAllow_methods() 
 {
 	return (this->_allow_methods);
 }

@@ -3,6 +3,7 @@
 
 #include "Server.hpp"
 #include "ReadFile.hpp"
+#include <sstream>
 
 class ParsingConfigFile {
 private:
@@ -55,6 +56,8 @@ private:
 
 
 	size_t	runSpaceTab(size_t pos_start, size_t pos_end);
+
+	void fill_metods(std::vector<std::string>& words);
 
 	class MyException : public std::exception
 	{

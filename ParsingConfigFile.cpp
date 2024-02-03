@@ -166,7 +166,7 @@ size_t ParsingConfigFile::CheckCorecktLocation(size_t pos_start, size_t pos_end)
 	{
 		if (this->_data[start] != '\t' && this->_data[start] != ' ')
 		{
-			if (this->_data[start] == '\n');
+			if (this->_data[start] == '\n')
 				throw MyException("Error Emty name location");
 			for (end = start; end < pos_end && this->_data[end] != '\t' && \
 				this->_data[end] != '\n' && this->_data[end] != ' ' && this->_data[end] != '{'; ++end);
@@ -306,7 +306,23 @@ size_t ParsingConfigFile::checkListen(size_t pos_start, size_t pos_end, bool con
 
 size_t ParsingConfigFile::checkServerName(size_t pos_start, size_t pos_end, bool controlFlag)
 {
-	return size_t();
+	size_t end;
+	std::vector<std::string> words;
+
+	std::string sv_name = this->_data.substr(pos_start, this->_data.find('\n', pos_start) - pos_start);
+	if ((end = sv_name.find(';') )== std::string::npos)
+		throw MyException("Error Sintexsis Server_name");
+	sv_name = sv_name.substr(0, end);
+	std::istringstream iss(sv_name);
+
+	std::string word;
+	while (iss >> word)
+		words.push_back(word);
+	
+	if(words.empty())
+		throw MyException("Error Sintexsis Server_name");
+	this->_serverList[this->_serverList.size() - 1].setServerName(words);
+	return size_t(end + 1);
 }
 
 size_t ParsingConfigFile::checkRoot(size_t pos_start, size_t pos_end, bool controlFlag)
@@ -314,9 +330,72 @@ size_t ParsingConfigFile::checkRoot(size_t pos_start, size_t pos_end, bool contr
 	return size_t();
 }
 
+void ParsingConfigFile::fill_metods(std::vector<std::string>& words)
+{
+	bool g, p, d;
+
+	for (size_t i = 0; i < words.size(); i++)
+	{
+		if (words[i] == "GET")
+			g = true;
+		else if (words[i] == "POST")
+			p = true;
+		else if (words[i] == "DELETE")
+			d = true;
+		else
+		 	throw MyException("Error Sintexsis Allow_method");
+	}
+	
+}
+
 size_t ParsingConfigFile::checkAllowMethods(size_t pos_start, size_t pos_end, bool controlFlag)
 {
-	return size_t();
+	size_t end;
+	bool g = false, p = false, d = false;
+
+	std::vector<std::string> words;
+
+	std::string methods = this->_data.substr(pos_start, this->_data.find('\n', pos_start) - pos_start);
+	if ((end = methods.find(';') ) == std::string::npos)
+		throw MyException("Error Sintexsis Allow_method");
+	methods = methods.substr(0, end);
+	std::istringstream iss(methods);
+	
+	std::string word;
+	while (iss >> word)
+		words.push_back(word);
+
+	if (words.empty())
+		throw MyException("Error Sintexsis Allow_method");
+
+	for (size_t i = 0; i < words.size(); i++)
+	{
+		if (words[i] != "GET" && words[i] != "POST" && words[i] != "DELETE")
+            throw MyException("Error Sintexsis Allow_method");
+		if (words[i] == "GET")
+			g = true;
+		if (words[i] == "POST")
+			p = true;
+		if (words[i] == "DELETE")
+			d = true;
+	}
+	
+	if (!controlFlag)
+	{
+		this->_serverList[this->_serverList.size() - 1].getServerConfig().getAllow_methods().SetGet(g);
+		this->_serverList[this->_serverList.size() - 1].getServerConfig().getAllow_methods().SetPost(p);
+		this->_serverList[this->_serverList.size() - 1].getServerConfig().getAllow_methods().SetDelete(d);
+	}
+	else
+	{
+		this->_serverList[this->_serverList.size() - 1].getLocations()[this->_serverList[this->_serverList.size() - 1].\
+		getLocations().size() - 1].getAllow_methods().SetGet(g);
+		this->_serverList[this->_serverList.size() - 1].getLocations()[this->_serverList[this->_serverList.size() - 1].\
+		getLocations().size() - 1].getAllow_methods().SetPost(p);
+		this->_serverList[this->_serverList.size() - 1].getLocations()[this->_serverList[this->_serverList.size() - 1].\
+		getLocations().size() - 1].getAllow_methods().SetDelete(d);
+	}
+	return size_t(end + 1);
 }
 
 size_t ParsingConfigFile::checkUploadDir(size_t pos_start, size_t pos_end, bool controlFlag)
@@ -346,7 +425,23 @@ size_t ParsingConfigFile::checkIndex(size_t pos_start, size_t pos_end, bool cont
 
 size_t ParsingConfigFile::checkAutoindex(size_t pos_start, size_t pos_end, bool controlFlag)
 {
-	return size_t();
+	size_t end;
+	std::string autoindex = this->_data.substr(pos_start, this->_data.find('\n', pos_start) - pos_start);
+	if ((end = autoindex.find(';') )== std::string::npos)
+		throw MyException("Error Sintexsis Autoindex");
+	autoindex = autoindex.substr(0, end);
+
+	std::istringstream iss(autoindex);
+	iss >> autoindex;
+	
+	if (autoindex != "off" && autoindex != "on")
+		throw MyException("Error Sintexsis Autoindex");//eli qnnarkel sosi het
+	if (!controlFlag)
+		this->_serverList[this->_serverList.size() - 1].getServerConfig().setAutoindex(autoindex == "off" ? false : true);
+	else
+		(this->_serverList[this->_serverList.size() - 1].getLocations())[this->_serverList[this->_serverList.size() - 1].\
+		getLocations().size() - 1].setAutoindex(autoindex == "off" ? false : true);
+	return size_t(end + 1);
 }
 
 size_t ParsingConfigFile::checkClientMaxBodySize(size_t pos_start, size_t pos_end, bool controlFlag)
@@ -370,7 +465,7 @@ size_t ParsingConfigFile::runSpaceTab(size_t pos_start, size_t pos_end)
 
 
 
-/////////////////
+
 
 ParsingConfigFile::MyException::MyException(const std::string &error) : _error(error) {}
 

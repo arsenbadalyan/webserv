@@ -21,7 +21,7 @@ Server& Server::operator= (const Server& other)
 
 Server::~Server() {}
 
-const Config& Server::getServerConfig() const
+Config& Server::getServerConfig()
 {
 	return (this->_serverConfig);
 }
@@ -32,12 +32,12 @@ Server& Server::setServerConfig(const Config& server_config)
 	return (*this);
 }
 
-std::string Server::getServerName() const
+std::vector<std::string>& Server::getServerName()
 {
 	return (this->_serverName);
 }
 
-Server& Server::setServerName(const std::string& server_name)
+Server& Server::setServerName(const std::vector<std::string>& server_name)
 {
 	this->_serverName = server_name;
 	return (*this);
