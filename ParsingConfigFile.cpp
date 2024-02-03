@@ -565,7 +565,39 @@ size_t ParsingConfigFile::checkCgi(size_t pos_start, size_t pos_end, bool contro
 
 size_t ParsingConfigFile::checkIndex(size_t pos_start, size_t pos_end, bool controlFlag)
 {
-	return size_t();
+	size_t end = 0, start = pos_start;
+	size_t i = pos_start;
+	for (; i < pos_end; i++)
+	{
+		if (this->_data[i] == ';')
+		{
+			end = i;
+			break;
+		}
+		if (this->_data[i] == '\n')
+			throw MyException("Error Sintexsis Index");
+	}
+	if (i >= pos_end)
+		throw MyException("Error Sintexsis Index");
+	std::stringstream str(std::string(this->_data.begin() + pos_start, this->_data.begin() + end));
+	std::string val;
+	std::vector<std::string> *res;
+	if (controlFlag)
+		res = &(this->_serverList[this->_serverList.size() - 1].getLocations()\
+		[this->_serverList[this->_serverList.size() - 1].getLocations().size() - 1].getIndex());
+	else
+		res = &(this->_serverList[this->_serverList.size() - 1].getServerConfig().getIndex());
+	res->clear();
+	for (; !str.eof() ;)
+	{
+		str >> val;
+		if (!val.size())
+			continue;
+		res->push_back(val);
+	}
+	if (!res->size())
+		throw MyException("Error Sintexsis Index");
+	return (end + 1);
 }
 
 size_t ParsingConfigFile::checkAutoindex(size_t pos_start, size_t pos_end, bool controlFlag)

@@ -1,7 +1,7 @@
 #include "Config.hpp"
 
 Config::Config():
-	_root("/var/www"),_index("index.html"),
+	_root("/var/www"),_index({"index.html"}),
 	_autoindex(true),_client_max_body_size(1024*1024) {}
 
 
@@ -100,12 +100,12 @@ Config& Config::setCgi(const bool& cgi)
 	return (*this);
 }
 
-std::string Config::getIndex() const
+std::vector<std::string>& Config::getIndex()
 {
 	return (this->_index);
 }
 
-Config& Config::setIndex(const std::string& index)
+Config& Config::setIndex(const std::vector<std::string>& index)
 {
 	this->_index = index;
 	return (*this);

@@ -17,7 +17,7 @@ private:
 	std::map<int, std::string>	_error_page;
 	StatusCollection			_return;
 	bool						_cgi;
-	std::string					_index;
+	std::vector<std::string>	_index;
 	std::string					_location_name;
 	bool						_autoindex;
 	unsigned long				_client_max_body_size;
@@ -45,8 +45,8 @@ public:
 	bool&  getCgi();
 	Config& setCgi(const bool& cgi);
 
-	std::string getIndex() const;
-	Config& setIndex(const std::string& index);
+	std::vector<std::string> & getIndex();
+	Config& setIndex(const std::vector<std::string>& index);
 
 	std::string getLocation_name() const;
 	Config& setLocation_name(const std::string& location_name);
