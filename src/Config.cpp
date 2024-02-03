@@ -1,15 +1,20 @@
 #include "Config.hpp"
 
 Config::Config():
-	_root("/var/www"),_index({"index.html"}),
-	_autoindex(true),_client_max_body_size(1024*1024) {}
+	_root("/var/www"),
+	_autoindex(true),_client_max_body_size(1024*1024) 
+{
+	this->_index.push_back("index.html");
+	
+}
 
 
 Config::Config(const Config& other):
+	_root(other._root),
 	_allow_methods(other._allow_methods),
+	_upload_dir(other._upload_dir),
 	_error_page(other._error_page),
-	_return(other._return),_cgi(other._cgi),
-	_root(other._root),_upload_dir(other._upload_dir),
+	_return(other._return), _cgi(other._cgi) ,
 	_index(other._index),_location_name(other._location_name),
 	_autoindex(other._autoindex),
 	_client_max_body_size(other._client_max_body_size) {}
@@ -45,7 +50,7 @@ Config& Config::setRoot(const std::string& root)
 	return (*this);
 }
 
-const ActiveMetods& Config::getAllow_methods() const
+ActiveMetods& Config::getAllow_methods()
 {
 	return (this->_allow_methods);
 }

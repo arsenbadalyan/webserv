@@ -30,7 +30,7 @@ public:
 	std::string getRoot() const;
 	Config& setRoot(const std::string& root);
 
-	const ActiveMetods& getAllow_methods() const;
+	ActiveMetods& getAllow_methods();
 	Config& setAllow_methods(const ActiveMetods& allow_methods);
 
 	std::string getUpload_dir() const;

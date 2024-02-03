@@ -1,6 +1,6 @@
 #include "StatusCollection.hpp"
 
-StatusCollection::StatusCollection():_path("non") , _statusTypes(0) {}
+StatusCollection::StatusCollection(): _statusTypes(0) {}
 
 StatusCollection::StatusCollection(const size_t &statusTypes, const std::string &path):_statusTypes(statusTypes),_path(path) {}
 

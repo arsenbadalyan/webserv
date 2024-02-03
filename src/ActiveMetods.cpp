@@ -24,34 +24,34 @@ ActiveMetods& ActiveMetods::operator= (const ActiveMetods& other)
 
 ActiveMetods::~ActiveMetods() {}
 
-const bool ActiveMetods::GetPost() const
+bool ActiveMetods::getPost()
 {
 	return (this->_post);
 }
 
-const bool ActiveMetods::GetGet() const
+bool ActiveMetods::getGet()
 {
 	return (this->_get);
 }
 
-const bool ActiveMetods::GetDelete() const
+bool ActiveMetods::getDelete()
 {
 	return (this->_delete);
 }
 
-ActiveMetods& ActiveMetods::SetPost(const bool PostData)
+ActiveMetods& ActiveMetods::setPost(const bool PostData)
 {
 	this->_post = PostData;
 	return (*this);
 }
 
-ActiveMetods& ActiveMetods::SetGet(const bool GetData)
+ActiveMetods& ActiveMetods::setGet(const bool GetData)
 {
 	this->_post = GetData;
 	return (*this);
 }
 
-ActiveMetods& ActiveMetods::SetDelete(const bool DeleteData)
+ActiveMetods& ActiveMetods::setDelete(const bool DeleteData)
 {
 	this->_post = DeleteData;
 	return (*this);

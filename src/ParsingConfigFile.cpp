@@ -166,7 +166,7 @@ size_t ParsingConfigFile::CheckCorecktLocation(size_t pos_start, size_t pos_end)
 	{
 		if (this->_data[start] != '\t' && this->_data[start] != ' ')
 		{
-			if (this->_data[start] == '\n');
+			if (this->_data[start] == '\n')
 				throw MyException("Error Emty name location");
 			for (end = start; end < pos_end && this->_data[end] != '\t' && \
 				this->_data[end] != '\n' && this->_data[end] != ' ' && this->_data[end] != '{'; ++end);
@@ -208,7 +208,7 @@ size_t	ParsingConfigFile::CheckCorecktConfig(std::string config, size_t pos_star
 	{
 		if (controlFlag)
 			throw MyException("Error listen for location");
-		//res = checkListen(pos_start, pos_end, controlFlag);
+		res = checkListen(pos_start, pos_end, controlFlag);
 		if (SIZE_MAX != res)
 			return (res);
 	} 
@@ -216,61 +216,61 @@ size_t	ParsingConfigFile::CheckCorecktConfig(std::string config, size_t pos_star
 	{
 		if (controlFlag)
 			throw MyException("Error server_name for location");
-		//res = checkServerName(pos_start, pos_end, controlFlag);
+		res = checkServerName(pos_start, pos_end, controlFlag);
 		if (SIZE_MAX != res)
 			return (res);
 	} 
 	else if (std::string("root") == config)
 	{
-		//res = checkRoot(pos_start, pos_end, controlFlag);
+		res = checkRoot(pos_start, pos_end, controlFlag);
 		if (SIZE_MAX != res)
 			return (res);
 	}
 	else if (std::string("allow_methods") == config)
 	{
-		//res = checkAllowMethods(pos_start, pos_end, controlFlag);
+		res = checkAllowMethods(pos_start, pos_end, controlFlag);
 		if (SIZE_MAX != res)
 			return (res);
 	}
 	else if (std::string("upload_dir") == config)
 	{
-		//res = checkUploadDir(pos_start, pos_end, controlFlag);
+		res = checkUploadDir(pos_start, pos_end, controlFlag);
 		if (SIZE_MAX != res)
 			return (res);
 	}
 	else if (std::string("error_page") == config)
 	{
-		//res = checkErrorPage(pos_start, pos_end, controlFlag);
+		res = checkErrorPage(pos_start, pos_end, controlFlag);
 		if (SIZE_MAX != res)
 			return (res);
 	}
 	else if (std::string("return") == config)
 	{
-		//res = checkReturn(pos_start, pos_end, controlFlag);
+		res = checkReturn(pos_start, pos_end, controlFlag);
 		if (SIZE_MAX != res)
 			return (res);
 	}
 	else if (std::string("cgi") == config)
 	{
-		//res = checkCgi(pos_start, pos_end, controlFlag);
+		res = checkCgi(pos_start, pos_end, controlFlag);
 		if (SIZE_MAX != res)
 			return (res);
 	}
 	else if (std::string("index") == config)
 	{
-		//res = checkIndex(pos_start, pos_end, controlFlag);
+		res = checkIndex(pos_start, pos_end, controlFlag);
 		if (SIZE_MAX != res)
 			return (res);
 	}
 	else if (std::string("autoindex") == config)
 	{
-		//res = checkAutoindex(pos_start, pos_end, controlFlag);
+		res = checkAutoindex(pos_start, pos_end, controlFlag);
 		if (SIZE_MAX != res)
 			return (res);
 	}
 	else if (std::string("client_max_body_size") == config)
 	{
-		//res = checkClientMaxBodySize(pos_start, pos_end, controlFlag);
+		res = checkClientMaxBodySize(pos_start, pos_end, controlFlag);
 		if (SIZE_MAX != res)
 			return (res);
 	}
@@ -317,12 +317,36 @@ size_t ParsingConfigFile::checkListen(size_t pos_start, size_t pos_end, bool con
 
 size_t ParsingConfigFile::checkServerName(size_t pos_start, size_t pos_end, bool controlFlag)
 {
-	return size_t();
+	(void)controlFlag;
+	size_t end = 0;
+	// size_t start = pos_start;
+	size_t i = pos_start;
+	for (; i < pos_end; i++)
+	{
+		if (this->_data[i] == ';')
+		{
+			end = i;
+			break;
+		}
+		if (this->_data[i] == '\n')
+			throw MyException("Error Sintexsis ServerName");
+	}
+	if (i >= pos_end)
+		throw MyException("Error Sintexsis ServerName");
+	std::stringstream str(std::string(this->_data.begin() + pos_start, this->_data.begin() + end));
+	std::string val, check;
+	str >> val;
+	str >> check;
+	if (check.size())
+		throw MyException("Error Sintexsis ServerName arguments");
+	this->_serverList[this->_serverList.size() - 1].setServerName(val);
+	return size_t(end + 1);
 }
 
 size_t ParsingConfigFile::checkRoot(size_t pos_start, size_t pos_end, bool controlFlag)
 {
-	size_t end = 0, start = pos_start;
+	size_t end = 0;
+	// size_t start = pos_start;
 	size_t i = pos_start;
 	for (; i < pos_end; i++)
 	{
@@ -351,17 +375,65 @@ size_t ParsingConfigFile::checkRoot(size_t pos_start, size_t pos_end, bool contr
 		[this->_serverList[this->_serverList.size() - 1].getLocations().size() - 1].setRoot(val);
 	else
 		this->_serverList[this->_serverList.size() - 1].getServerConfig().setRoot(val);
+	// (void)pos_end;
 	return (end + 1);
 }
 
 size_t ParsingConfigFile::checkAllowMethods(size_t pos_start, size_t pos_end, bool controlFlag)
 {
-	return size_t();
+	(void)pos_end;
+	size_t end;
+	bool g = false, p = false, d = false;
+
+	std::vector<std::string> words;
+
+	std::string methods = this->_data.substr(pos_start, this->_data.find('\n', pos_start) - pos_start);
+	if ((end = methods.find(';') ) == std::string::npos)
+		throw MyException("Error Sintexsis Allow_method");
+	methods = methods.substr(0, end);
+	std::istringstream iss(methods);
+	
+	std::string word;
+	while (iss >> word)
+		words.push_back(word);
+
+	if (words.empty())
+		throw MyException("Error Sintexsis Allow_method");
+
+	for (size_t i = 0; i < words.size(); i++)
+	{
+		if (words[i] != "GET" && words[i] != "POST" && words[i] != "DELETE")
+            throw MyException("Error Sintexsis Allow_method");
+		if (words[i] == "GET")
+			g = true;
+		if (words[i] == "POST")
+			p = true;
+		if (words[i] == "DELETE")
+			d = true;
+	}
+	
+	if (!controlFlag)
+	{
+		this->_serverList[this->_serverList.size() - 1].getServerConfig().getAllow_methods().setGet(g);
+		this->_serverList[this->_serverList.size() - 1].getServerConfig().getAllow_methods().setPost(p);
+		this->_serverList[this->_serverList.size() - 1].getServerConfig().getAllow_methods().setDelete(d);
+	}
+	else
+	{
+		this->_serverList[this->_serverList.size() - 1].getLocations()[this->_serverList[this->_serverList.size() - 1].\
+		getLocations().size() - 1].getAllow_methods().setGet(g);
+		this->_serverList[this->_serverList.size() - 1].getLocations()[this->_serverList[this->_serverList.size() - 1].\
+		getLocations().size() - 1].getAllow_methods().setPost(p);
+		this->_serverList[this->_serverList.size() - 1].getLocations()[this->_serverList[this->_serverList.size() - 1].\
+		getLocations().size() - 1].getAllow_methods().setDelete(d);
+	}
+	return size_t(end + 1);
 }
 
 size_t ParsingConfigFile::checkUploadDir(size_t pos_start, size_t pos_end, bool controlFlag)
 {
-	size_t end = 0, start = pos_start;
+	size_t end = 0;
+	// size_t start = pos_start;
 	size_t i = pos_start;
 	for (; i < pos_end; i++)
 	{
@@ -396,7 +468,8 @@ size_t ParsingConfigFile::checkUploadDir(size_t pos_start, size_t pos_end, bool 
 
 size_t ParsingConfigFile::checkErrorPage(size_t pos_start, size_t pos_end, bool controlFlag)
 {
-	size_t end = 0, start = pos_start;
+	size_t end = 0;
+	// size_t start = pos_start;
 	size_t i = pos_start;
 	for (; i < pos_end; i++)
 	{
@@ -471,7 +544,8 @@ size_t ParsingConfigFile::statusCodes(std::string number)
 
 size_t ParsingConfigFile::checkReturn(size_t pos_start, size_t pos_end, bool controlFlag)
 {
-	size_t end = 0, start = pos_start;
+	size_t end = 0;
+	// size_t start = pos_start;
 	size_t i = pos_start;
 	for (; i < pos_end; i++)
 	{
@@ -527,7 +601,8 @@ size_t ParsingConfigFile::checkReturn(size_t pos_start, size_t pos_end, bool con
 
 size_t ParsingConfigFile::checkCgi(size_t pos_start, size_t pos_end, bool controlFlag)
 {
-	size_t end = 0, start = pos_start;
+	size_t end = 0;
+	// size_t start = pos_start;
 	size_t i = pos_start;
 	for (; i < pos_end; i++)
 	{
@@ -565,7 +640,8 @@ size_t ParsingConfigFile::checkCgi(size_t pos_start, size_t pos_end, bool contro
 
 size_t ParsingConfigFile::checkIndex(size_t pos_start, size_t pos_end, bool controlFlag)
 {
-	size_t end = 0, start = pos_start;
+	size_t end = 0;
+	// size_t start = pos_start;
 	size_t i = pos_start;
 	for (; i < pos_end; i++)
 	{
@@ -602,12 +678,35 @@ size_t ParsingConfigFile::checkIndex(size_t pos_start, size_t pos_end, bool cont
 
 size_t ParsingConfigFile::checkAutoindex(size_t pos_start, size_t pos_end, bool controlFlag)
 {
-	return size_t();
+	(void)pos_end;
+	size_t end;
+	std::string autoindex = this->_data.substr(pos_start, this->_data.find('\n', pos_start) - pos_start);
+	if ((end = autoindex.find(';') ) == std::string::npos)
+		throw MyException("Error Sintexsis Autoindex");
+	autoindex = autoindex.substr(0, end);
+	std::string check;
+	std::istringstream iss(autoindex);
+	iss >> autoindex;
+	iss >> check;
+	if (check.size())
+		throw MyException("Error Sintexsis Autoindex arguments");
+	
+	if (autoindex != "off" && autoindex != "on")
+		throw MyException("Error Sintexsis Autoindex");//eli qnnarkel sosi het
+	if (!controlFlag)
+		this->_serverList[this->_serverList.size() - 1].getServerConfig().setAutoindex(autoindex == "off" ? false : true);
+	else
+		(this->_serverList[this->_serverList.size() - 1].getLocations())[this->_serverList[this->_serverList.size() - 1].\
+		getLocations().size() - 1].setAutoindex(autoindex == "off" ? false : true);
+	return size_t(end + 1);
 }
 
 size_t ParsingConfigFile::checkClientMaxBodySize(size_t pos_start, size_t pos_end, bool controlFlag)
 {
-	return size_t();
+	(void)pos_end;
+	(void)pos_start;
+	(void)controlFlag;
+	return size_t(0);
 }
 
 size_t ParsingConfigFile::runSpaceTab(size_t pos_start, size_t pos_end)
@@ -631,6 +730,7 @@ size_t ParsingConfigFile::runSpaceTab(size_t pos_start, size_t pos_end)
 
 bool ParsingConfigFile::checCorectHostAndPort(size_t pos_start, size_t pos_end, bool controlFlag)
 {
+	(void)controlFlag;
 	size_t	pos_period = this->_data.find(":", pos_start, pos_end - pos_start);
 	if (pos_period == SIZE_MAX)
 		throw MyException("Error Sintexsis Listen -> :");

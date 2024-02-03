@@ -9,7 +9,7 @@ server
 
 	location /test/barev
 	{
-		autoindex on;
+		autoindex on asdsad ;
 		return 301;
 		allow_method POST;
 		root some/other/path;
@@ -56,4 +56,5 @@ server
 	M --> 17592186044415
 	G --> 17179869183
 	/index
+
 }
