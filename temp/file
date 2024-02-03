@@ -1,0 +1,60 @@
+server
+{
+	root mysite/;
+	cgi php /usr/bin/php-cgi;
+	location blabla 
+	{
+
+	}
+
+	location /test/barev
+	{
+		autoindex on asdsad ;
+		return 301;
+		allow_method POST;
+		root some/other/path;
+	}
+
+	location /test/index.html
+	{
+
+	}
+
+
+	autoindex on;
+	index 
+
+
+	listen
+	server_name
+	index
+	autoindex
+	root
+	return
+	upload_dir
+	allow_method
+
+
+	listen: Specify the IP and port for the server to bind to.  --> 127.0.0.1:8080 defolt ??
+	server_name: Specify names that HTTP clients can send via the Host header in HTTP requests.--> defolt ""  
+															--> example.org  www.example.org;
+	root: Set the root path of the server directory.   --> /www/data; --> defolt /var/www; ??
+	allow_methods: Explicitly define allowed HTTP methods for this server. --> GET, POST, DELETE --> defolt all
+	upload_dir: Configure the directory where the server should store files from multipart form data. --> defold none
+	error_page: Craft custom error pages based on response status codes. --> error_page 500 502 503 504 /custom_50x.html;
+													--> error_page 404 /custom_404.html;  --> defolt your
+	return: Set up redirection URLs for specific scenarios.  --> return 301 http://www.example.com/moved/here;
+															--> defolt none
+	cgi: Enable CGI script execution for handling Python and PHP scripts. --> defold ?? --->> on kam off sarqel
+	index: Specify the default index file.     --> defolt   index index.html index2.html; -->> sarqel vector<string>
+	autoindex: Enable directory listing when no index file is found. --> defold off  --> on
+	client_max_body_size: Set the maximum allowed size of the client request body. --> 2KB ?? --> defold 1MB
+
+
+	byte --> 18446744073709551615
+	kilo --> 18014398509481983
+	M --> 17592186044415
+	G --> 17179869183
+	/index
+
+}
