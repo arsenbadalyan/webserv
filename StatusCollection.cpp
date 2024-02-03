@@ -1,8 +1,8 @@
 #include "StatusCollection.hpp"
 
-StatusCollection::StatusCollection():_path("non") {}
+StatusCollection::StatusCollection():_path("non") , _statusTypes(0) {}
 
-StatusCollection::StatusCollection(const std::vector<int> &statusTypes, const std::string &path):_statusTypes(statusTypes),_path(path) {}
+StatusCollection::StatusCollection(const size_t &statusTypes, const std::string &path):_statusTypes(statusTypes),_path(path) {}
 
 
 StatusCollection::StatusCollection(const StatusCollection& other):_statusTypes(other._statusTypes)
@@ -19,12 +19,9 @@ StatusCollection& StatusCollection::operator= (const StatusCollection& other)
 	return (*this);
 }
 
-StatusCollection::~StatusCollection()
-{
-	this->_statusTypes.clear();
-}
+StatusCollection::~StatusCollection() {}
 
-std::vector<int>& StatusCollection::getStatusTypes()
+size_t& StatusCollection::getStatusTypes()
 {
 	return (this->_statusTypes);
 }
@@ -34,9 +31,9 @@ std::string& StatusCollection::getPath()
 	return (this->_path);
 }
 
-StatusCollection& StatusCollection::setStatusTypes(const int statusType)
+StatusCollection& StatusCollection::setStatusTypes(const size_t statusType)
 {
-	this->_statusTypes.push_back(statusType);
+	this->_statusTypes = statusType;
 	return (*this);
 }
 

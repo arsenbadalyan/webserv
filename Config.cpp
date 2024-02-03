@@ -67,18 +67,18 @@ Config& Config::setUpload_dir(const std::string& upload_dir)
 	return (*this);
 }
 
-const StatusCollection& Config::getError_page() const
+std::map<int, std::string>& Config::getError_page()
 {
 	return (this->_error_page);
 }
 
-Config& Config::setError_page(const StatusCollection& error_page)
+Config& Config::setError_page(const std::map<int, std::string>& error_page)
 {
 	this->_error_page = error_page;
 	return (*this);
 }
 
-const StatusCollection& Config::getReturn() const
+StatusCollection& Config::getReturn()
 {
 	return (this->_return);
 }
@@ -89,12 +89,12 @@ Config& Config::setReturn(const StatusCollection& _return)
 	return (*this);
 }
 
-const CgiHandler&  Config::getCgi() const
+bool&  Config::getCgi()
 {
 	return (this->_cgi);
 }
 
-Config& Config::setCgi(const CgiHandler& cgi)
+Config& Config::setCgi(const bool& cgi)
 {
 	this->_cgi = cgi;
 	return (*this);

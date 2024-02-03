@@ -361,7 +361,36 @@ size_t ParsingConfigFile::checkAllowMethods(size_t pos_start, size_t pos_end, bo
 
 size_t ParsingConfigFile::checkUploadDir(size_t pos_start, size_t pos_end, bool controlFlag)
 {
-	return size_t();
+	size_t end = 0, start = pos_start;
+	size_t i = pos_start;
+	for (; i < pos_end; i++)
+	{
+		if (this->_data[i] == ';')
+		{
+			end = i;
+			break;
+		}
+		if (this->_data[i] == '\n')
+			throw MyException("Error Sintexsis Upload_Dir");
+	}
+	if (i >= pos_end)
+		throw MyException("Error Sintexsis Upload_Dir");
+	std::stringstream str(std::string(this->_data.begin() + pos_start, this->_data.begin() + end));
+	std::string val, check;
+	str >> val;
+	str >> check;
+	if (check.size())
+		throw MyException("Error Sintexsis Upload_Dir arguments");
+	DIR *dir = opendir(val.c_str());
+	if (dir)
+		throw MyException("Error Sintexsis Upload_Dir not direktory");
+	closedir(dir);
+	if (controlFlag)
+		this->_serverList[this->_serverList.size() - 1].getLocations()\
+		[this->_serverList[this->_serverList.size() - 1].getLocations().size() - 1].setUpload_dir(val);
+	else
+		this->_serverList[this->_serverList.size() - 1].getServerConfig().setUpload_dir(val);
+	return (end + 1);
 }
 
 
@@ -382,38 +411,156 @@ size_t ParsingConfigFile::checkErrorPage(size_t pos_start, size_t pos_end, bool 
 	if (i >= pos_end)
 		throw MyException("Error Sintexsis ErrorPage");
 	std::stringstream str(std::string(this->_data.begin() + pos_start, this->_data.begin() + end));
-	std::string val, check;
-	
+	std::string val, page;
+	std::vector<size_t> statCod;
+
+	for (; !str.eof() ;)
+	{
+		str >> val;
+		if (!val.size())
+			continue;
+		try
+		{
+			statCod.push_back(statusCodes(val));
+		}
+		catch(...)
+		{
+			if(page.size() || !statCod.size())
+				throw MyException("Error Sintexsis ErrorPage");
+			if (access(val.c_str(), F_OK))
+				throw MyException("Error Sintexsis ErrorPage no file");
+			page = val;
+		}
+	}
+	if (!statCod.size() || !page.size())
+		throw MyException("Error Sintexsis ErrorPage");
+	std::map<int, std::string> *_map;
+	if (controlFlag)
+	{
+		_map = &(this->_serverList[this->_serverList.size() - 1].getLocations()\
+		[this->_serverList[this->_serverList.size() - 1].getLocations().size()].getError_page());
+	}
+	else{
+		_map = &(this->_serverList[this->_serverList.size() - 1].getServerConfig().getError_page());
+	}
+	for (size_t i = 0; i < statCod.size(); ++i)
+	{
+		_map->insert(std::pair<size_t, std::string>(statCod[i],val));
+	}
 	return (end + 1);
 }
 
-int ParsingConfigFile::statusCodes(std::string number)
+size_t ParsingConfigFile::statusCodes(std::string number)
 {
 	size_t  size = number.size();
 	int num;
 	if (!size)
-		throw MyException("Error Sintexsis statusCodes");
+		throw MyException(" ");
 	try
 	{
 		num = std::stoi(number, &size);
 	}
 	catch(...)
 	{
-		throw MyException("Error Sintexsis statusCodes");
+		throw MyException(" ");
 	}
 	if (size != number.size() || num < 100 || num > 599)
-		throw MyException("Error Sintexsis statusCodes");
-	return (num);
+		throw MyException(" ");
+	return (static_cast<size_t>(num));
 }
 
 size_t ParsingConfigFile::checkReturn(size_t pos_start, size_t pos_end, bool controlFlag)
 {
-	return size_t();
+	size_t end = 0, start = pos_start;
+	size_t i = pos_start;
+	for (; i < pos_end; i++)
+	{
+		if (this->_data[i] == ';')
+		{
+			end = i;
+			break;
+		}
+		if (this->_data[i] == '\n')
+			throw MyException("Error Sintexsis Return");
+	}
+	if (i >= pos_end)
+		throw MyException("Error Sintexsis Return");
+
+	std::stringstream str(std::string(this->_data.begin() + pos_start, this->_data.begin() + end));
+	std::string val, page;
+	size_t		statCod = 0, ival = 0;
+	for (; !str.eof() ;)
+	{
+		str >> val;
+		if (!val.size())
+			continue;
+		try
+		{
+			ival = statusCodes(val);
+		}
+		catch(...)
+		{
+			if(page.size() || !statCod)
+				throw MyException("Error Sintexsis Return");
+			page = val;
+			continue;
+		}
+		if (ival && statCod)
+			throw MyException("Error Sintexsis Return");
+		if (ival && !statCod)
+			statCod = ival;
+		ival = 0;
+	}
+	if (controlFlag)
+	{
+		this->_serverList[this->_serverList.size() - 1].getLocations()\
+		[this->_serverList[this->_serverList.size() - 1].getLocations().size()].getReturn().setStatusTypes(statCod);
+		this->_serverList[this->_serverList.size() - 1].getLocations()\
+		[this->_serverList[this->_serverList.size() - 1].getLocations().size()].getReturn().setPath(val);
+	}
+	else{
+		this->_serverList[this->_serverList.size() - 1].getServerConfig().getReturn().setStatusTypes(statCod);
+		this->_serverList[this->_serverList.size() - 1].getServerConfig().getReturn().setPath(val);
+	}
+	return (end + 1);
 }
 
 size_t ParsingConfigFile::checkCgi(size_t pos_start, size_t pos_end, bool controlFlag)
 {
-	return size_t();
+	size_t end = 0, start = pos_start;
+	size_t i = pos_start;
+	for (; i < pos_end; i++)
+	{
+		if (this->_data[i] == ';')
+		{
+			end = i;
+			break;
+		}
+		if (this->_data[i] == '\n')
+			throw MyException("Error Sintexsis Upload_Dir");
+	}
+	if (i >= pos_end)
+		throw MyException("Error Sintexsis Upload_Dir");
+	std::stringstream str(std::string(this->_data.begin() + pos_start, this->_data.begin() + end));
+	std::string val, check;
+	str >> val;
+	str >> check;
+	if (check.size())
+		throw MyException("Error Sintexsis Upload_Dir arguments");
+	bool *res;
+	if (controlFlag)
+		res = &(this->_serverList[this->_serverList.size() - 1].getLocations()\
+		[this->_serverList[this->_serverList.size() - 1].getLocations().size() - 1].getCgi());
+	else
+		res = &(this->_serverList[this->_serverList.size() - 1].getServerConfig().getCgi());
+	std::transform(val.begin(), val.end(), val.begin(), ::tolower);
+	if (val == std::string("on"))
+		*res = (true);
+	else if(val == std::string("off"))
+		*res = (false);
+	else
+		throw MyException("Error Sintexsis Upload_Dir arguments");
+	return (end + 1);
 }
 
 size_t ParsingConfigFile::checkIndex(size_t pos_start, size_t pos_end, bool controlFlag)

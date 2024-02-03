@@ -43,11 +43,17 @@ server
 	upload_dir: Configure the directory where the server should store files from multipart form data. --> defold none
 	error_page: Craft custom error pages based on response status codes. --> error_page 500 502 503 504 /custom_50x.html;
 													--> error_page 404 /custom_404.html;  --> defolt your
-	return: Set up redirection URLs for specific scenarios.  --> return 301 http://www.example.com/moved/here; 
+	return: Set up redirection URLs for specific scenarios.  --> return 301 http://www.example.com/moved/here;
 															--> defolt none
-	cgi: Enable CGI script execution for handling Python and PHP scripts. --> defold ??
-	index: Specify the default index file.     --> defolt   index index.html;
+	cgi: Enable CGI script execution for handling Python and PHP scripts. --> defold ?? --->> on kam off sarqel
+	index: Specify the default index file.     --> defolt   index index.html index2.html; -->> sarqel vector<string>
 	autoindex: Enable directory listing when no index file is found. --> defold off  --> on
-	client_max_body_size: Set the maximum allowed size of the client request body. --> 2MB ?? --> defold 1MB
+	client_max_body_size: Set the maximum allowed size of the client request body. --> 2KB ?? --> defold 1MB
 
+
+	byte --> 18446744073709551615
+	kilo --> 18014398509481983
+	M --> 17592186044415
+	G --> 17179869183
+	/index
 }

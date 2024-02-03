@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <unistd.h>
 
 class ReadFile
 {

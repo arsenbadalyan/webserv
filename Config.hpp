@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <map>
 #include "ActiveMetods.hpp"
 #include "StatusCollection.hpp"
 #include "CgiHandler.hpp"
@@ -10,16 +11,16 @@
 class Config
 {
 private:
-	std::string _root;
-	ActiveMetods _allow_methods;
-	std::string _upload_dir;
-	StatusCollection _error_page;
-	StatusCollection _return;
-	CgiHandler _cgi;
-	std::string _index;
-	std::string _location_name;
-	bool _autoindex;
-	unsigned long _client_max_body_size;
+	std::string					_root;
+	ActiveMetods				_allow_methods;
+	std::string					_upload_dir;
+	std::map<int, std::string>	_error_page;
+	StatusCollection			_return;
+	bool						_cgi;
+	std::string					_index;
+	std::string					_location_name;
+	bool						_autoindex;
+	unsigned long				_client_max_body_size;
 public:
 	Config();
 	Config(const Config& other);
@@ -35,14 +36,14 @@ public:
 	std::string getUpload_dir() const;
 	Config& setUpload_dir(const std::string& upload_dir);
 
-	const StatusCollection& getError_page() const;
-	Config& setError_page(const StatusCollection& error_page);
+	std::map<int, std::string> & getError_page() ;
+	Config& setError_page(const std::map<int, std::string>& error_page);
 
-	const StatusCollection& getReturn() const;
+	StatusCollection& getReturn();
 	Config& setReturn(const StatusCollection& _return);
 
-	const CgiHandler&  getCgi() const;
-	Config& setCgi(const CgiHandler& cgi);
+	bool&  getCgi();
+	Config& setCgi(const bool& cgi);
 
 	std::string getIndex() const;
 	Config& setIndex(const std::string& index);
