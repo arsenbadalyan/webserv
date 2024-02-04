@@ -1,5 +1,6 @@
 server
 {
+	listen 127.0.0.1:8080;
 	root mysite/;
 	cgi php /usr/bin/php-cgi;
 	location blabla 
@@ -55,6 +56,6 @@ server
 	kilo --> 18014398509481983
 	M --> 17592186044415
 	G --> 17179869183
-	/index
-
+	//index
+	-g3 -fsanitize=address
 }

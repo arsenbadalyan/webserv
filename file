@@ -1,0 +1,22 @@
+server
+{
+	listen 127.0.0.1:8080 ;
+	cgi on;
+	location blabla 
+	{
+		return 301;
+	}
+
+	location /test/barev
+	{
+		autoindex on ;
+		return 301;
+		allow_method POST;
+	}
+
+	location /test/index.html
+	{
+		return 301;
+	}
+
+}
