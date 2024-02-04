@@ -63,6 +63,13 @@ private:
 	bool	chekAndSavePort(std::string port);
 	bool	chekHostNumber(std::string number);
 
+	size_t checkGigabyte(std::string &BodySize);
+	size_t checkMegabyte(std::string &BodySize);
+	size_t checkKilobyte(std::string &BodySize);
+	size_t checkByte(std::string &BodySize);
+	void findSimbol(std::string &BodySize);
+
+
 	class MyException : public std::exception
 	{
 	private:

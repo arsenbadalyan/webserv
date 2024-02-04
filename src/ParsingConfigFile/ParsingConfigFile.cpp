@@ -701,12 +701,70 @@ size_t ParsingConfigFile::checkAutoindex(size_t pos_start, size_t pos_end, bool 
 	return size_t(end + 1);
 }
 
+size_t ParsingConfigFile::checkGigabyte(std::string &BodySize)
+{
+	size_t numb = std::stoul(BodySize);
+	//std::string result = std::to_string(numb);
+	if (BodySize.size() > 11 || result > 17179869183)
+		throw MyException("Error Sintexsis ClientBodySize");
+	return (result);
+}
+
+size_t ParsingConfigFile::checkMegabyte(std::string &BodySize)
+{
+	size_t result = std::stoul(BodySize);
+	if (BodySize.size() > 14 || result > 17592186044415)
+		throw MyException("Error Sintexsis ClientBodySize");
+	return (result);
+}
+
+size_t ParsingConfigFile::checkKilobyte(std::string &BodySize)
+{
+	size_t result = std::stoul(BodySize);
+	if (BodySize.size() > 17 || result > 18014398509481983)
+		throw MyException("Error Sintexsis ClientBodySize");
+	return (result);
+}
+
+size_t ParsingConfigFile::checkByte(std::string &BodySize)
+{
+	size_t result = static_cast<size_t>(std::strtoull(BodySize.c_str(), nullptr, 10));
+	std::string check = std::to_string(result);
+	if (check.size() != BodySize.size())
+		throw MyException("Error Sintexsis ClientBodySize");
+	return (result);
+}
+
+void ParsingConfigFile::findSimbol(std::string &BodySize)
+{
+	size_t pos = BodySize.find_first_not_of("0123456789");
+	if (pos == std::string::npos)
+		checkByte(BodySize);
+	else if (BodySize[pos] == 'K' || BodySize[pos] == 'k' && BodySize[pos + 1] == '\0')
+		checkKilobyte(BodySize);
+	else if (BodySize[pos] == 'M' || BodySize[pos] == 'm' && BodySize[pos + 1] == '\0')
+		checkMegabyte(BodySize);
+	else if (BodySize[pos] == 'G' || BodySize[pos] == 'g' && BodySize[pos + 1] == '\0')
+		checkGigabyte(BodySize);
+	else
+		throw MyException("Error Sintexsis ClientBodySize");
+}
+
 size_t ParsingConfigFile::checkClientMaxBodySize(size_t pos_start, size_t pos_end, bool controlFlag)
 {
-	(void)pos_end;
-	(void)pos_start;
-	(void)controlFlag;
-	return size_t(0);
+	size_t end;
+	std::string BodySize = this->_data.substr(pos_start, this->_data.find('\n', pos_start) - pos_start);
+	if ((end = BodySize.find(';') ) == std::string::npos)
+		throw MyException("Error Sintexsis ClientBodySize");
+	BodySize = BodySize.substr(0, end);
+	std::string check;
+	std::istringstream iss(BodySize);
+	iss >> BodySize;
+	iss >> check;
+	if (check.size())
+		throw MyException("Error Sintexsis Autoindex arguments");
+	findSimbol(BodySize);
+	return size_t(end + 1);
 }
 
 size_t ParsingConfigFile::runSpaceTab(size_t pos_start, size_t pos_end)
@@ -806,7 +864,6 @@ bool ParsingConfigFile::chekHostNumber(std::string number)
 	return (true);
 }
 
-/////////////////
 
 ParsingConfigFile::MyException::MyException(const std::string &error) : _error(error) {}
 
