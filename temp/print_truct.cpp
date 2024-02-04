@@ -1,22 +1,4 @@
 #include "ParsingConfigFile.hpp"
-void print_struct(std::vector<Server>  s);
-
-int main() {
-
-	std::vector<Server> t;
-	ParsingConfigFile  a("file");
-	try
-	{
-		t = a.startPars();
-	}
-	catch(const std::exception& e)
-	{
-		std::cerr << e.what() << '\n';
-	}
-	print_struct(t);
-	
-    return (0);
-}
 
 void print_struct(std::vector<Server>  s)
 {

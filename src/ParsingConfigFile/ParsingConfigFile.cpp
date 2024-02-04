@@ -20,7 +20,7 @@ ParsingConfigFile & ParsingConfigFile::operator=(const ParsingConfigFile & other
 
 ParsingConfigFile::~ParsingConfigFile() { }
 
-bool ParsingConfigFile::startPars()
+std::vector<Server> ParsingConfigFile::startPars()
 {
 	std::cout << "error -> 1" << std::endl;
 	this->_data = this->_file.Read();
@@ -34,7 +34,7 @@ bool ParsingConfigFile::startPars()
 	if (!this->CheckCorecktServer())
 		throw MyException("Corect Error");
 	std::cout << "error -> 5" << std::endl;
-	return (true);
+	return (this->_serverList);
 }
 
 bool ParsingConfigFile::CheckSintex()

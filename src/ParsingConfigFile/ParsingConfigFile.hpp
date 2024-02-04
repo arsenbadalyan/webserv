@@ -5,6 +5,8 @@
 #include "ReadFile.hpp"
 #include <dirent.h>
 #include <sstream>
+#include <cstdint>
+#include <algorithm>
 
 class ParsingConfigFile {
 private:
@@ -22,7 +24,7 @@ public:
 	ParsingConfigFile & operator=(const ParsingConfigFile & other);
 	~ParsingConfigFile();
 
-	bool startPars();
+	std::vector<Server>	startPars();
 
 private:
 
