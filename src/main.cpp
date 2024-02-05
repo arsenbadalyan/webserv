@@ -57,11 +57,11 @@ void print_struct(std::vector<Server>  s)
             for (std::map<int, std::string>::iterator h = s[i].getLocations()[j].getError_page().begin();\
             h != s[i].getLocations()[j].getError_page().end(); h++)
             {
-                std::cout << "Server " << i << " Error_page = " << h->first <<" "<< h->second << std::endl;
+                std::cout << "  Server " << i << " Error_page = " << h->first <<" "<< h->second << std::endl;
             }
             for (size_t h = 0; h < s[i].getLocations()[j].getIndex().size(); h++)
             {
-                std::cout << "Server " << i << " Index = " << s[i].getLocations()[j].getIndex()[h] << std::endl;
+                std::cout << "  Server " << i << " Index = " << s[i].getLocations()[j].getIndex()[h] << std::endl;
             }
             std::cout << "  Server " << i << " Location_name = " << s[i].getLocations()[j].getLocation_name() << std::endl;
             std::cout << "  Server " << i << " Return = " << s[i].getLocations()[j].getReturn().getStatusTypes()\

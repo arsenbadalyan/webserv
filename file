@@ -1,6 +1,13 @@
 server
 {
 	listen 127.0.0.1:8080 ;
+	server_name fdfsdfd;
+	root temp;
+	allow_methods GET;
+	upload_dir on;
+	error_page 550 400 300 200 file;
+	return 301;
+	index file;
 	cgi on;
 	location blabla 
 	{
@@ -11,7 +18,7 @@ server
 	{
 		autoindex on ;
 		return 301;
-		allow_method POST;
+		allow_methods POST;
 	}
 
 	location /test/index.html
