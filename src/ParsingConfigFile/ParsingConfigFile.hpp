@@ -67,7 +67,7 @@ private:
 	size_t checkMegabyte(std::string &BodySize);
 	size_t checkKilobyte(std::string &BodySize);
 	size_t checkByte(std::string &BodySize);
-	void findSimbol(std::string &BodySize);
+	size_t findSimbol(std::string &BodySize);
 
 
 	class MyException : public std::exception

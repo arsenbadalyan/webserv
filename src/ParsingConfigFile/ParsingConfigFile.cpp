@@ -587,6 +587,7 @@ size_t ParsingConfigFile::checkReturn(size_t pos_start, size_t pos_end, bool con
 	}
 	if (controlFlag)
 	{
+		//karoxa size -1
 		this->_serverList[this->_serverList.size() - 1].getLocations()\
 		[this->_serverList[this->_serverList.size() - 1].getLocations().size()].getReturn().setStatusTypes(statCod);
 		this->_serverList[this->_serverList.size() - 1].getLocations()\
@@ -704,55 +705,67 @@ size_t ParsingConfigFile::checkAutoindex(size_t pos_start, size_t pos_end, bool 
 size_t ParsingConfigFile::checkGigabyte(std::string &BodySize)
 {
 	size_t numb = std::stoul(BodySize);
-	//std::string result = std::to_string(numb);
-	if (BodySize.size() > 11 || result > 17179869183)
+	std::string result = std::to_string(numb);
+	if (result.size() > 11 || numb > 17179869183)
 		throw MyException("Error Sintexsis ClientBodySize");
-	return (result);
+	return (numb);
 }
 
 size_t ParsingConfigFile::checkMegabyte(std::string &BodySize)
 {
-	size_t result = std::stoul(BodySize);
-	if (BodySize.size() > 14 || result > 17592186044415)
+	size_t numb = std::stoul(BodySize);
+	std::string result = std::to_string(numb);
+	if (result.size() > 14 || numb > 17592186044415)
 		throw MyException("Error Sintexsis ClientBodySize");
-	return (result);
+	return (numb);
 }
 
 size_t ParsingConfigFile::checkKilobyte(std::string &BodySize)
 {
-	size_t result = std::stoul(BodySize);
-	if (BodySize.size() > 17 || result > 18014398509481983)
+	size_t numb = std::stoul(BodySize);
+	std::string result = std::to_string(numb);
+	if (result.size() > 17 || numb > 18014398509481983)
 		throw MyException("Error Sintexsis ClientBodySize");
-	return (result);
+	return (numb);
 }
 
 size_t ParsingConfigFile::checkByte(std::string &BodySize)
 {
-	size_t result = static_cast<size_t>(std::strtoull(BodySize.c_str(), nullptr, 10));
-	std::string check = std::to_string(result);
-	if (check.size() != BodySize.size())
+	size_t nonZeroPos = BodySize.find_first_not_of('0');
+
+    if (nonZeroPos != std::string::npos)
+        BodySize.erase(0, nonZeroPos);
+     else 
+        BodySize = "0";
+
+	size_t numb = static_cast<size_t>(std::strtoull(BodySize.c_str(), nullptr, 10));
+	std::string check = std::to_string(numb);
+	if (check != BodySize)
 		throw MyException("Error Sintexsis ClientBodySize");
-	return (result);
+	return (numb);
 }
 
-void ParsingConfigFile::findSimbol(std::string &BodySize)
+size_t ParsingConfigFile::findSimbol(std::string &BodySize)
 {
 	size_t pos = BodySize.find_first_not_of("0123456789");
+	size_t result;
 	if (pos == std::string::npos)
-		checkByte(BodySize);
+		result = checkByte(BodySize);
 	else if (BodySize[pos] == 'K' || BodySize[pos] == 'k' && BodySize[pos + 1] == '\0')
-		checkKilobyte(BodySize);
+		result = checkKilobyte(BodySize);
 	else if (BodySize[pos] == 'M' || BodySize[pos] == 'm' && BodySize[pos + 1] == '\0')
-		checkMegabyte(BodySize);
+		result = checkMegabyte(BodySize);
 	else if (BodySize[pos] == 'G' || BodySize[pos] == 'g' && BodySize[pos + 1] == '\0')
-		checkGigabyte(BodySize);
+		result = checkGigabyte(BodySize);
 	else
 		throw MyException("Error Sintexsis ClientBodySize");
+	return (result);
 }
 
 size_t ParsingConfigFile::checkClientMaxBodySize(size_t pos_start, size_t pos_end, bool controlFlag)
 {
 	size_t end;
+	size_t result;
 	std::string BodySize = this->_data.substr(pos_start, this->_data.find('\n', pos_start) - pos_start);
 	if ((end = BodySize.find(';') ) == std::string::npos)
 		throw MyException("Error Sintexsis ClientBodySize");
@@ -763,7 +776,16 @@ size_t ParsingConfigFile::checkClientMaxBodySize(size_t pos_start, size_t pos_en
 	iss >> check;
 	if (check.size())
 		throw MyException("Error Sintexsis Autoindex arguments");
-	findSimbol(BodySize);
+	result = findSimbol(BodySize);
+
+	if (controlFlag)
+	{
+		this->_serverList[this->_serverList.size() - 1].getLocations()\
+		[this->_serverList[this->_serverList.size() - 1].getLocations().size() - 1].setClient_max_body_size(result);//karoxa size-1 kam che
+	}
+	else
+		this->_serverList[this->_serverList.size() - 1].getServerConfig().setClient_max_body_size(result);
+
 	return size_t(end + 1);
 }
 
