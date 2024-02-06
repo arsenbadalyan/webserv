@@ -27,6 +27,8 @@ std::vector<Server> ParsingConfigFile::startPars()
 	// std::cout << "error -> 2" << std::endl;
 	if (!this->_data.size())
 		throw MyException("Emty File ERROR");
+	this->removeComent();
+	// std::cout << this->_data;
 	// std::cout << "error -> 3" << std::endl;
 	if (!this->CheckSintex())
 		throw MyException("Sintexs ERROR");
@@ -48,7 +50,7 @@ bool ParsingConfigFile::CheckSintex()
 		if(this->_data[i] == '}')
 			--flag;
 		if (flag < 0)
-			throw MyException("Error {");
+			throw MyException("Error {" + this->getErrorline(i));
 	}
 	if (flag > 0)
 		throw MyException("Error }");
@@ -69,7 +71,7 @@ bool ParsingConfigFile::CheckCorecktServer()
 		// std::cout << "error -> 1.2" << std::endl;
 		pos_end = this->_data.find('{', pos_start);
 		if (SIZE_MAX == pos_end && pos_start == 0)
-			throw MyException("Suntexs Error");
+			throw MyException("Suntexs Error" + this->getErrorline(pos_start));
 		// std::cout << "error -> 1.3" << std::endl;
 		if (SIZE_MAX == pos_end)
 		{
@@ -230,13 +232,6 @@ size_t ParsingConfigFile::CheckCorecktLocation(size_t pos_start, size_t pos_end)
 size_t	ParsingConfigFile::CheckCorecktConfig(std::string config, size_t pos_start, size_t pos_end, bool controlFlag)
 {
 	//esi jnji
-	int j = 1;
-	for (size_t i = 0; i < pos_start; i++)
-	{
-		if (this->_data[i] == '\n')
-			++j;
-	}
-	std::cout << "tox = ==============" << j << std::endl;
 	// std::cout << "conf = " << config << "  start = " << pos_start << "  end == " << pos_end << std::endl;
 	// std::cout << "error -> 3.1" << std::endl;
 	size_t res = SIZE_MAX;
@@ -512,6 +507,7 @@ size_t ParsingConfigFile::checkUploadDir(size_t pos_start, size_t pos_end, bool 
 {
 	size_t end = 0;
 	// size_t start = pos_start;
+	std::cout << "error -> 9.1" << std::endl;
 	size_t i = pos_start;
 	for (; i < pos_end; i++)
 	{
@@ -532,7 +528,7 @@ size_t ParsingConfigFile::checkUploadDir(size_t pos_start, size_t pos_end, bool 
 	if (check.size())
 		throw MyException("Error Sintexsis Upload_Dir arguments");
 	DIR *dir = opendir(val.c_str());
-	if (dir)
+	if (!dir)
 		throw MyException("Error Sintexsis Upload_Dir not direktory");
 	closedir(dir);
 	if (controlFlag)
@@ -540,6 +536,7 @@ size_t ParsingConfigFile::checkUploadDir(size_t pos_start, size_t pos_end, bool 
 		[this->_serverList[this->_serverList.size() - 1].getLocations().size() - 1].setUpload_dir(val);
 	else
 		this->_serverList[this->_serverList.size() - 1].getServerConfig().setUpload_dir(val);
+	std::cout << "error -> 9.15" << std::endl;
 	return (end + 1);
 }
 
@@ -626,6 +623,7 @@ size_t ParsingConfigFile::checkReturn(size_t pos_start, size_t pos_end, bool con
 	size_t end = 0;
 	// size_t start = pos_start;
 	// std::cout << "error -> 5." << std::endl;
+	
 	size_t i = pos_start;
 	for (; i < pos_end; i++)
 	{
@@ -791,13 +789,94 @@ size_t ParsingConfigFile::checkAutoindex(size_t pos_start, size_t pos_end, bool 
 	return size_t(end + 1 + pos_start);
 }
 
+size_t ParsingConfigFile::checkGigabyte(std::string &BodySize)
+{
+	size_t numb = std::stoul(BodySize);
+	std::string result = std::to_string(numb);
+	if (result.size() > 11 || numb > 17179869183)
+		throw MyException("Error Sintexsis ClientBodySize");
+	return (numb);
+}
+
+size_t ParsingConfigFile::checkMegabyte(std::string &BodySize)
+{
+	size_t numb = std::stoul(BodySize);
+	std::string result = std::to_string(numb);
+	if (result.size() > 14 || numb > 17592186044415)
+		throw MyException("Error Sintexsis ClientBodySize");
+	return (numb);
+}
+
+size_t ParsingConfigFile::checkKilobyte(std::string &BodySize)
+{
+	size_t numb = std::stoul(BodySize);
+	std::string result = std::to_string(numb);
+	if (result.size() > 17 || numb > 18014398509481983)
+		throw MyException("Error Sintexsis ClientBodySize");
+	return (numb);
+}
+
+size_t ParsingConfigFile::checkByte(std::string &BodySize)
+{
+	size_t nonZeroPos = BodySize.find_first_not_of('0');
+
+    if (nonZeroPos != std::string::npos)
+        BodySize.erase(0, nonZeroPos);
+     else 
+        BodySize = "0";
+
+	size_t numb = static_cast<size_t>(std::strtoull(BodySize.c_str(), nullptr, 10));
+	std::string check = std::to_string(numb);
+	if (check != BodySize)
+		throw MyException("Error Sintexsis ClientBodySize");
+	return (numb);
+}
+
+size_t ParsingConfigFile::findSimbol(std::string &BodySize)
+{
+	size_t pos = BodySize.find_first_not_of("0123456789");
+	size_t result;
+	if (pos == std::string::npos)
+		result = checkByte(BodySize);
+	else if ((BodySize[pos] == 'K' || BodySize[pos] == 'k') && BodySize[pos + 1] == '\0')
+		result = checkKilobyte(BodySize) * 1024;
+	else if ((BodySize[pos] == 'M' || BodySize[pos] == 'm') && BodySize[pos + 1] == '\0')
+		result = checkMegabyte(BodySize) * 1024 * 1024;
+	else if ((BodySize[pos] == 'G' || BodySize[pos] == 'g') && BodySize[pos + 1] == '\0')
+		result = checkGigabyte(BodySize) * 1024 * 1024 * 1024;
+	else
+		throw MyException("Error Sintexsis ClientBodySize");
+	return (result);
+}
+
 size_t ParsingConfigFile::checkClientMaxBodySize(size_t pos_start, size_t pos_end, bool controlFlag)
 {
+	size_t end;
+	size_t result;
 	(void)pos_end;
-	(void)pos_start;
-	(void)controlFlag;
-	return size_t(0);
+	std::string BodySize = this->_data.substr(pos_start, this->_data.find('\n', pos_start) - pos_start);
+	if ((end = BodySize.find(';') ) == std::string::npos)
+		throw MyException("Error Sintexsis ClientBodySize");
+	BodySize = BodySize.substr(0, end);
+	std::string check;
+	std::istringstream iss(BodySize);
+	iss >> BodySize;
+	iss >> check;
+	if (check.size())
+		throw MyException("Error Sintexsis Autoindex arguments");
+	result = findSimbol(BodySize);
+
+	if (controlFlag)
+	{
+		this->_serverList[this->_serverList.size() - 1].getLocations()\
+		[this->_serverList[this->_serverList.size() - 1].getLocations().size() - 1].setClient_max_body_size(result);//karoxa size-1 kam che
+	}
+	else
+		this->_serverList[this->_serverList.size() - 1].getServerConfig().setClient_max_body_size(result);
+
+	return size_t(end + pos_start + 1);
 }
+
 
 size_t ParsingConfigFile::runSpaceTab(size_t pos_start, size_t pos_end)
 {
@@ -897,6 +976,31 @@ bool ParsingConfigFile::chekHostNumber(std::string number)
 	if (size != number.size() || num < 0 || num > 255)
 		throw MyException("Error Sintexsis Listen Host");
 	return (true);
+}
+
+void ParsingConfigFile::removeComent()
+{
+	for (size_t i = 0; i < this->_data.size();)
+	{
+		if (this->_data[i] == '#')
+		{
+			size_t pos = this->_data.find('\n', i);
+			this->_data.erase(i, pos - i);
+		}
+		else
+			++i;
+	}
+}
+
+std::string ParsingConfigFile::getErrorline(size_t pos)
+{
+	int j = 1;
+	for (size_t i = 0; i < pos; i++)
+	{
+		if (this->_data[i] == '\n')
+			++j;
+	}
+	return (" Line " + std::to_string(j) + ".");
 }
 
 /////////////////
