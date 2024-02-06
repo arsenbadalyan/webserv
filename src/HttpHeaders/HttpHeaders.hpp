@@ -6,17 +6,27 @@
 
 #define INVALID_HEADER_KEY_CHARS "()<>@,;:\\\"/[]?={} "
 
+typedef std::map<std::string, std::string> HeadersMap;
 struct HttpHeaders {
 
-    public:
-        const std::string& getHeader( std::string& headerKey ) const;
-        HttpHeaders& setHeader( std::string& key, std::string& value );
+	public:
+        HttpHeaders(void);
 
-    private:
-        bool headerValidator(std::string& key, std::string& value) const;
+	public:
+		const std::string* getHeader(std::string& key) const;
+		HttpHeaders& setHeader(std::string& key, std::string& value);
+		HttpHeaders& setHeader(std::string& line);
 
-    private:
-        std::map<std::string, std::string> headers;
+	private:
+		HttpHeaders(const HttpHeaders &);
+		void operator=(const HttpHeaders &);
+		~HttpHeaders();
+
+	private:
+		bool headerValidator(std::string& key, std::string& value) const;
+
+	private:
+		HeadersMap headers;
 
 };
 
