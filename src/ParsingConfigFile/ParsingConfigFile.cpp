@@ -22,20 +22,14 @@ ParsingConfigFile::~ParsingConfigFile() { }
 
 std::vector<Server> ParsingConfigFile::startPars()
 {
-	// std::cout << "error -> 1" << std::endl;
 	this->_data = this->_file.Read();
-	// std::cout << "error -> 2" << std::endl;
 	if (!this->_data.size())
 		throw MyException("Emty File ERROR");
 	this->removeComent();
-	// std::cout << this->_data;
-	// std::cout << "error -> 3" << std::endl;
 	if (!this->CheckSintex())
 		throw MyException("Sintexs ERROR");
-	// std::cout << "error -> 4" << std::endl;
 	if (!this->CheckCorecktServer())
 		throw MyException("Corect Error");
-	// std::cout << "error -> 5" << std::endl;
 	return (this->_serverList);
 }
 
@@ -63,53 +57,51 @@ bool ParsingConfigFile::CheckCorecktServer()
 {
 	std::string server = "server";
 
-	// this->_sizeList = 0;
-	// std::cout << "error -> 1.1" << std::endl;
 	for (size_t pos_start = 0, pos_end = 0, pos = 0; \
 		pos_start < this->_data.size(); pos_start = pos_end + 1)
 	{
-		// std::cout << "error -> 1.2" << std::endl;
+
 		pos_end = this->_data.find('{', pos_start);
 		if (SIZE_MAX == pos_end && pos_start == 0)
 			throw MyException("Suntexs Error" + this->getErrorline(pos_start));
-		// std::cout << "error -> 1.3" << std::endl;
+
 		if (SIZE_MAX == pos_end)
 		{
 			for (size_t i = pos_start; i < this->_data.size() ; ++i)
 			{
 				if (this->_data[i] != '\n' && this->_data[i] != '\t' && this->_data[i] != ' ')
-					throw MyException("Suntexs Error");
+					throw MyException("Suntexs Error" + this->getErrorline(pos_start));
 			}
 			return (true);
 		}
-		// std::cout << "error -> 1.4" << std::endl;
+
 		std::transform(this->_data.begin(), this->_data.begin() + (pos_end - pos_start), \
 			this->_data.begin(), ::tolower);
 		pos = this->_data.find(server.c_str(), pos_start, pos_end - pos_start);
 		if (SIZE_MAX == pos_end)
-			throw MyException("Suntexs Error don exist server");
-		// std::cout << "error -> 1.5" << std::endl;
+			throw MyException("Suntexs Error don exist server" + this->getErrorline(pos_start));
+
 		for (size_t i = pos_start; i < pos_end; ++i)
 		{
 			if (i < pos && i > pos + server.size() && \
 				this->_data[i] != '\n' && this->_data[i] != '\t' && this->_data[i] != ' ')
 				{
-					// std::cout << "i = " << i  << "  " << (int)this->_data[i] << std::endl;
-					throw MyException("Suntexs Error");
+			
+					throw MyException("Suntexs Error" + this->getErrorline(pos_start));
 				}
 		}
-		// std::cout << "error -> 1.6" << std::endl;
+
 		pos_start = pos_end + 1;
 		pos_end = get_reng(pos_start);
 		if (pos_end == SIZE_MAX)
-			throw MyException("Suntexs Error");
-		// std::cout << "error -> 1.6" << std::endl;
+			throw MyException("Suntexs Error" + this->getErrorline(pos_start));
+
 		if (!CheckCoreckt(pos_start, pos_end, false))
-			throw MyException("Suntexs Error");
-		// std::cout << "error -> 1.7" << std::endl;
+			throw MyException("Suntexs Error" + this->getErrorline(pos_start));
+
 		if (pos_end == this->_data.size())
 			return (true);
-		// std::cout << "error -> 1.8" << std::endl;
+
 	}
 	return (true);
 }
@@ -135,49 +127,44 @@ size_t ParsingConfigFile::get_reng(size_t start)
 */
 bool ParsingConfigFile::CheckCoreckt(size_t pos_start, size_t pos_end, bool controlFlag)
 {
-	// std::string conf_name;
-	// std::cout << "error -> 2.1" << std::endl;
 	if (!controlFlag)
 		this->_serverList.push_back(Server());
-	// else
-	// 	this->_serverList[this->_serverList.size() -1].getLocations().push_back(Config());
 	std::string cpy;
-	// std::cout << "error -> 2.2" << std::endl;
 	for (size_t i = pos_start, pos = 0; i < pos_end;)
 	{
-		// std::cout << "error -> 2.3" << std::endl;
+
 		if (this->_data[i] != '\n' && this->_data[i] != '\t' && this->_data[i] != ' ' )
 		{
 			pos = i;
-			// std::cout << "error -> 2.4" << std::endl;
+	
 			for (; this->_data[i] != '\t' && this->_data[i] != ' ' && this->_data[i] != '}'; i++);
 			if (this->_data[i] == '}')
-				throw MyException("Emty Lokacion");
-			// std::cout << "error -> 2.5" << std::endl;
+				throw MyException("Emty Lokacion" + this->getErrorline(pos_start));
+	
 			cpy =  this->_data.substr(pos, i - pos);
 			std::transform(cpy.begin(), cpy.end(), cpy.begin(), ::tolower);
-			// std::cout << "error -> 2.6" << std::endl;
-			// write(1,"error read -> 2.6\n", 19);
+	
+	
 			if (std::string("location") == cpy)
 			{
-				// std::cout << "error -> 2.7" << std::endl;
+		
 				if (controlFlag)
-					throw MyException("Error double location");
+					throw MyException("Error double location" + this->getErrorline(pos_start));
 				this->_serverList[this->_serverList.size() -1].getLocations().push_back(Config());
 				i = CheckCorecktLocation(i, pos_end);
-				// std::cout << "error -> 2.8" << std::endl;
+		
 			}
 			else
 				i = CheckCorecktConfig(cpy, i, pos_end, controlFlag);
-			// std::cout << "error -> 2.8" << std::endl;
+	
 			if (SIZE_MAX == i)
-				throw MyException("Suntexs Error");
-			// std::cout << "error -> 2.9" << std::endl;
+				throw MyException("Suntexs Error" + this->getErrorline(pos_start));
+	
 		}
 		else
 			++i;
 		cpy.clear();
-		// std::cout << "error -> 2.10" << std::endl;
+
 	}
 	return (true);
 }
@@ -195,10 +182,10 @@ size_t ParsingConfigFile::CheckCorecktLocation(size_t pos_start, size_t pos_end)
 		if (this->_data[start] != '\t' && this->_data[start] != ' ')
 		{
 			if (this->_data[start] == '\n')
-				throw MyException("Error Emty name location");
+				throw MyException("Error Emty name location" + this->getErrorline(pos_start));
 			for (end = start; end < pos_end && this->_data[end] != '\t' && \
 				this->_data[end] != '\n' && this->_data[end] != ' ' && this->_data[end] != '{'; ++end);
-			//lokaciayi anun
+	
 			this->_serverList[this->_serverList.size() -1].getLocations()\
 			[this->_serverList[this->_serverList.size() -1].getLocations().size() - 1].\
 			setLocation_name(std::string(this->_data.begin() + start, this->_data.begin() + end));
@@ -208,19 +195,19 @@ size_t ParsingConfigFile::CheckCorecktLocation(size_t pos_start, size_t pos_end)
 			{
 				if (this->_data[i] != '\n' && this->_data[i] != '\t' && this->_data[i] != ' ')
 				{
-					throw MyException("Error name lokacion");
+					throw MyException("Error name lokacion" + this->getErrorline(pos_start));
 				}
 			}
 			start = end + 1;
 			end = get_reng(start);
 			if (!CheckCoreckt(start, end, true))
-				throw MyException("Error Lokacion");
+				throw MyException("Error Lokacion" + this->getErrorline(pos_start));
 			return (end + 1);
 		}
 		else
 			++start;
 	}
-	throw MyException("Error Emty name location");
+	throw MyException("Error Emty name location" + this->getErrorline(pos_start));
 	return size_t(SIZE_MAX);
 }
 
@@ -231,97 +218,91 @@ size_t ParsingConfigFile::CheckCorecktLocation(size_t pos_start, size_t pos_end)
 
 size_t	ParsingConfigFile::CheckCorecktConfig(std::string config, size_t pos_start, size_t pos_end, bool controlFlag)
 {
-	//esi jnji
-	// std::cout << "conf = " << config << "  start = " << pos_start << "  end == " << pos_end << std::endl;
-	// std::cout << "error -> 3.1" << std::endl;
 	size_t res = SIZE_MAX;
-	// std::cout << "config = " << config << std::endl;
 	if (std::string("listen") == config)
 	{
-		// std::cout << "error -> 3.2" << std::endl;
+
 		if (controlFlag)
-			throw MyException("Error listen for location");
+			throw MyException("Error listen for location" + this->getErrorline(pos_start));
 		res = checkListen(pos_start, pos_end, controlFlag);
 		if (SIZE_MAX != res)
 			return (res);
 	} 
 	else if (std::string("server_name") == config)
 	{
-		// std::cout << "error -> 3.3" << std::endl;
+
 		if (controlFlag)
-			throw MyException("Error server_name for location");
+			throw MyException("Error server_name for location" + this->getErrorline(pos_start));
 		res = checkServerName(pos_start, pos_end, controlFlag);
 		if (SIZE_MAX != res)
 			return (res);
 	} 
 	else if (std::string("root") == config)
 	{
-		// std::cout << "error -> 3.4" << std::endl;
+
 		res = checkRoot(pos_start, pos_end, controlFlag);
-		// std::cout << "error -> 3.4.2" << std::endl;
+
 		if (SIZE_MAX != res)
 			return (res);
 	}
 	else if (std::string("allow_methods") == config)
 	{
-		// std::cout << "error -> 3.5" << std::endl;
+
 		res = checkAllowMethods(pos_start, pos_end, controlFlag);
 		if (SIZE_MAX != res)
 			return (res);
 	}
 	else if (std::string("upload_dir") == config)
 	{
-		// std::cout << "error -> 3.6" << std::endl;
+
 		res = checkUploadDir(pos_start, pos_end, controlFlag);
 		if (SIZE_MAX != res)
 			return (res);
 	}
 	else if (std::string("error_page") == config)
 	{
-		// std::cout << "error -> 3.7" << std::endl;
+
 		res = checkErrorPage(pos_start, pos_end, controlFlag);
 		if (SIZE_MAX != res)
 			return (res);
 	}
 	else if (std::string("return") == config)
 	{
-		// std::cout << "error -> 3.8" << std::endl;
+
 		res = checkReturn(pos_start, pos_end, controlFlag);
 		if (SIZE_MAX != res)
 			return (res);
 	}
 	else if (std::string("cgi") == config)
 	{
-		// std::cout << "error -> 3.9" << std::endl;
+
 		res = checkCgi(pos_start, pos_end, controlFlag);
 		if (SIZE_MAX != res)
 			return (res);
 	}
 	else if (std::string("index") == config)
 	{
-		// std::cout << "error -> 3.10" << std::endl;
+
 		res = checkIndex(pos_start, pos_end, controlFlag);
 		if (SIZE_MAX != res)
 			return (res);
 	}
 	else if (std::string("autoindex") == config)
 	{
-		// std::cout << "error -> 3.11" << std::endl;
+
 		res = checkAutoindex(pos_start, pos_end, controlFlag);
-		// std::cout << "res == " << res << std::endl;
+
 		if (SIZE_MAX != res)
 			return (res);
 	}
 	else if (std::string("client_max_body_size") == config)
 	{
-		// std::cout << "error -> 3.12" << std::endl;
+
 		res = checkClientMaxBodySize(pos_start, pos_end, controlFlag);
 		if (SIZE_MAX != res)
 			return (res);
 	}
-	// std::cout << "error -> 3.15" << std::endl;
-	// std::cout << "conf = " << "  start = " << pos_start << "  end == " << pos_end << std::endl;
-	throw MyException("Error no config2");
+	throw MyException("Error no config2" + this->getErrorline(pos_start));
 	return (SIZE_MAX);
 }
 
@@ -335,7 +316,6 @@ size_t	ParsingConfigFile::CheckCorecktConfig(std::string config, size_t pos_star
 size_t ParsingConfigFile::checkListen(size_t pos_start, size_t pos_end, bool controlFlag)
 {
 	size_t end = 0, start = pos_start;
-	// this->_data.find(';', pos_start);
 	size_t i = pos_start;
 	for (; i < pos_end; i++)
 	{
@@ -345,26 +325,20 @@ size_t ParsingConfigFile::checkListen(size_t pos_start, size_t pos_end, bool con
 			break;
 		}
 		if (this->_data[i] == '\n')
-			throw MyException("Error Sintexsis Listen");
+			throw MyException("Error Sintexsis Listen" + this->getErrorline(pos_start));
 	}
 	if (i >= pos_end)
-		throw MyException("Error Sintexsis Listen");
+		throw MyException("Error Sintexsis Listen" + this->getErrorline(pos_start));
 	pos_end = end;
-	// std::cout << "start = " << start << "  End = " << end << std::endl;
 	for (; start < end && (this->_data[start] == '\t' || this->_data[start] == ' '); ++start);
 	if (start >= end)
-		throw MyException("Error Emty Listen");
-	// std::cout << "start = " << start << "  End = " << end << std::endl;
-	// std::cout << "--------------->>> |" << this->_data[start] << "|\n";
-	// std::cout <<"|"<< std::string(this->_data.begin() + start,this->_data.end()) << std::endl;
+		throw MyException("Error Emty Listen" + this->getErrorline(pos_start));
 	for (end = start; end < pos_end && this->_data[end] != '\t' && this->_data[end] != ' '; ++end);
-	// std::cout <<"|"<<  std::string(this->_data.begin() + end,this->_data.end()) << std::endl;
-	// std::cout << std::string(this->_data.begin() + pos_end,this->_data.end()) << std::endl;
 	for (i = end; i < pos_end; ++i)
 		if (this->_data[i] != '\t' && this->_data[i] != ' ')
-			throw MyException("Error Sintexts Listen1");
+			throw MyException("Error Sintexts Listen1" + this->getErrorline(pos_start));
 	if (!checCorectHostAndPort(start, end, controlFlag))
-		throw MyException("Error Sintexts Listen2");
+		throw MyException("Error Sintexts Listen2" + this->getErrorline(pos_start));
 	return size_t(pos_end + 1);
 }
 
@@ -372,7 +346,6 @@ size_t ParsingConfigFile::checkServerName(size_t pos_start, size_t pos_end, bool
 {
 	(void)controlFlag;
 	size_t end = 0;
-	// size_t start = pos_start;
 	size_t i = pos_start;
 	for (; i < pos_end; i++)
 	{
@@ -382,27 +355,24 @@ size_t ParsingConfigFile::checkServerName(size_t pos_start, size_t pos_end, bool
 			break;
 		}
 		if (this->_data[i] == '\n')
-			throw MyException("Error Sintexsis ServerName");
+			throw MyException("Error Sintexsis ServerName" + this->getErrorline(pos_start));
 	}
 	if (i >= pos_end)
-		throw MyException("Error Sintexsis ServerName");
+		throw MyException("Error Sintexsis ServerName" + this->getErrorline(pos_start));
 	std::stringstream str(std::string(this->_data.begin() + pos_start, this->_data.begin() + end));
 	std::string val, check;
 	str >> val;
 	str >> check;
 	if (check.size())
-		throw MyException("Error Sintexsis ServerName arguments");
+		throw MyException("Error Sintexsis ServerName arguments" + this->getErrorline(pos_start));
 	this->_serverList[this->_serverList.size() - 1].setServerName(val);
 	return size_t(end + 1);
 }
 
 size_t ParsingConfigFile::checkRoot(size_t pos_start, size_t pos_end, bool controlFlag)
 {
-	// std::cout << "error -> 5.1" << std::endl;
 	size_t end = 0;
-	// size_t start = pos_start;
 	size_t i = pos_start;
-	// std::cout << "error -> 5.2" << std::endl;
 	for (; i < pos_end; i++)
 	{
 		if (this->_data[i] == ';')
@@ -411,43 +381,31 @@ size_t ParsingConfigFile::checkRoot(size_t pos_start, size_t pos_end, bool contr
 			break;
 		}
 		if (this->_data[i] == '\n')
-			throw MyException("Error Sintexsis root");
+			throw MyException("Error Sintexsis root" + this->getErrorline(pos_start));
 	}
-	// std::cout << "error -> 5.3" << std::endl;
 	if (i >= pos_end)
-		throw MyException("Error Sintexsis root");
-	// std::cout << "error -> 5.4" << std::endl;
+		throw MyException("Error Sintexsis root" + this->getErrorline(pos_start));
 	std::stringstream str(std::string(this->_data.begin() + pos_start, this->_data.begin() + end));
 	std::string val, check;
-	// std::cout << "error -> 5.5" << std::endl;
 	str >> val;
 	str >> check;
-	// std::cout << "error -> 5.6" << std::endl;
 	if (check.size())
-		throw MyException("Error Sintexsis root arguments");
-	// std::cout << "error -> 5.7" << std::endl;
+		throw MyException("Error Sintexsis root arguments" + this->getErrorline(pos_start));
 	DIR *dir = opendir(val.c_str());
 	if (!dir)
-		throw MyException("Error Sintexsis root not direktory");
-	// std::cout << "error -> 5.8" << std::endl;
-	// write(1,"error read -> 5.8\n", 19);
-	// std::cout << "dir == -> " << dir << std::endl;
+		throw MyException("Error Sintexsis root not direktory" + this->getErrorline(pos_start));
 	closedir(dir);
-	// write(1,"error read -> 5.9\n", 19);
-	// std::cout << "error -> 5.9" << std::endl;
 	if (controlFlag)
 	{
-		// std::cout << "error -> 5.10" << std::endl;
+
 		this->_serverList[this->_serverList.size() - 1].getLocations()\
 		[this->_serverList[this->_serverList.size() - 1].getLocations().size() - 1].setRoot(val);
 	}
 	else
 	{
-		// std::cout << "error -> 5.11" << std::endl;
+
 		this->_serverList[this->_serverList.size() - 1].getServerConfig().setRoot(val);
 	}
-	// std::cout << "error -> 5.15" << std::endl;
-	// (void)pos_end;
 	return (end + 1);
 }
 
@@ -461,7 +419,7 @@ size_t ParsingConfigFile::checkAllowMethods(size_t pos_start, size_t pos_end, bo
 
 	std::string methods = this->_data.substr(pos_start, this->_data.find('\n', pos_start) - pos_start);
 	if ((end = methods.find(';') ) == std::string::npos)
-		throw MyException("Error Sintexsis Allow_method");
+		throw MyException("Error Sintexsis Allow_method" + this->getErrorline(pos_start));
 	methods = methods.substr(0, end);
 	std::istringstream iss(methods);
 	
@@ -470,12 +428,12 @@ size_t ParsingConfigFile::checkAllowMethods(size_t pos_start, size_t pos_end, bo
 		words.push_back(word);
 
 	if (words.empty())
-		throw MyException("Error Sintexsis Allow_method");
+		throw MyException("Error Sintexsis Allow_method" + this->getErrorline(pos_start));
 
 	for (size_t i = 0; i < words.size(); i++)
 	{
 		if (words[i] != "GET" && words[i] != "POST" && words[i] != "DELETE")
-            throw MyException("Error Sintexsis Allow_method");
+            throw MyException("Error Sintexsis Allow_method" + this->getErrorline(pos_start));
 		if (words[i] == "GET")
 			g = true;
 		if (words[i] == "POST")
@@ -499,15 +457,12 @@ size_t ParsingConfigFile::checkAllowMethods(size_t pos_start, size_t pos_end, bo
 		this->_serverList[this->_serverList.size() - 1].getLocations()[this->_serverList[this->_serverList.size() - 1].\
 		getLocations().size() - 1].getAllow_methods().setDelete(d);
 	}
-	// std::cout << std::string(this->_data.begin() + end + pos_start, this->_data.end()) << std::endl;
 	return size_t(end + 1 + pos_start);
 }
 
 size_t ParsingConfigFile::checkUploadDir(size_t pos_start, size_t pos_end, bool controlFlag)
 {
 	size_t end = 0;
-	// size_t start = pos_start;
-	std::cout << "error -> 9.1" << std::endl;
 	size_t i = pos_start;
 	for (; i < pos_end; i++)
 	{
@@ -517,26 +472,25 @@ size_t ParsingConfigFile::checkUploadDir(size_t pos_start, size_t pos_end, bool 
 			break;
 		}
 		if (this->_data[i] == '\n')
-			throw MyException("Error Sintexsis Upload_Dir");
+			throw MyException("Error Sintexsis Upload_Dir" + this->getErrorline(pos_start));
 	}
 	if (i >= pos_end)
-		throw MyException("Error Sintexsis Upload_Dir");
+		throw MyException("Error Sintexsis Upload_Dir" + this->getErrorline(pos_start));
 	std::stringstream str(std::string(this->_data.begin() + pos_start, this->_data.begin() + end));
 	std::string val, check;
 	str >> val;
 	str >> check;
 	if (check.size())
-		throw MyException("Error Sintexsis Upload_Dir arguments");
+		throw MyException("Error Sintexsis Upload_Dir arguments" + this->getErrorline(pos_start));
 	DIR *dir = opendir(val.c_str());
 	if (!dir)
-		throw MyException("Error Sintexsis Upload_Dir not direktory");
+		throw MyException("Error Sintexsis Upload_Dir not direktory" + this->getErrorline(pos_start));
 	closedir(dir);
 	if (controlFlag)
 		this->_serverList[this->_serverList.size() - 1].getLocations()\
 		[this->_serverList[this->_serverList.size() - 1].getLocations().size() - 1].setUpload_dir(val);
 	else
 		this->_serverList[this->_serverList.size() - 1].getServerConfig().setUpload_dir(val);
-	std::cout << "error -> 9.15" << std::endl;
 	return (end + 1);
 }
 
@@ -544,7 +498,6 @@ size_t ParsingConfigFile::checkUploadDir(size_t pos_start, size_t pos_end, bool 
 size_t ParsingConfigFile::checkErrorPage(size_t pos_start, size_t pos_end, bool controlFlag)
 {
 	size_t end = 0;
-	// size_t start = pos_start;
 	size_t i = pos_start;
 	for (; i < pos_end; i++)
 	{
@@ -554,10 +507,10 @@ size_t ParsingConfigFile::checkErrorPage(size_t pos_start, size_t pos_end, bool 
 			break;
 		}
 		if (this->_data[i] == '\n')
-			throw MyException("Error Sintexsis ErrorPage");
+			throw MyException("Error Sintexsis ErrorPage" + this->getErrorline(pos_start));
 	}
 	if (i >= pos_end)
-		throw MyException("Error Sintexsis ErrorPage");
+		throw MyException("Error Sintexsis ErrorPage" + this->getErrorline(pos_start));
 	std::stringstream str(std::string(this->_data.begin() + pos_start, this->_data.begin() + end));
 	std::string val, page;
 	std::vector<size_t> statCod;
@@ -574,15 +527,15 @@ size_t ParsingConfigFile::checkErrorPage(size_t pos_start, size_t pos_end, bool 
 		catch(...)
 		{
 			if(page.size() || !statCod.size())
-				throw MyException("Error Sintexsis ErrorPage");
-			// std::cout << "val = " << val.c_str() << std::endl;
+				throw MyException("Error Sintexsis ErrorPage" + this->getErrorline(pos_start));
+	
 			if (access(val.c_str(), F_OK))
-				throw MyException("Error Sintexsis ErrorPage no file");
+				throw MyException("Error Sintexsis ErrorPage no file" + this->getErrorline(pos_start));
 			page = val;
 		}
 	}
 	if (!statCod.size() || !page.size())
-		throw MyException("Error Sintexsis ErrorPage");
+		throw MyException("Error Sintexsis ErrorPage" + this->getErrorline(pos_start));
 	std::map<int, std::string> *_map;
 	if (controlFlag)
 	{
@@ -621,8 +574,6 @@ size_t ParsingConfigFile::statusCodes(std::string number)
 size_t ParsingConfigFile::checkReturn(size_t pos_start, size_t pos_end, bool controlFlag)
 {
 	size_t end = 0;
-	// size_t start = pos_start;
-	// std::cout << "error -> 5." << std::endl;
 	
 	size_t i = pos_start;
 	for (; i < pos_end; i++)
@@ -633,19 +584,17 @@ size_t ParsingConfigFile::checkReturn(size_t pos_start, size_t pos_end, bool con
 			break;
 		}
 		if (this->_data[i] == '\n')
-			throw MyException("Error Sintexsis Return");
+			throw MyException("Error Sintexsis Return" + this->getErrorline(pos_start));
 	}
-	// std::cout << "error -> 5.4" << std::endl;
 	if (i >= pos_end)
-		throw MyException("Error Sintexsis Return");
+		throw MyException("Error Sintexsis Return" + this->getErrorline(pos_start));
 
 	std::stringstream str(std::string(this->_data.begin() + pos_start, this->_data.begin() + end));
 	std::string val, page;
 	size_t		statCod = 0, ival = 0;
-	// std::cout << "error -> 5.7" << std::endl;
 	for (; !str.eof() ;)
 	{
-		// std::cout << "error -> 5.8" << std::endl;
+
 		str >> val;
 		if (!val.size())
 			continue;
@@ -656,40 +605,38 @@ size_t ParsingConfigFile::checkReturn(size_t pos_start, size_t pos_end, bool con
 		catch(...)
 		{
 			if(page.size() || !statCod)
-				throw MyException("Error Sintexsis Return");
+				throw MyException("Error Sintexsis Return" + this->getErrorline(pos_start));
 			page = val;
 			continue;
 		}
 		if (ival && statCod)
-			throw MyException("Error Sintexsis Return");
+			throw MyException("Error Sintexsis Return" + this->getErrorline(pos_start));
 		if (ival && !statCod)
 			statCod = ival;
 		ival = 0;
-		// std::cout << "error -> 5.12" << std::endl;
+
 	}
 	if (controlFlag)
 	{
-		// std::cout << "error -> 5.15" << std::endl;
-		// std::cout << "Size = -->>  " << this->_serverList.size() << std::endl;
-		// std::cout << "error -> 5.15" << std::endl;
+
+
+
 		this->_serverList[this->_serverList.size() - 1].getLocations()\
 		[this->_serverList[this->_serverList.size() - 1].getLocations().size() - 1].getReturn().setStatusTypes(statCod);
 		this->_serverList[this->_serverList.size() - 1].getLocations()\
 		[this->_serverList[this->_serverList.size() - 1].getLocations().size() - 1].getReturn().setPath(val);
 	}
 	else{
-		// std::cout << "error -> 5.17" << std::endl;
+
 		this->_serverList[this->_serverList.size() - 1].getServerConfig().getReturn().setStatusTypes(statCod);
 		this->_serverList[this->_serverList.size() - 1].getServerConfig().getReturn().setPath(val);
 	}
-	// std::cout << "error -> 5.20" << std::endl;
 	return (end + 1);
 }
 
 size_t ParsingConfigFile::checkCgi(size_t pos_start, size_t pos_end, bool controlFlag)
 {
 	size_t end = 0;
-	// size_t start = pos_start;
 	size_t i = pos_start;
 	for (; i < pos_end; i++)
 	{
@@ -699,16 +646,16 @@ size_t ParsingConfigFile::checkCgi(size_t pos_start, size_t pos_end, bool contro
 			break;
 		}
 		if (this->_data[i] == '\n')
-			throw MyException("Error Sintexsis Upload_Dir");
+			throw MyException("Error Sintexsis Upload_Dir" + this->getErrorline(pos_start));
 	}
 	if (i >= pos_end)
-		throw MyException("Error Sintexsis Upload_Dir");
+		throw MyException("Error Sintexsis Upload_Dir" + this->getErrorline(pos_start));
 	std::stringstream str(std::string(this->_data.begin() + pos_start, this->_data.begin() + end));
 	std::string val, check;
 	str >> val;
 	str >> check;
 	if (check.size())
-		throw MyException("Error Sintexsis Upload_Dir arguments");
+		throw MyException("Error Sintexsis Upload_Dir arguments" + this->getErrorline(pos_start));
 	bool *res;
 	if (controlFlag)
 		res = &(this->_serverList[this->_serverList.size() - 1].getLocations()\
@@ -721,14 +668,13 @@ size_t ParsingConfigFile::checkCgi(size_t pos_start, size_t pos_end, bool contro
 	else if(val == std::string("off"))
 		*res = (false);
 	else
-		throw MyException("Error Sintexsis Upload_Dir arguments");
+		throw MyException("Error Sintexsis Upload_Dir arguments" + this->getErrorline(pos_start));
 	return (end + 1);
 }
 
 size_t ParsingConfigFile::checkIndex(size_t pos_start, size_t pos_end, bool controlFlag)
 {
 	size_t end = 0;
-	// size_t start = pos_start;
 	size_t i = pos_start;
 	for (; i < pos_end; i++)
 	{
@@ -738,10 +684,10 @@ size_t ParsingConfigFile::checkIndex(size_t pos_start, size_t pos_end, bool cont
 			break;
 		}
 		if (this->_data[i] == '\n')
-			throw MyException("Error Sintexsis Index");
+			throw MyException("Error Sintexsis Index" + this->getErrorline(pos_start));
 	}
 	if (i >= pos_end)
-		throw MyException("Error Sintexsis Index");
+		throw MyException("Error Sintexsis Index" + this->getErrorline(pos_start));
 	std::stringstream str(std::string(this->_data.begin() + pos_start, this->_data.begin() + end));
 	std::string val;
 	std::vector<std::string> *res;
@@ -759,7 +705,7 @@ size_t ParsingConfigFile::checkIndex(size_t pos_start, size_t pos_end, bool cont
 		res->push_back(val);
 	}
 	if (!res->size())
-		throw MyException("Error Sintexsis Index");
+		throw MyException("Error Sintexsis Index" + this->getErrorline(pos_start));
 	return (end + 1);
 }
 
@@ -769,54 +715,53 @@ size_t ParsingConfigFile::checkAutoindex(size_t pos_start, size_t pos_end, bool 
 	size_t end;
 	std::string autoindex = this->_data.substr(pos_start, this->_data.find('\n', pos_start) - pos_start);
 	if ((end = autoindex.find(';') ) == std::string::npos)
-		throw MyException("Error Sintexsis Autoindex");
+		throw MyException("Error Sintexsis Autoindex" + this->getErrorline(pos_start));
 	autoindex = autoindex.substr(0, end);
 	std::string check;
 	std::istringstream iss(autoindex);
 	iss >> autoindex;
 	iss >> check;
 	if (check.size())
-		throw MyException("Error Sintexsis Autoindex arguments");
+		throw MyException("Error Sintexsis Autoindex arguments" + this->getErrorline(pos_start));
 	
 	if (autoindex != "off" && autoindex != "on")
-		throw MyException("Error Sintexsis Autoindex");//eli qnnarkel sosi het
+		throw MyException("Error Sintexsis Autoindex" + this->getErrorline(pos_start));
 	if (!controlFlag)
 		this->_serverList[this->_serverList.size() - 1].getServerConfig().setAutoindex(autoindex == "off" ? false : true);
 	else
 		(this->_serverList[this->_serverList.size() - 1].getLocations())[this->_serverList[this->_serverList.size() - 1].\
 		getLocations().size() - 1].setAutoindex(autoindex == "off" ? false : true);
-	// std::cout << std::string(this->_data.begin() + end + pos_start, this->_data.end()) << std::endl;
 	return size_t(end + 1 + pos_start);
 }
 
-size_t ParsingConfigFile::checkGigabyte(std::string &BodySize)
+size_t ParsingConfigFile::checkGigabyte(std::string &BodySize, size_t pos_start)
 {
 	size_t numb = std::stoul(BodySize);
 	std::string result = std::to_string(numb);
 	if (result.size() > 11 || numb > 17179869183)
-		throw MyException("Error Sintexsis ClientBodySize");
+		throw MyException("Error Sintexsis ClientBodySize" + this->getErrorline(pos_start));
 	return (numb);
 }
 
-size_t ParsingConfigFile::checkMegabyte(std::string &BodySize)
+size_t ParsingConfigFile::checkMegabyte(std::string &BodySize, size_t pos_start)
 {
 	size_t numb = std::stoul(BodySize);
 	std::string result = std::to_string(numb);
 	if (result.size() > 14 || numb > 17592186044415)
-		throw MyException("Error Sintexsis ClientBodySize");
+		throw MyException("Error Sintexsis ClientBodySize" + this->getErrorline(pos_start));
 	return (numb);
 }
 
-size_t ParsingConfigFile::checkKilobyte(std::string &BodySize)
+size_t ParsingConfigFile::checkKilobyte(std::string &BodySize, size_t pos_start)
 {
 	size_t numb = std::stoul(BodySize);
 	std::string result = std::to_string(numb);
 	if (result.size() > 17 || numb > 18014398509481983)
-		throw MyException("Error Sintexsis ClientBodySize");
+		throw MyException("Error Sintexsis ClientBodySize" + this->getErrorline(pos_start));
 	return (numb);
 }
 
-size_t ParsingConfigFile::checkByte(std::string &BodySize)
+size_t ParsingConfigFile::checkByte(std::string &BodySize, size_t pos_start)
 {
 	size_t nonZeroPos = BodySize.find_first_not_of('0');
 
@@ -828,24 +773,24 @@ size_t ParsingConfigFile::checkByte(std::string &BodySize)
 	size_t numb = static_cast<size_t>(std::strtoull(BodySize.c_str(), nullptr, 10));
 	std::string check = std::to_string(numb);
 	if (check != BodySize)
-		throw MyException("Error Sintexsis ClientBodySize");
+		throw MyException("Error Sintexsis ClientBodySize" + this->getErrorline(pos_start));
 	return (numb);
 }
 
-size_t ParsingConfigFile::findSimbol(std::string &BodySize)
+size_t ParsingConfigFile::findSimbol(std::string &BodySize, size_t pos_start)
 {
 	size_t pos = BodySize.find_first_not_of("0123456789");
 	size_t result;
 	if (pos == std::string::npos)
-		result = checkByte(BodySize);
+		result = checkByte(BodySize, pos_start);
 	else if ((BodySize[pos] == 'K' || BodySize[pos] == 'k') && BodySize[pos + 1] == '\0')
-		result = checkKilobyte(BodySize) * 1024;
+		result = checkKilobyte(BodySize, pos_start) * 1024;
 	else if ((BodySize[pos] == 'M' || BodySize[pos] == 'm') && BodySize[pos + 1] == '\0')
-		result = checkMegabyte(BodySize) * 1024 * 1024;
+		result = checkMegabyte(BodySize, pos_start) * 1024 * 1024;
 	else if ((BodySize[pos] == 'G' || BodySize[pos] == 'g') && BodySize[pos + 1] == '\0')
-		result = checkGigabyte(BodySize) * 1024 * 1024 * 1024;
+		result = checkGigabyte(BodySize, pos_start) * 1024 * 1024 * 1024;
 	else
-		throw MyException("Error Sintexsis ClientBodySize");
+		throw MyException("Error Sintexsis ClientBodySize" + this->getErrorline(pos_start));
 	return (result);
 }
 
@@ -856,20 +801,20 @@ size_t ParsingConfigFile::checkClientMaxBodySize(size_t pos_start, size_t pos_en
 	(void)pos_end;
 	std::string BodySize = this->_data.substr(pos_start, this->_data.find('\n', pos_start) - pos_start);
 	if ((end = BodySize.find(';') ) == std::string::npos)
-		throw MyException("Error Sintexsis ClientBodySize");
+		throw MyException("Error Sintexsis ClientBodySize" + this->getErrorline(pos_start));
 	BodySize = BodySize.substr(0, end);
 	std::string check;
 	std::istringstream iss(BodySize);
 	iss >> BodySize;
 	iss >> check;
 	if (check.size())
-		throw MyException("Error Sintexsis Autoindex arguments");
-	result = findSimbol(BodySize);
+		throw MyException("Error Sintexsis Autoindex arguments" + this->getErrorline(pos_start));
+	result = findSimbol(BodySize, pos_start);
 
 	if (controlFlag)
 	{
 		this->_serverList[this->_serverList.size() - 1].getLocations()\
-		[this->_serverList[this->_serverList.size() - 1].getLocations().size() - 1].setClient_max_body_size(result);//karoxa size-1 kam che
+		[this->_serverList[this->_serverList.size() - 1].getLocations().size() - 1].setClient_max_body_size(result);
 	}
 	else
 		this->_serverList[this->_serverList.size() - 1].getServerConfig().setClient_max_body_size(result);
@@ -900,16 +845,14 @@ size_t ParsingConfigFile::runSpaceTab(size_t pos_start, size_t pos_end)
 bool ParsingConfigFile::checCorectHostAndPort(size_t pos_start, size_t pos_end, bool controlFlag)
 {
 	(void)controlFlag;
-	// std::cout << "start = " << pos_start << "  End = " << pos_end << std::endl;
-	// std::cout << std::string(this->_data.begin() + pos_start,this->_data.end()) << std::endl;
 	std::string::iterator  it = std::find(this->_data.begin() + pos_start, this->_data.begin() + pos_end, ':');
 	if (it == this->_data.end())
-		throw MyException("Error Sintexsis Listen -> :");
+		throw MyException("Error Sintexsis Listen -> :" + this->getErrorline(pos_start));
 	size_t	pos_period = it - this->_data.begin();
 	if (!chekAndSaveHost(std::string(this->_data.begin() + pos_start, this->_data.begin() + pos_period)))
-		throw MyException("Error Sintexsis Listen Host");
+		throw MyException("Error Sintexsis Listen Host" + this->getErrorline(pos_start));
 	if (!chekAndSavePort(std::string(this->_data.begin() + pos_period + 1, this->_data.begin() + pos_end)))
-		throw MyException("Error Sintexsis Listen Host");
+		throw MyException("Error Sintexsis Listen Host" + this->getErrorline(pos_start));
 	return (true);
 }
 
@@ -1002,8 +945,6 @@ std::string ParsingConfigFile::getErrorline(size_t pos)
 	}
 	return (" Line " + std::to_string(j) + ".");
 }
-
-/////////////////
 
 ParsingConfigFile::MyException::MyException(const std::string &error) : _error(error) {}
 

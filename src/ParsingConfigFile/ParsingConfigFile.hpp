@@ -68,11 +68,11 @@ private:
 	void	removeComent();
 	std::string getErrorline(size_t pos);
 
-	size_t checkGigabyte(std::string &BodySize);
-	size_t checkMegabyte(std::string &BodySize);
-	size_t checkKilobyte(std::string &BodySize);
-	size_t checkByte(std::string &BodySize);
-	size_t findSimbol(std::string &BodySize);
+	size_t checkGigabyte(std::string &BodySize, size_t pos_start);
+	size_t checkMegabyte(std::string &BodySize, size_t pos_start);
+	size_t checkKilobyte(std::string &BodySize, size_t pos_start);
+	size_t checkByte(std::string &BodySize, size_t pos_start);
+	size_t findSimbol(std::string &BodySize, size_t pos_start);
 
 	class MyException : public std::exception
 	{

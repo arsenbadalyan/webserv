@@ -28,3 +28,33 @@ server
 	}
 
 }
+
+server
+{
+	listen 127.0.0.1:8080 ;
+	server_name fdfsdfd ;
+	root temp;
+	allow_methods POST;
+	client_max_body_size 17179869183G ;
+	upload_dir temp;
+	error_page 550 400 300 200 file;
+	return 301;
+	index file;
+	cgi on;
+	location blabla 
+	{
+		return 301;
+	}
+
+	location /test/barev
+	{
+		autoindex on ;
+		return 301;
+		allow_methods POST;
+	}
+
+	location /test/index.html
+	{
+		return 301;
+	}
+}
