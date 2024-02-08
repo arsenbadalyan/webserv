@@ -47,12 +47,12 @@ ActiveMetods& ActiveMetods::setPost(const bool PostData)
 
 ActiveMetods& ActiveMetods::setGet(const bool GetData)
 {
-	this->_post = GetData;
+	this->_get = GetData;
 	return (*this);
 }
 
 ActiveMetods& ActiveMetods::setDelete(const bool DeleteData)
 {
-	this->_post = DeleteData;
+	this->_delete = DeleteData;
 	return (*this);
 }
