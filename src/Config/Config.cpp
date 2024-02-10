@@ -2,6 +2,7 @@
 
 Config::Config():
 	_root("/var/www"),
+	_root_flag(false),
 	_autoindex(true),_client_max_body_size(1024*1024) 
 {
 	this->_index.push_back("index.html");
@@ -11,6 +12,7 @@ Config::Config():
 
 Config::Config(const Config& other):
 	_root(other._root),
+	_root_flag(other._root_flag),
 	_allow_methods(other._allow_methods),
 	_upload_dir(other._upload_dir),
 	_error_page(other._error_page),
@@ -24,6 +26,7 @@ Config& Config::operator= (const Config& other)
 	if (this != &other)
 	{
 		this->_root = other._root;
+		this->_root_flag = other._root_flag;
 		this->_allow_methods = other._allow_methods;
 		this->_upload_dir = other._upload_dir;
 		this->_error_page = other._error_page;
@@ -47,6 +50,17 @@ std::string Config::getRoot() const
 Config& Config::setRoot(const std::string& root)
 {
 	this->_root = root;
+	return (*this);
+}
+
+bool Config::getRootFlag()
+{
+	return (this->_root_flag);
+}
+
+Config &Config::setRootFlag(const bool root_flag)
+{
+	this->_root_flag = root_flag;
 	return (*this);
 }
 

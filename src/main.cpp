@@ -5,13 +5,17 @@ int main() {
 
 	std::vector<Server> t;
 	ParsingConfigFile  a("file");
+	// t = a.startPars();
 	try
 	{
 		t = a.startPars();
+		// std::cout << "Error 1\n";
 	}
 	catch(const std::exception& e)
 	{
+		// std::cout << "Error 2\n";
 		std::cerr << e.what() << '\n';
+		// std::cout << "Error 3\n";
 	}
 	print_struct(t);
 	
@@ -23,7 +27,13 @@ void print_struct(std::vector<Server>  s)
     for (size_t i = 0; i < s.size(); i++)
     {
         std::cout << "Server " << i << " Host = " << s[i].getHost() << std::endl;
-        std::cout << "Server " << i << " Port = " << s[i].getPort() << std::endl;
+		// std::cout << "==================================  " << s[i].getPort().size() << std::endl;
+		std::cout << "Server " << i << " Port = ";
+		for (size_t j = 0; j < s[i].getPort().size(); j++)
+		{
+	        std::cout  << s[i].getPort()[j] << " ";
+		}
+		std::cout << std::endl;
         std::cout << "Server " << i << " ServerName = " << s[i].getServerName() << std::endl;
         std::cout << "Server " << i << " getAllow_methods = " << s[i].getServerConfig().getAllow_methods().getGet() \
         << " " << s[i].getServerConfig().getAllow_methods().getPost() << " " << \

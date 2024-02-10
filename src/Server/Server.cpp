@@ -1,10 +1,13 @@
 #include "Server.hpp"
 
-Server::Server():_port(0) {}
+Server::Server():_host("127.0.0.1"),_host_flag(false),_port_flag(false)
+ {
+	this->_port.push_back(8080);
+ }
 
 Server::Server(const Server& other):
 	_serverConfig(other._serverConfig), _serverName(other._serverName),
-	_host(other._host),_port(other._port),_locations(other._locations) {}
+	_host(other._host),_host_flag(other._host_flag), _port(other._port), _port_flag(other._port_flag),_locations(other._locations) {}
 
 Server& Server::operator= (const Server& other)
 {
@@ -13,7 +16,9 @@ Server& Server::operator= (const Server& other)
 		this->_serverConfig = other._serverConfig;
 		this-> _serverName = other._serverName;
 		this->_host = other._host;
+		this->_host_flag = other._host_flag;
 		this->_port = other._port;
+		this->_port_flag = other._port_flag;
 		this->_locations = other._locations;
 	}
 	return (*this);
@@ -54,14 +59,36 @@ Server& Server::setHost(const std::string& host)
 	return (*this);
 }
 
-unsigned int Server::getPort() const
+bool Server::getHostFlag()
+{
+	return (this->_host_flag);
+}
+
+Server &Server::setHostFlag(const bool &host)
+{
+	this->_host_flag = host;
+	return (*this);
+}
+
+std::vector<size_t>& Server::getPort()
 {
 	return (this->_port);
 }
 
-Server& Server::setPort(const unsigned int port)
+Server& Server::setPort(const std::vector<size_t> port)
 {
 	this->_port = port;
+	return (*this);
+}
+
+bool Server::getPortFlag()
+{
+	return (this->_port_flag);
+}
+
+Server &Server::setPortFlag(const bool port)
+{
+	this->_port_flag = port;
 	return (*this);
 }
 

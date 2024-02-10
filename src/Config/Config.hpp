@@ -12,6 +12,7 @@ class Config
 {
 private:
 	std::string					_root;
+	bool						_root_flag;
 	ActiveMetods				_allow_methods;
 	std::string					_upload_dir;
 	std::map<int, std::string>	_error_page;
@@ -29,6 +30,9 @@ public:
 
 	std::string getRoot() const;
 	Config& setRoot(const std::string& root);
+
+	bool	getRootFlag();
+	Config& setRootFlag(const bool root_flag);
 
 	ActiveMetods& getAllow_methods();
 	Config& setAllow_methods(const ActiveMetods& allow_methods);

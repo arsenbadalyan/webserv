@@ -5,7 +5,12 @@ void print_struct(std::vector<Server>  s)
     for (size_t i = 0; i < s.size(); i++)
     {
         std::cout << "Server " << i << " Host = " << s[i].getHost() << std::endl;
-        std::cout << "Server " << i << " Port = " << s[i].getPort() << std::endl;
+		std::cout << "Server " << i << " Port = ";
+		for (size_t j = 0; j < s[j].getPort().size(); j++)
+		{
+	        std::cout  << s[i].getPort()[j] << " ";
+		}
+		std::cout << std::endl;
         std::cout << "Server " << i << " ServerName = " << s[i].getServerName() << std::endl;
         std::cout << "Server " << i << " getAllow_methods = " << s[i].getServerConfig().getAllow_methods().getGet() \
         << " " << s[i].getServerConfig().getAllow_methods().getPost() << " " << \
@@ -39,11 +44,11 @@ void print_struct(std::vector<Server>  s)
             for (std::map<int, std::string>::iterator h = s[i].getLocations()[j].getError_page().begin();\
             h != s[i].getLocations()[j].getError_page().end(); h++)
             {
-                std::cout << "Server " << i << " Error_page = " << h->first <<" "<< h->second << std::endl;
+                std::cout << "  Server " << i << " Error_page = " << h->first <<" "<< h->second << std::endl;
             }
             for (size_t h = 0; h < s[i].getLocations()[j].getIndex().size(); h++)
             {
-                std::cout << "Server " << i << " Index = " << s[i].getLocations()[j].getIndex()[h] << std::endl;
+                std::cout << "  Server " << i << " Index = " << s[i].getLocations()[j].getIndex()[h] << std::endl;
             }
             std::cout << "  Server " << i << " Location_name = " << s[i].getLocations()[j].getLocation_name() << std::endl;
             std::cout << "  Server " << i << " Return = " << s[i].getLocations()[j].getReturn().getStatusTypes()\

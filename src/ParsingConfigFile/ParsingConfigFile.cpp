@@ -28,10 +28,8 @@ std::vector<Server> ParsingConfigFile::startPars()
 	this->removeComent();
 	if (!this->CheckSintex())
 		throw MyException("Sintexs ERROR");
-	std::cout << "Error 1\n"; 
 	if (!this->CheckCorecktServer())
 		throw MyException("Corect Error");
-	std::cout << "Error 1.2\n"; 
 	return (this->_serverList);
 }
 
@@ -81,8 +79,8 @@ bool ParsingConfigFile::CheckCorecktServer()
 			throw MyException("Suntexs Error don exist server" + this->getErrorline(pos_start));
 		for (size_t i = pos_start; i < pos_end; ++i)
 		{
-			if (i < pos && i > pos + server.size() && \
-				this->_data[i] != '\n' && this->_data[i] != '\t' && this->_data[i] != ' ')
+			if ((i < pos || i > pos + server.size()) && \
+				(this->_data[i] != '\n' && this->_data[i] != '\t' && this->_data[i] != ' '))
 				{
 					throw MyException("Suntexs Error" + this->getErrorline(pos_start));
 				}
@@ -125,7 +123,6 @@ bool ParsingConfigFile::CheckCoreckt(size_t pos_start, size_t pos_end, bool cont
 	std::string cpy;
 	for (size_t i = pos_start, pos = 0; i < pos_end;)
 	{
-
 		if (this->_data[i] != '\n' && this->_data[i] != '\t' && this->_data[i] != ' ' )
 		{
 			pos = i;
@@ -158,6 +155,17 @@ bool ParsingConfigFile::CheckCoreckt(size_t pos_start, size_t pos_end, bool cont
 			++i;
 		cpy.clear();
 
+	}
+	if (!controlFlag)
+	{
+		for (size_t i = 0; i < this->_serverList[this->_serverList.size() - 1].getLocations().size(); i++)
+		{
+			if (!(this->_serverList[this->_serverList.size() - 1].getLocations()[i].getRootFlag()))
+			{
+				this->_serverList[this->_serverList.size() - 1].getLocations()[i].setRoot\
+				(this->_serverList[this->_serverList.size() - 1].getServerConfig().getRoot());
+			}
+		}
 	}
 	return (true);
 }
@@ -295,7 +303,7 @@ size_t	ParsingConfigFile::CheckCorecktConfig(std::string config, size_t pos_star
 		if (SIZE_MAX != res)
 			return (res);
 	}
-	throw MyException("Error no config2" + this->getErrorline(pos_start));
+	throw MyException("Error no config" + this->getErrorline(pos_start));
 	return (SIZE_MAX);
 }
 
@@ -393,6 +401,8 @@ size_t ParsingConfigFile::checkRoot(size_t pos_start, size_t pos_end, bool contr
 
 		this->_serverList[this->_serverList.size() - 1].getLocations()\
 		[this->_serverList[this->_serverList.size() - 1].getLocations().size() - 1].setRoot(val);
+		this->_serverList[this->_serverList.size() - 1].getLocations()\
+		[this->_serverList[this->_serverList.size() - 1].getLocations().size() - 1].setRootFlag(true);
 	}
 	else
 	{
@@ -839,13 +849,26 @@ bool ParsingConfigFile::checCorectHostAndPort(size_t pos_start, size_t pos_end, 
 {
 	(void)controlFlag;
 	std::string::iterator  it = std::find(this->_data.begin() + pos_start, this->_data.begin() + pos_end, ':');
-	if (it == this->_data.end())
-		throw MyException("Error Sintexsis Listen -> :" + this->getErrorline(pos_start));
+	// if (it == this->_data.end())
+	// 	throw MyException("Error Sintexsis Listen -> :" + this->getErrorline(pos_start));
+	// std::cout << "string == " << std::string(this->_data.begin() + pos_start, this->_data.begin() + pos_end) << std::endl;
+	// std::cout << "it = " << *it << "  end == " << *(this->_data.begin() + pos_end) << std::endl;
 	size_t	pos_period = it - this->_data.begin();
-	if (!chekAndSaveHost(std::string(this->_data.begin() + pos_start, this->_data.begin() + pos_period)))
-		throw MyException("Error Sintexsis Listen Host" + this->getErrorline(pos_start));
-	if (!chekAndSavePort(std::string(this->_data.begin() + pos_period + 1, this->_data.begin() + pos_end)))
-		throw MyException("Error Sintexsis Listen Host" + this->getErrorline(pos_start));
+	if (it == (this->_data.begin() + pos_end))
+	{
+		// std::cout << "Error 3.1\n";
+		if (!chekAndSavePort(std::string(this->_data.begin() + pos_start, this->_data.begin() + pos_end)))
+			throw MyException("Error Sintexsis Listen Host" + this->getErrorline(pos_start));
+	}
+	else
+	{
+		// std::cout << "Error 3.2\n";
+		if (!chekAndSaveHost(std::string(this->_data.begin() + pos_start, this->_data.begin() + pos_period)))
+			throw MyException("Error Sintexsis Listen Host" + this->getErrorline(pos_start));
+		if (!chekAndSavePort(std::string(this->_data.begin() + pos_period + 1, this->_data.begin() + pos_end)))
+			throw MyException("Error Sintexsis Listen Host" + this->getErrorline(pos_start));
+	}
+	// std::cout << "Error 3.3\n";
 	return (true);
 }
 
@@ -856,6 +879,10 @@ bool u(char a)
 
 bool ParsingConfigFile::chekAndSaveHost(std::string host)
 {
+	// std::cout << "===============================\n";
+	if (this->_serverList[this->_serverList.size() - 1].getHostFlag())
+		throw MyException("Error Sintexsis Listen Host double host");
+	this->_serverList[this->_serverList.size() - 1].setHostFlag(true);
 	size_t count = std::count_if(host.begin(), host.end(), u);
 	std::stringstream str(host);
 	std::string val;
@@ -877,21 +904,46 @@ bool ParsingConfigFile::chekAndSaveHost(std::string host)
 
 bool ParsingConfigFile::chekAndSavePort(std::string port)
 {
+	// std::cout << "Error 2.1\n";
+	// std::cout << "flag = " << this->_serverList[this->_serverList.size() - 1].getPortFlag() << std::endl;
+	if (!(this->_serverList[this->_serverList.size() - 1].getPortFlag()))
+	{
+		// std::cout << "Error 2.2\n";
+		this->_serverList[this->_serverList.size() - 1].setPortFlag(true);
+		this->_serverList[this->_serverList.size() - 1].getPort().clear();
+	}
+	// std::cout << "Error 2.3\n";
 	size_t  size = port.size();
-	int number;
+	size_t number;
+	// std::cout << "Error 2.4\n";
 	if (!size)
 		return (false);
 	try
 	{
-		number = std::stoi(port, &size);
+		number = (size_t)std::stoi(port, &size);
 	}
 	catch(...)
 	{
 		throw MyException("Error Sintexsis Listen Host");
 	}
+	// std::cout << "Error 2.7\n";
 	if (size != port.size() || number < 0)
 		throw MyException("Error Sintexsis Listen Host");
-	this->_serverList[this->_serverList.size()].setPort(number);
+	// std::cout << "Error 2.8\n";
+	if (this->_serverList[this->_serverList.size() - 1].getPort().size() && \
+	this->_serverList[this->_serverList.size() - 1].getPort().end() != \
+	std::find(this->_serverList[this->_serverList.size() - 1].getPort().begin(), \
+	this->_serverList[this->_serverList.size() - 1].getPort().end(),number))
+	{
+		// std::cout << "Error 2.9\n";
+		return (true);
+	}
+	// std::cout << "Error 2.10\n";
+	// std::cout <<  "size ====== " << this->_serverList[this->_serverList.size() - 1].getPort().size() << std::endl;
+	// std::cout << "number = " << number << std::endl;
+	this->_serverList[this->_serverList.size() - 1].getPort().push_back(number);
+	// std::cout <<  "size ====== " << this->_serverList[this->_serverList.size() - 1].getPort().size() << std::endl;
+	// std::cout << "Error 2.11\n";
 	return (true);
 }
 

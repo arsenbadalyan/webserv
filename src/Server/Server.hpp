@@ -9,10 +9,12 @@
 class Server 
 {
 private:
-	Config _serverConfig;
-	std::string	 _serverName;
-	std::string	_host;
-	unsigned int _port;
+	Config				_serverConfig;
+	std::string			_serverName;
+	std::string			_host;
+	bool				_host_flag;
+	std::vector<size_t> _port;
+	bool				_port_flag;
 	std::vector<Config> _locations;
 public:
 	Server();
@@ -29,8 +31,14 @@ public:
 	std::string getHost() const;
 	Server& setHost(const std::string& host);
 
-	unsigned int getPort() const;
-	Server& setPort(const unsigned int port);
+	bool getHostFlag();
+	Server& setHostFlag(const bool& host);
+
+	std::vector<size_t>& getPort();
+	Server& setPort(const std::vector<size_t> port);
+
+	bool getPortFlag();
+	Server& setPortFlag(const bool port);
 
 	std::vector<Config>& getLocations();
 	Server& setLocations(const std::vector<Config>& locations);
