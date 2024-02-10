@@ -3,7 +3,7 @@ server
 	listen 127.0.0.1:8080 ;
 	server_name fdfsdfd ;
 	root temp;
-	allow_methods POST;
+	allow_methods GET;
 	client_max_body_size 17179869183G ;
 	upload_dir temp;
 	error_page 550 400 300 200 file;

@@ -28,8 +28,10 @@ std::vector<Server> ParsingConfigFile::startPars()
 	this->removeComent();
 	if (!this->CheckSintex())
 		throw MyException("Sintexs ERROR");
+	std::cout << "Error 1\n"; 
 	if (!this->CheckCorecktServer())
 		throw MyException("Corect Error");
+	std::cout << "Error 1.2\n"; 
 	return (this->_serverList);
 }
 
@@ -60,11 +62,9 @@ bool ParsingConfigFile::CheckCorecktServer()
 	for (size_t pos_start = 0, pos_end = 0, pos = 0; \
 		pos_start < this->_data.size(); pos_start = pos_end + 1)
 	{
-
 		pos_end = this->_data.find('{', pos_start);
 		if (SIZE_MAX == pos_end && pos_start == 0)
 			throw MyException("Suntexs Error" + this->getErrorline(pos_start));
-
 		if (SIZE_MAX == pos_end)
 		{
 			for (size_t i = pos_start; i < this->_data.size() ; ++i)
@@ -74,34 +74,27 @@ bool ParsingConfigFile::CheckCorecktServer()
 			}
 			return (true);
 		}
-
 		std::transform(this->_data.begin(), this->_data.begin() + (pos_end - pos_start), \
 			this->_data.begin(), ::tolower);
-		pos = this->_data.find(server.c_str(), pos_start, pos_end - pos_start);
-		if (SIZE_MAX == pos_end)
+		pos = this->_data.find(server.c_str(), pos_start);
+		if (SIZE_MAX == pos_end || pos >= pos_end)
 			throw MyException("Suntexs Error don exist server" + this->getErrorline(pos_start));
-
 		for (size_t i = pos_start; i < pos_end; ++i)
 		{
 			if (i < pos && i > pos + server.size() && \
 				this->_data[i] != '\n' && this->_data[i] != '\t' && this->_data[i] != ' ')
 				{
-			
 					throw MyException("Suntexs Error" + this->getErrorline(pos_start));
 				}
 		}
-
 		pos_start = pos_end + 1;
 		pos_end = get_reng(pos_start);
 		if (pos_end == SIZE_MAX)
 			throw MyException("Suntexs Error" + this->getErrorline(pos_start));
-
 		if (!CheckCoreckt(pos_start, pos_end, false))
 			throw MyException("Suntexs Error" + this->getErrorline(pos_start));
-
 		if (pos_end == this->_data.size())
 			return (true);
-
 	}
 	return (true);
 }
