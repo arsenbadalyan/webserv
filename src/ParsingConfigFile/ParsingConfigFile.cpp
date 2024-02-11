@@ -775,8 +775,8 @@ size_t ParsingConfigFile::checkByte(std::string &BodySize, size_t pos_start)
 
     if (nonZeroPos != std::string::npos)
         BodySize.erase(0, nonZeroPos);
-     else 
-        BodySize = "0";
+    else
+		BodySize = "0";
 
 	size_t numb = static_cast<size_t>(std::strtoull(BodySize.c_str(), nullptr, 10));
 	std::string check = std::to_string(numb);
@@ -785,10 +785,10 @@ size_t ParsingConfigFile::checkByte(std::string &BodySize, size_t pos_start)
 	return (numb);
 }
 
-size_t ParsingConfigFile::findSimbol(std::string &BodySize, size_t pos_start)
+size_t	ParsingConfigFile::findSimbol(std::string &BodySize, size_t pos_start)
 {
 	size_t pos = BodySize.find_first_not_of("0123456789");
-	size_t result;
+	size_t result = 0;
 	if (pos == std::string::npos)
 		result = checkByte(BodySize, pos_start);
 	else if ((BodySize[pos] == 'K' || BodySize[pos] == 'k') && BodySize[pos + 1] == '\0')

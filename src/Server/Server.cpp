@@ -102,3 +102,25 @@ Server& Server::setLocations(const std::vector<Config>& locations)
 	this->_locations = locations;
 	return (*this);
 }
+
+std::vector<size_t> &Server::getMainServer()
+{
+    return (this->_mainServer);
+}
+
+Server &Server::setMainServer(const std::vector<size_t> &fd)
+{
+	this->_mainServer = fd;
+	return (*this);
+}
+
+std::vector<size_t> &Server::getClientSocket()
+{
+    return (this->_clientSocket);
+}
+
+Server &Server::setClientSocket(const std::vector<size_t> &fd)
+{
+	this->_clientSocket = fd;
+	return (*this);
+}
