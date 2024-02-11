@@ -74,6 +74,9 @@ private:
 	size_t checkByte(std::string &BodySize, size_t pos_start);
 	size_t findSimbol(std::string &BodySize, size_t pos_start);
 
+	bool	checkSinv(const std::string &sin);
+	bool	checkLocName(const std::string &sin);
+
 	class MyException : public std::exception
 	{
 	private:

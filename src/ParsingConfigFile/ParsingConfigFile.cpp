@@ -186,10 +186,13 @@ size_t ParsingConfigFile::CheckCorecktLocation(size_t pos_start, size_t pos_end)
 				throw MyException("Error Emty name location" + this->getErrorline(pos_start));
 			for (end = start; end < pos_end && this->_data[end] != '\t' && \
 				this->_data[end] != '\n' && this->_data[end] != ' ' && this->_data[end] != '{'; ++end);
-	
+			//Location_name set
+			std::string loc_name = std::string(this->_data.begin() + start, this->_data.begin() + end);
+			if (!checkLocName(loc_name))
+				throw MyException("Error name location" + this->getErrorline(pos_start));
 			this->_serverList[this->_serverList.size() -1].getLocations()\
 			[this->_serverList[this->_serverList.size() -1].getLocations().size() - 1].\
-			setLocation_name(std::string(this->_data.begin() + start, this->_data.begin() + end));
+			setLocation_name(loc_name);
 			start = end;
 			end = this->_data.find('{', start);
 			for (size_t i = start; i < end; ++i)
@@ -365,6 +368,8 @@ size_t ParsingConfigFile::checkServerName(size_t pos_start, size_t pos_end, bool
 	str >> val;
 	str >> check;
 	if (check.size())
+		throw MyException("Error Sintexsis ServerName arguments" + this->getErrorline(pos_start));
+	if (!checkSinv(val))
 		throw MyException("Error Sintexsis ServerName arguments" + this->getErrorline(pos_start));
 	this->_serverList[this->_serverList.size() - 1].setServerName(val);
 	return size_t(end + 1);
@@ -617,7 +622,7 @@ size_t ParsingConfigFile::checkReturn(size_t pos_start, size_t pos_end, bool con
 		if (ival && !statCod)
 			statCod = ival;
 		ival = 0;
-
+		val.clear();
 	}
 	if (controlFlag)
 	{
@@ -797,6 +802,30 @@ size_t ParsingConfigFile::findSimbol(std::string &BodySize, size_t pos_start)
 	return (result);
 }
 
+bool ParsingConfigFile::checkSinv(const std::string &sin)
+{
+	for (size_t i = 0; i < sin.size(); i++)
+	{
+		if (sin[i] == '\\' || sin[i] == '/' || sin[i] == ':' || sin[i] == '?' \
+		|| sin[i] == '*' || sin[i] == '&' || sin[i] == ';' || sin[i]  == '\'' || sin[i] == '\"' \
+		|| sin[i] == '`')
+			return (false);
+	}
+	return (true);
+}
+
+bool ParsingConfigFile::checkLocName(const std::string &sin)
+{
+	for (size_t i = 0; i < sin.size(); i++)
+	{
+		if (sin[i] == '\\' || sin[i] == ':' || sin[i] == '?' \
+		|| sin[i] == '*' || sin[i] == '&' || sin[i] == ';' || sin[i]  == '\'' || sin[i] == '\"' \
+		|| sin[i] == '`')
+			return (false);
+	}
+	return (true);
+}
+
 size_t ParsingConfigFile::checkClientMaxBodySize(size_t pos_start, size_t pos_end, bool controlFlag)
 {
 	size_t end;
@@ -879,7 +908,6 @@ bool u(char a)
 
 bool ParsingConfigFile::chekAndSaveHost(std::string host)
 {
-	// std::cout << "===============================\n";
 	if (this->_serverList[this->_serverList.size() - 1].getHostFlag())
 		throw MyException("Error Sintexsis Listen Host double host");
 	this->_serverList[this->_serverList.size() - 1].setHostFlag(true);
@@ -914,26 +942,26 @@ bool ParsingConfigFile::chekAndSavePort(std::string port)
 	}
 	// std::cout << "Error 2.3\n";
 	size_t  size = port.size();
-	size_t number;
+	int number;
 	// std::cout << "Error 2.4\n";
 	if (!size)
 		return (false);
 	try
 	{
-		number = (size_t)std::stoi(port, &size);
+		number = std::stoi(port, &size);
 	}
 	catch(...)
 	{
-		throw MyException("Error Sintexsis Listen Host");
+		throw MyException("Error Sintexsis Listen Port");
 	}
 	// std::cout << "Error 2.7\n";
-	if (size != port.size() || number < 0)
-		throw MyException("Error Sintexsis Listen Host");
+	if (size != port.size() || number < 1 || number > 65535)
+		throw MyException("Error Sintexsis Listen Port");
 	// std::cout << "Error 2.8\n";
 	if (this->_serverList[this->_serverList.size() - 1].getPort().size() && \
 	this->_serverList[this->_serverList.size() - 1].getPort().end() != \
 	std::find(this->_serverList[this->_serverList.size() - 1].getPort().begin(), \
-	this->_serverList[this->_serverList.size() - 1].getPort().end(),number))
+	this->_serverList[this->_serverList.size() - 1].getPort().end(),(size_t)number))
 	{
 		// std::cout << "Error 2.9\n";
 		return (true);
@@ -941,7 +969,7 @@ bool ParsingConfigFile::chekAndSavePort(std::string port)
 	// std::cout << "Error 2.10\n";
 	// std::cout <<  "size ====== " << this->_serverList[this->_serverList.size() - 1].getPort().size() << std::endl;
 	// std::cout << "number = " << number << std::endl;
-	this->_serverList[this->_serverList.size() - 1].getPort().push_back(number);
+	this->_serverList[this->_serverList.size() - 1].getPort().push_back((size_t)number);
 	// std::cout <<  "size ====== " << this->_serverList[this->_serverList.size() - 1].getPort().size() << std::endl;
 	// std::cout << "Error 2.11\n";
 	return (true);
@@ -949,9 +977,10 @@ bool ParsingConfigFile::chekAndSavePort(std::string port)
 
 bool ParsingConfigFile::chekHostNumber(std::string number)
 {
+	std::cout << "=============================== " << number << std::endl;
 	size_t  size = number.size();
 	int num;
-	if (!size)
+	if (!size || number[0] == '-')
 		return (false);
 	try
 	{
