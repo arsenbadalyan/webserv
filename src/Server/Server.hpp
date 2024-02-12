@@ -4,20 +4,21 @@
 #include <iostream>
 #include <string>
 #include "Config.hpp"
+#include "LisenStruc.hpp"
 #include <vector>
 
 class Server 
 {
 private:
-	Config				_serverConfig;
-	std::string			_serverName;
-	std::string			_host;
-	bool				_host_flag;
-	std::vector<size_t> _port;
-	bool				_port_flag;
-	std::vector<Config> _locations;
-	std::vector<size_t>	_mainServer;
-	std::vector<size_t>	_clientSocket;
+	Config					_serverConfig;
+	std::string				_serverName;
+	std::string				_host;
+	bool					_host_flag;
+	std::vector<size_t> 	_port;
+	bool					_port_flag;
+	std::vector<Config> 	_locations;
+	std::vector<LisenStruc>	_mainServer;
+	std::vector<size_t>		_clientSocket;
 public:
 	Server();
 	Server(const Server& other);
@@ -45,8 +46,8 @@ public:
 	std::vector<Config>& getLocations();
 	Server& setLocations(const std::vector<Config>& locations);
 
-	std::vector<size_t>& getMainServer();
-	Server& setMainServer(const std::vector<size_t>& fd);
+	std::vector<LisenStruc>& getMainServer();
+	Server& setMainServer(const std::vector<LisenStruc>& fd);
 
 	std::vector<size_t>& getClientSocket();
 	Server& setClientSocket(const std::vector<size_t>& fd);

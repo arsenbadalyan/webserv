@@ -103,12 +103,12 @@ Server& Server::setLocations(const std::vector<Config>& locations)
 	return (*this);
 }
 
-std::vector<size_t> &Server::getMainServer()
+std::vector<LisenStruc> &Server::getMainServer()
 {
     return (this->_mainServer);
 }
 
-Server &Server::setMainServer(const std::vector<size_t> &fd)
+Server &Server::setMainServer(const std::vector<LisenStruc> &fd)
 {
 	this->_mainServer = fd;
 	return (*this);
