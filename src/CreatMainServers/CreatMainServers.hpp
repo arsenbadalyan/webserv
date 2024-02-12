@@ -16,6 +16,7 @@ public:
 
 private:
    CreatMainServers(){}
+   static void starting(std::vector<Server> & serverlist);
 };
 
 
