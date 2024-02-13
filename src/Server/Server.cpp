@@ -114,12 +114,12 @@ Server &Server::setMainServer(const std::vector<LisenStruc> &fd)
 	return (*this);
 }
 
-std::vector<size_t> &Server::getClientSocket()
+std::vector<int> &Server::getClientSocket()
 {
     return (this->_clientSocket);
 }
 
-Server &Server::setClientSocket(const std::vector<size_t> &fd)
+Server &Server::setClientSocket(const std::vector<int> &fd)
 {
 	this->_clientSocket = fd;
 	return (*this);

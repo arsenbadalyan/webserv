@@ -47,3 +47,13 @@ void LisenStruc::close()
 {
     ::close(this->_server);
 }
+
+int LisenStruc::getServerFD()
+{
+	return this->_server;
+}
+
+sockaddr_in &LisenStruc::getServerAddress()
+{
+	return (this->_serverAddress);
+}

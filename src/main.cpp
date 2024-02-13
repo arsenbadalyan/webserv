@@ -20,10 +20,10 @@ int main() {
 	}
 	print_struct(t);
 	CreatMainServers::startServer(t);
-	std::string q;
-	std::cin >> q;
-	(void)q;
-	CreatMainServers::startServer(t);
+	// std::string q;
+	// std::cin >> q;
+	// (void)q;
+	CreatMainServers::closeFullPorts(t);
 	
     return (0);
 }

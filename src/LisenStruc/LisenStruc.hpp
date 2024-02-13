@@ -19,6 +19,8 @@ public:
 	bool	bind();
 	bool	listen();
 	void	close();
+	int		getServerFD();
+	struct sockaddr_in & getServerAddress();
 };
 
 #endif

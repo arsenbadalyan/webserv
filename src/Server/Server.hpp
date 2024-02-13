@@ -18,7 +18,7 @@ private:
 	bool					_port_flag;
 	std::vector<Config> 	_locations;
 	std::vector<LisenStruc>	_mainServer;
-	std::vector<size_t>		_clientSocket;
+	std::vector<int>		_clientSocket;
 public:
 	Server();
 	Server(const Server& other);
@@ -49,8 +49,8 @@ public:
 	std::vector<LisenStruc>& getMainServer();
 	Server& setMainServer(const std::vector<LisenStruc>& fd);
 
-	std::vector<size_t>& getClientSocket();
-	Server& setClientSocket(const std::vector<size_t>& fd);
+	std::vector<int>& getClientSocket();
+	Server& setClientSocket(const std::vector<int>& fd);
 
 };
 

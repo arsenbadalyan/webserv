@@ -7,6 +7,9 @@
 #include <sstream>
 #include <cstdint>
 #include <algorithm>
+#include <fstream>
+#include <fcntl.h>
+#include <stdio.h>
 
 class CreatMainServers
 {
