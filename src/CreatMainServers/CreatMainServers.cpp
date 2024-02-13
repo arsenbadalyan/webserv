@@ -1,6 +1,6 @@
 #include "CreatMainServers.hpp"
 
-#define BUFFER_SIZE 2048
+#define BUFFER_SIZE 6000
 
 bool CreatMainServers::startServer(std::vector<Server> & serverlist)
 {
@@ -15,8 +15,9 @@ bool CreatMainServers::startServer(std::vector<Server> & serverlist)
 	fd_set	rfds;
 	fd_set	wfds;
 	fd_set	efds;
-	std::string q;
-	while (q != "#")
+	// std::string q;
+	// while (q != "#")
+	while (1)
 	{
 		FD_ZERO(&rfds);
 		FD_ZERO(&wfds);
@@ -64,11 +65,11 @@ bool CreatMainServers::startServer(std::vector<Server> & serverlist)
 							resp += buffer;
 							// std::cout << resp;
 							std::cout << "send = " << send((serverlist[j].getClientSocket()[serverlist[j].getClientSocket().size() - 1]), \
-							&resp, resp.size(), 0) << std::endl;
+							resp.c_str(), resp.size(), 0) << std::endl;
 							close(file);
 						}
-						// close(serverlist[j].getClientSocket()[serverlist[j].getClientSocket().size() - 1]);
-						// serverlist[j].getClientSocket().erase(serverlist[j].getClientSocket().begin() + serverlist[j].getClientSocket().size() - 1);
+						close(serverlist[j].getClientSocket()[serverlist[j].getClientSocket().size() - 1]);
+						serverlist[j].getClientSocket().erase(serverlist[j].getClientSocket().begin() + serverlist[j].getClientSocket().size() - 1);
 					}
 				}
 			}
@@ -95,7 +96,7 @@ bool CreatMainServers::startServer(std::vector<Server> & serverlist)
 		// 	}
 			
 		// }
-		std::cin >> q;
+		// std::cin >> q;
 		std::cout << "continue...\n";
 	}
 	return true;
