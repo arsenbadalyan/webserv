@@ -1,6 +1,6 @@
 #include "ParsingConfigFile.hpp"
 
-void print_struct(std::vector<Server>  s)
+void print_struct(std::vector<Server> & s)
 {
     for (size_t i = 0; i < s.size(); i++)
     {

@@ -1,5 +1,6 @@
 #include "ParsingConfigFile.hpp"
-void print_struct(std::vector<Server>  s);
+#include "CreatMainServers.hpp"
+void print_struct(std::vector<Server> & s);
 
 int main() {
 
@@ -18,11 +19,16 @@ int main() {
 		// std::cout << "Error 3\n";
 	}
 	print_struct(t);
+	CreatMainServers::startServer(t);
+	std::string q;
+	std::cin >> q;
+	(void)q;
+	CreatMainServers::startServer(t);
 	
     return (0);
 }
 
-void print_struct(std::vector<Server>  s)
+void print_struct(std::vector<Server> & s)
 {
     for (size_t i = 0; i < s.size(); i++)
     {

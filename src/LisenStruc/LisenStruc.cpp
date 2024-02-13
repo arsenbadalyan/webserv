@@ -38,8 +38,9 @@ bool LisenStruc::bind()
 
 bool LisenStruc::listen()
 {
-    ::listen(this->_server, 1);
-    return false;
+    if (::listen(this->_server, 1))
+		return (false);
+    return true;
 }
 
 void LisenStruc::close()

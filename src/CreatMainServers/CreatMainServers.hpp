@@ -12,11 +12,12 @@ class CreatMainServers
 {
 public:
 
-   static bool startServer(std::vector<Server> & serverlist);
+	static bool startServer(std::vector<Server> & serverlist);
+	static void	closeFullPorts(std::vector<Server> &serverlist);
 
 private:
    CreatMainServers(){}
-   static void starting(std::vector<Server> & serverlist);
+   static bool starting(std::vector<Server> & serverlist);
 };
 
 
