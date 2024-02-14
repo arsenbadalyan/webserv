@@ -15,9 +15,8 @@ bool CreatMainServers::startServer(std::vector<Server> & serverlist)
 	fd_set	rfds;
 	fd_set	wfds;
 	fd_set	efds;
-	// std::string q;
-	// while (q != "#")
-	while (1)
+	std::string q;
+	while (q != "#")
 	{
 		FD_ZERO(&rfds);
 		FD_ZERO(&wfds);
@@ -96,7 +95,7 @@ bool CreatMainServers::startServer(std::vector<Server> & serverlist)
 		// 	}
 			
 		// }
-		// std::cin >> q;
+		std::cin >> q;
 		std::cout << "continue...\n";
 	}
 	return true;

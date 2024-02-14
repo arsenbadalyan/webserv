@@ -10,6 +10,7 @@
 #include <fstream>
 #include <fcntl.h>
 #include <stdio.h>
+#include <strings.h>
 
 class CreatMainServers
 {
