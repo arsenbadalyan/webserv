@@ -79,16 +79,16 @@ bool CreatMainServers::startServer(std::vector<Server> & serverlist)
 				 " == " << FD_ISSET(serverlist[j].getClientSocket()[i], &rfds) << std::endl;
 				if (FD_ISSET(serverlist[j].getClientSocket()[i], &rfds))
 				{
-
-					
 					// socklen_t siz = sizeof(serverlist[j].getMainServer()[i].getServerAddress());
 					// // serverlist[j].getClientSocket().push_back();
 					// int fd = accept(serverlist[j].getClientSocket()[i], \
 					// reinterpret_cast<struct sockaddr*>(&(serverlist[j].getMainServer()[i].getServerAddress())), &siz);
 					// std::cout << "NEW  fd =====  ===== " << fd << std::endl;
-
-					// close (serverlist[j].getClientSocket()[i]);
-					// serverlist[j].getClientSocket()[i] = fd;
+					// if (fd > 0)
+					// {
+					// 	close (serverlist[j].getClientSocket()[i]);
+					// 	serverlist[j].getClientSocket()[i] = fd;
+					// }
 
 					bzero(buffer,BUFFER_SIZE);
 					int aaa = recv(serverlist[j].getClientSocket()[serverlist[j].getClientSocket().size() - 1], buffer, BUFFER_SIZE,0);
@@ -106,7 +106,6 @@ bool CreatMainServers::startServer(std::vector<Server> & serverlist)
 							read(file, buffer, BUFFER_SIZE);
 							std::cout << "tttttttttt -- 2.5\n";
 							std::cout << "tttttttttt -- 2.6\n";
-							// (void)aaa;
 							std::string resp;
 							std::cout << "tttttttttt -- 2.7\n";
 							resp += buffer;
@@ -166,11 +165,13 @@ bool CreatMainServers::startServer(std::vector<Server> & serverlist)
 							resp.c_str(), resp.size(), 0) << std::endl;
 							close(file);
 						}
+
+
 						// std::cout << "erroe listen ------------------------------------  " << \
 						// listen(serverlist[j].getClientSocket()[serverlist[j].getClientSocket().size() - 1],1) << std::endl;
 						//uxarkum u jnjuma fd
-						// close(serverlist[j].getClientSocket()[serverlist[j].getClientSocket().size() - 1]);
-						// serverlist[j].getClientSocket().erase(serverlist[j].getClientSocket().begin() + serverlist[j].getClientSocket().size() - 1);
+						close(serverlist[j].getClientSocket()[serverlist[j].getClientSocket().size() - 1]);
+						serverlist[j].getClientSocket().erase(serverlist[j].getClientSocket().begin() + serverlist[j].getClientSocket().size() - 1);
 					}
 				}
 			}
