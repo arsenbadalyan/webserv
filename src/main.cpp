@@ -7,34 +7,70 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#define PORT 5678
+#define PORT 5555
+
+std::string* split(const std::string& str, char delimiter, size_t & size) {
+	size = 0;
+
+	std::string token;
+	std::stringstream ss(str);
+
+	while (std::getline(ss, token, delimiter)) {
+		size++;
+	}
+
+	std::string * dividedList = new std::string[size];
+	size_t fillSize = 0;
+
+	ss.clear();
+	ss.seekg(0);
+
+	while (std::getline(ss, token, delimiter)) {
+		dividedList[fillSize] = token;
+		fillSize++;
+	}
+
+	return (dividedList);
+}
 
 int main() {
 
-    int socketFd = socket(AF_INET, SOCK_STREAM, 0);
-    // HttpRequest request = new HttpRequest()
+    std::string test;
+    std::stringstream iss(0);
+    size_t tt = 0;
+    std::string *eee = split(test, ' ', tt);
 
-    if (socketFd < 0) {
-        std::cout << "Invalid socket creation!" << std::endl;
-        return (1);
-    }
+    std::cout << tt << std::endl;
+    (void)eee;
 
-    struct sockaddr_in address;
+    // int socketFd = socket(AF_INET, SOCK_STREAM, 0);
+    // // HttpRequest request = new HttpRequest()
 
-    address.sin_family = AF_INET;
-    address.sin_addr.s_addr = INADDR_ANY;
-    address.sin_port = htons(PORT);
+    // if (socketFd < 0) {
+    //     std::cout << "Invalid socket creation!" << std::endl;
+    //     return (1);
+    // }
 
-    int bindFd = bind(socketFd, (sockaddr *)&address, sizeof(address));
-    if (bindFd < 0) {
-        std::cout << "Cannot bind socket!" << std::endl;
-        return (1);
-    }
+    // struct sockaddr_in address;
 
-    if (listen(socketFd, 3) < 0) {
-        std::cout << "Cannot listen socket" << std::endl;
-    }
+    // address.sin_family = AF_INET;
+    // address.sin_addr.s_addr = INADDR_ANY;
+    // address.sin_port = htons(PORT);
 
-    
+    // int bindFd = bind(socketFd, (sockaddr *)&address, sizeof(address));
+    // if (bindFd < 0) {
+    //     std::cout << "Cannot bind socket!" << std::endl;
+    //     return (1);
+    // }
+
+    // if (listen(socketFd, 3) < 0) {
+    //     std::cout << "Cannot listen socket" << std::endl;
+    // }
+
+    // socklen_t sockLen = sizeof(address);
+    // std::cout << "Server listening port: " << PORT << std::endl;
+    // int client = accept(socketFd, (sockaddr *)&address, &sockLen);
+
+    // HttpRequest *request = new HttpRequest(client);
     return (0);
 }
