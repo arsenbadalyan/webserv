@@ -1,6 +1,6 @@
 server 
 {
-	listen 127.0.0.1:9090 ;
+	listen 127.0.0.1:4040 ;
 #	listen 50;
 	server_name fdfsdfd ;
 	root temp;

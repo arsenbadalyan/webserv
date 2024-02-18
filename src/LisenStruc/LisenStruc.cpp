@@ -28,11 +28,11 @@ bool LisenStruc::bind()
     {
         return (false);
     }
-	int opt = 1;
-	if(setsockopt(this->_server, SOL_SOCKET, SO_REUSEADDR , &opt, sizeof(opt)))
-	{
-		return (false);
-	}
+	// int opt = 1;
+	// if(setsockopt(this->_server, SOL_SOCKET, SO_REUSEADDR , &opt, sizeof(opt)))
+	// {
+	// 	return (false);
+	// }
     if (::bind(this->_server, reinterpret_cast<struct \
     sockaddr*>(&this->_serverAddress), sizeof(this->_serverAddress)) < 0)
     {

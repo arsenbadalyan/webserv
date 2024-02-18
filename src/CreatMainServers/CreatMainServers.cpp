@@ -21,117 +21,72 @@ bool CreatMainServers::startServer(std::vector<Server> & serverlist)
 		FD_ZERO(&rfds);
 		FD_ZERO(&wfds);
 		FD_ZERO(&efds);
+		int a = 3;
 		//serveri diskriptrner kardalu hamar
 		for (size_t j = 0; j < serverlist.size(); j++)
 		{
 			for (size_t i = 0; i < serverlist[j].getMainServer().size(); i++)
 			{
+				if (j == 0 && i == 0)
+					continue;
+				if (serverlist[j].getMainServer()[i].getServerFD() > a)
+					a = serverlist[j].getMainServer()[i].getServerFD();
 				FD_SET(serverlist[j].getMainServer()[i].getServerFD(), &rfds);
 			}
 			
 		}
-		//clienti diskriptorner kardalu hamar
 		for (size_t j = 0; j < serverlist.size(); j++)
 		{
 			for (size_t i = 0; i < serverlist[j].getClientSocket().size(); i++)
 			{
-				FD_SET(serverlist[j].getClientSocket()[i], &rfds);
-			}
-			
-		}
-		//clienti diskriptorner grelu hamar
-		for (size_t j = 0; j < serverlist.size(); j++)
-		{
-			for (size_t i = 0; i < serverlist[j].getClientSocket().size(); i++)
-			{
+				if (serverlist[j].getClientSocket()[i] > a)
+					a = serverlist[j].getClientSocket()[i];
 				FD_SET(serverlist[j].getClientSocket()[i], &wfds);
 			}
 			
 		}
 
 		// ---------------------------------
-		int res = select(50, &rfds, &wfds, &efds, &tv );
+		int res = select(a + 1, &rfds, &wfds, &efds, &tv );
 		// ----------------------------------
-
 		std::cout << "selecti tvat res = " << res << std::endl;
 
 
-		//stugum em clienti fd grelu hamar
-		std::cout << "tttttttttt -- 1\n";
+		// stugum em clienti fd grelu hamar
 		for (size_t j = 0; j < serverlist.size(); j++)
 		{
 			for (size_t i = 0; i < serverlist[j].getClientSocket().size(); i++)
 			{
 				std::cout << "te client patrasta grelu hamar -> " << serverlist[j].getClientSocket()[i] << \
 				" == " << FD_ISSET(serverlist[j].getClientSocket()[i], &wfds) << std::endl;
-			}
-			
-		}
-		//stugum em clienti fd grelu hamar
-		std::cout << "tttttttttt -- 2\n";
-		for (size_t j = 0; j < serverlist.size(); j++)
-		{
-			std::cout << "tttttttttt -- 2.1\n";
-			for (size_t i = 0; i < serverlist[j].getClientSocket().size(); i++)
-			{
-				std::cout << "tttttttttt -- 2.2\n";
-				std::cout << "te klient patrasta kardalu hamar -> " << serverlist[j].getClientSocket()[i] <<\
-				 " == " << FD_ISSET(serverlist[j].getClientSocket()[i], &rfds) << std::endl;
-				if (FD_ISSET(serverlist[j].getClientSocket()[i], &rfds))
+				if(FD_ISSET(serverlist[j].getClientSocket()[i], &wfds))
 				{
-					// socklen_t siz = sizeof(serverlist[j].getMainServer()[i].getServerAddress());
-					// // serverlist[j].getClientSocket().push_back();
-					// int fd = accept(serverlist[j].getClientSocket()[i], \
-					// reinterpret_cast<struct sockaddr*>(&(serverlist[j].getMainServer()[i].getServerAddress())), &siz);
-					// std::cout << "NEW  fd =====  ===== " << fd << std::endl;
-					// if (fd > 0)
-					// {
-					// 	close (serverlist[j].getClientSocket()[i]);
-					// 	serverlist[j].getClientSocket()[i] = fd;
-					// }
-
+					int file = open("index.html", O_RDONLY);
 					bzero(buffer,BUFFER_SIZE);
-					int aaa = recv(serverlist[j].getClientSocket()[serverlist[j].getClientSocket().size() - 1], buffer, BUFFER_SIZE,0);
-					std::cout << "clienti kardatatn soketic = " << aaa << std::endl;
-					if (aaa > 0)
+					if (file >= 0)
 					{
-						std::cout << buffer << std::endl;
-						int file = open("index.html", O_RDONLY);
-						bzero(buffer,BUFFER_SIZE);
-						std::cout << "tttttttttt -- 2.3\n";
-						if (file >= 0)
-						{
-							// bzero(buffer,BUFFER_SIZE);
-							std::cout << "tttttttttt -- 2.4\n";
-							read(file, buffer, BUFFER_SIZE);
-							std::cout << "tttttttttt -- 2.5\n";
-							std::cout << "tttttttttt -- 2.6\n";
-							std::string resp;
-							std::cout << "tttttttttt -- 2.7\n";
-							resp += buffer;
-							// std::cout << resp;
-							std::cout << "tttttttttt -- 2.8\n";
-							std::cout << "serveri grat soketum send = " << \
-							send((serverlist[j].getClientSocket()[serverlist[j].getClientSocket().size() - 1]), \
-							resp.c_str(), resp.size(), 0) << std::endl;
-							std::cout << "tttttttttt -- 2.9\n";
-							close(file);
-							std::cout << "tttttttttt -- 2.10\n";
-						}
+						read(file, buffer, BUFFER_SIZE);
+						std::string resp;
+						resp += buffer;
+						// std::cout << resp;
+						std::cout << "serveri grat soketum send = " << \
+						send(serverlist[j].getClientSocket()[i], resp.c_str(), resp.size(), 0) << std::endl;
+						close(file);
 					}
-					std::cout << "tttttttttt -- 2.11\n";
+					//uxarkum u jnjuma fd
+					close(serverlist[j].getClientSocket()[i]);
+					serverlist[j].getClientSocket().erase(serverlist[j].getClientSocket().begin() + i);
 				}
-				std::cout << "tttttttttt -- 2.12\n";
 			}
 			
 		}
 		//stugum em serveri fd kardalu hamar
-		std::cout << "tttttttttt -- 3\n";
 		for (size_t j = 0; j < serverlist.size(); j++)
 		{
 			for (size_t i = 0; i < serverlist[j].getMainServer().size(); i++)
 			{
 				// std::cout << "ERROR 1 \n";
+				std::cout << "j == " << j << " i == " << i << " diskrip = " << serverlist[j].getMainServer()[i].getServerFD() << std::endl;
 				std::cout << "grelu hamar servri port hamar -> " << serverlist[j].getPort()[i] << \
 				" == " << FD_ISSET(serverlist[j].getMainServer()[i].getServerFD(), &rfds) << std::endl;
 				if (FD_ISSET(serverlist[j].getMainServer()[i].getServerFD(), &rfds))
@@ -143,40 +98,39 @@ bool CreatMainServers::startServer(std::vector<Server> & serverlist)
 					if ((serverlist[j].getClientSocket()[serverlist[j].getClientSocket().size() - 1]) < 0)
 					{
 						serverlist[j].getClientSocket().erase(serverlist[j].getClientSocket().begin() + serverlist[j].getClientSocket().size() - 1);
-						// std::cout << "ERROR Client 3\n";
+						std::cout << "ERROR Client 444\n";
 					}
 					else{
 						bzero(buffer,BUFFER_SIZE);
+						std::cout << "aaaaaa____1\n";
+						std::cout << "diskrip blok = " << serverlist[j].getClientSocket()[serverlist[j].getClientSocket().size() - 1] << std::endl;
 						int aaa = recv(serverlist[j].getClientSocket()[serverlist[j].getClientSocket().size() - 1], buffer, BUFFER_SIZE,0);
+						std::cout << "aaaaaa____2\n";
 						std::cout << "serveri kardatatn soketic = " << aaa << std::endl; 
+						std::cout << "aaaaaa____3\n";
 						std::cout << buffer << std::endl;
-						int file = open("index.html", O_RDONLY);
-						bzero(buffer,BUFFER_SIZE);
-						if (file >= 0)
-						{
-							// bzero(buffer,BUFFER_SIZE);
-							read(file, buffer, BUFFER_SIZE);
-							// (void)aaa;
-							std::string resp;
-							resp += buffer;
-							// std::cout << resp;
-							std::cout << "serveri grat soketum send = " << \
-							send((serverlist[j].getClientSocket()[serverlist[j].getClientSocket().size() - 1]), \
-							resp.c_str(), resp.size(), 0) << std::endl;
-							close(file);
-						}
 
 
-						// std::cout << "erroe listen ------------------------------------  " << \
-						// listen(serverlist[j].getClientSocket()[serverlist[j].getClientSocket().size() - 1],1) << std::endl;
-						//uxarkum u jnjuma fd
-						close(serverlist[j].getClientSocket()[serverlist[j].getClientSocket().size() - 1]);
-						serverlist[j].getClientSocket().erase(serverlist[j].getClientSocket().begin() + serverlist[j].getClientSocket().size() - 1);
+						// int file = open("index.html", O_RDONLY);
+						// bzero(buffer,BUFFER_SIZE);
+						// if (file >= 0)
+						// {
+						// 	read(file, buffer, BUFFER_SIZE);
+						// 	std::string resp;
+						// 	resp += buffer;
+						// 	// std::cout << resp;
+						// 	std::cout << "serveri grat soketum send = " << \
+						// 	send(serverlist[j].getClientSocket()[i], resp.c_str(), resp.size(), 0) << std::endl;
+						// 	close(file);
+						// }
+						// //uxarkum u jnjuma fd
+						// close(serverlist[j].getClientSocket()[i]);
+						// serverlist[j].getClientSocket().erase(serverlist[j].getClientSocket().begin() + i);
+
 					}
 				}
 			}
 		}
-		std::cout << "tttttttttt -- 4\n";
 		std::cin >> q;
 		std::cout << "continue...\n";
 	}
