@@ -15,8 +15,9 @@ bool CreatMainServers::startServer(std::vector<Server> & serverlist)
 	fd_set	rfds;
 	fd_set	wfds;
 	fd_set	efds;
-	std::string q;
-	while (q != "#")
+	// std::string q;
+	// while (q != "#")
+	while(1)
 	{
 		FD_ZERO(&rfds);
 		FD_ZERO(&wfds);
@@ -27,8 +28,8 @@ bool CreatMainServers::startServer(std::vector<Server> & serverlist)
 		{
 			for (size_t i = 0; i < serverlist[j].getMainServer().size(); i++)
 			{
-				if (j == 0 && i == 0)
-					continue;
+				// if (j == 0 && i == 0)
+				// 	continue;
 				if (serverlist[j].getMainServer()[i].getServerFD() > a)
 					a = serverlist[j].getMainServer()[i].getServerFD();
 				FD_SET(serverlist[j].getMainServer()[i].getServerFD(), &rfds);
@@ -119,7 +120,7 @@ bool CreatMainServers::startServer(std::vector<Server> & serverlist)
 						// 	std::string resp;
 						// 	resp += buffer;
 						// 	// std::cout << resp;
-						// 	std::cout << "serveri grat soketum send = " << \
+						// 	std::cout << "serveri grat soketum send = " << 
 						// 	send(serverlist[j].getClientSocket()[i], resp.c_str(), resp.size(), 0) << std::endl;
 						// 	close(file);
 						// }
@@ -131,7 +132,7 @@ bool CreatMainServers::startServer(std::vector<Server> & serverlist)
 				}
 			}
 		}
-		std::cin >> q;
+		// std::cin >> q;
 		std::cout << "continue...\n";
 	}
 	return true;

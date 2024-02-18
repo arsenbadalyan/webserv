@@ -5,6 +5,8 @@ LisenStruc::LisenStruc(size_t port)
     this->_serverAddress.sin_port = htons(port);
     this->_serverAddress.sin_family = AF_INET;
     this->_serverAddress.sin_addr.s_addr = htons(INADDR_ANY);
+    // this->_serverAddress.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    // this->_serverAddress.sin_addr.s_addr = htons(0x7f000001);
 }
 
 LisenStruc::LisenStruc(const LisenStruc &other) :_server(other._server) , _serverAddress(other._serverAddress)
