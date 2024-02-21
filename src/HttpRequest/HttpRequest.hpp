@@ -4,10 +4,16 @@
 #include <sys/socket.h>
 #include <sstream>
 #include "HttpHeaders.hpp"
+#include "Util.hpp"
+#include "RootConfigs.hpp"
 
 #define BUFFER_SIZE 1024
 #define TERMINATION_BUFFER "\r\n\r\n"
-#define SUPPORTED_PROTOCOL "HTTP/1.1"
+#define SUPPORTED_PROTOCOL ""
+
+#define ERR_INVALID_REQUEST "request startline is invalid"
+#define ERR_NOT_SUPPORTED_HTTP_METHOD "http method is not supported"
+#define ERR_NOT_SUPPORTED_HTTP_PROTOCOL "http protocol is not supported"
 
 class HttpRequest {
 
