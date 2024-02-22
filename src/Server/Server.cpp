@@ -124,3 +124,15 @@ Server &Server::setClientSocket(const std::vector<int> &fd)
 	this->_clientSocket = fd;
 	return (*this);
 }
+
+std::vector<int> &Server::getServerSocket()
+{
+    return (this->_serverSocket);
+}
+
+Server &Server::setServerSocket(const std::vector<int> &fd)
+{
+	this->_serverSocket = fd;
+	return (*this);
+}
+

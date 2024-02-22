@@ -19,6 +19,7 @@ private:
 	std::vector<Config> 	_locations;
 	std::vector<LisenStruc>	_mainServer;
 	std::vector<int>		_clientSocket;
+	std::vector<int>		_serverSocket;
 public:
 	Server();
 	Server(const Server& other);
@@ -51,6 +52,9 @@ public:
 
 	std::vector<int>& getClientSocket();
 	Server& setClientSocket(const std::vector<int>& fd);
+
+	std::vector<int>& getServerSocket();
+	Server& setServerSocket(const std::vector<int>& fd);
 
 };
 
