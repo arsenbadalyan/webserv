@@ -1,7 +1,7 @@
 #include "CreatMainServers.hpp"
 
 #define BUFFER_SIZE 6000
-#define COUNT_CHEACK 15
+#define COUNT_CHEACK 40
 
 bool CreatMainServers::startServer(std::vector<Server> & serverlist)
 {
@@ -17,12 +17,13 @@ bool CreatMainServers::startServer(std::vector<Server> & serverlist)
 	tv.tv_usec = 0;
 	// std::string q;
 	// while (q != "#")
+	int i = 0;
 	while(1)
 	{
 		int a = CreatMainServers::bindFD(serverlist, rfds, wfds);
 		// ---------------------------------
 		int res = select(a + 1, &rfds, &wfds, &efds, &tv );
-		// ----------------------------------
+		// ---------------------------------
 		// std::cout << "selecti tvat res = " << res << std::endl;
 		if (res >= 0)
 		{
@@ -32,6 +33,8 @@ bool CreatMainServers::startServer(std::vector<Server> & serverlist)
 		}
 		// std::cin >> q;
 		// std::cout << "continue...\n";
+		// std::cout << "   --   " << i << std::endl;
+		++i;
 	}
 	return true;
 }
@@ -118,7 +121,7 @@ int	CreatMainServers::bindFD(std::vector<Server> &serverlist, fd_set &rfds, fd_s
 	}
 	for (size_t j = 0; j < serverlist.size(); j++)
 	{
-		for (size_t i = 0; i < serverlist[j].getWritSocket().size() && i * j <= sokwrit; i++)
+		for (size_t i = 0; i < serverlist[j].getWritSocket().size() && static_cast<int>(i * j) <= sokwrit; i++)
 		{
 			// std::cout << "Client write  ds = " << serverlist[j].getClientSocket()[i] << std::endl;
 			if (serverlist[j].getWritSocket()[i] > a)
@@ -129,7 +132,7 @@ int	CreatMainServers::bindFD(std::vector<Server> &serverlist, fd_set &rfds, fd_s
 	}
 	for (size_t j = 0; j < serverlist.size(); j++)
 	{
-		for (size_t i = 0; i < serverlist[j].getReadSocket().size() && i * j <= sokread; i++)
+		for (size_t i = 0; i < serverlist[j].getReadSocket().size() && static_cast<int>(i * j) <= sokread; i++)
 		{
 			// std::cout << "client read ds = " << serverlist[j].getServerSocket()[i] << std::endl;
 			if ((serverlist[j].getReadSocket()[i])._fd > a)
