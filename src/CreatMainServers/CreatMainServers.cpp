@@ -1,7 +1,7 @@
 #include "CreatMainServers.hpp"
 
 #define BUFFER_SIZE 6000
-#define COUNT_CHEACK 40
+#define COUNT_CHEACK 150
 
 bool CreatMainServers::startServer(std::vector<Server> & serverlist)
 {
@@ -22,7 +22,8 @@ bool CreatMainServers::startServer(std::vector<Server> & serverlist)
 	{
 		int a = CreatMainServers::bindFD(serverlist, rfds, wfds);
 		// ---------------------------------
-		int res = select(a + 1, &rfds, &wfds, &efds, &tv );
+		(void)tv;
+		int res = select(a + 1, &rfds, &wfds, &efds,0 );
 		// ---------------------------------
 		// std::cout << "selecti tvat res = " << res << std::endl;
 		if (res >= 0)
