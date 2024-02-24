@@ -9,7 +9,18 @@
 
 class Server 
 {
+public:
+
+	struct ReadSoket
+	{
+		int		_fd;
+		size_t	_flag;
+		ReadSoket(int fd, size_t flag) :\
+		 _fd(fd), _flag(flag){}
+	};
+
 private:
+
 	Config					_serverConfig;
 	std::string				_serverName;
 	std::string				_host;
@@ -18,8 +29,8 @@ private:
 	bool					_port_flag;
 	std::vector<Config> 	_locations;
 	std::vector<LisenStruc>	_mainServer;
-	std::vector<int>		_clientSocket;
-	std::vector<int>		_serverSocket;
+	std::vector<int>		_writSocket;
+	std::vector<ReadSoket>	_readSocket;
 public:
 	Server();
 	Server(const Server& other);
@@ -50,11 +61,11 @@ public:
 	std::vector<LisenStruc>& getMainServer();
 	Server& setMainServer(const std::vector<LisenStruc>& fd);
 
-	std::vector<int>& getClientSocket();
-	Server& setClientSocket(const std::vector<int>& fd);
+	std::vector<int>& getWritSocket();
+	Server& setWritSocket(const std::vector<int>& fd);
 
-	std::vector<int>& getServerSocket();
-	Server& setServerSocket(const std::vector<int>& fd);
+	std::vector<ReadSoket>& getReadSocket();
+	Server& setReadSocket(const std::vector<ReadSoket>& fd);
 
 };
 

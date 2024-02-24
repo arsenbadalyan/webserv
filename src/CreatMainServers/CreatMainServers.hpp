@@ -21,7 +21,11 @@ public:
 
 private:
    CreatMainServers(){}
-   static bool starting(std::vector<Server> & serverlist);
+   static bool	starting(std::vector<Server> & serverlist);
+   static int	bindFD(std::vector<Server> & serverlist, fd_set &rfds, fd_set &wfds);
+   static void	conectClient(std::vector<Server> & serverlist, fd_set &rfds);
+   static void	readClient(std::vector<Server> & serverlist, fd_set &rfds);
+   static void	writeClient(std::vector<Server> & serverlist, fd_set &wfds);
 };
 
 

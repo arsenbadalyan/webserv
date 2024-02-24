@@ -114,25 +114,25 @@ Server &Server::setMainServer(const std::vector<LisenStruc> &fd)
 	return (*this);
 }
 
-std::vector<int> &Server::getClientSocket()
+std::vector<int> &Server::getWritSocket()
 {
-    return (this->_clientSocket);
+    return (this->_writSocket);
 }
 
-Server &Server::setClientSocket(const std::vector<int> &fd)
+Server &Server::setWritSocket(const std::vector<int> &fd)
 {
-	this->_clientSocket = fd;
+	this->_writSocket = fd;
 	return (*this);
 }
 
-std::vector<int> &Server::getServerSocket()
+std::vector<Server::ReadSoket> &Server::getReadSocket()
 {
-    return (this->_serverSocket);
+    return (this->_readSocket);
 }
 
-Server &Server::setServerSocket(const std::vector<int> &fd)
+Server &Server::setReadSocket(const std::vector<ReadSoket> &fd)
 {
-	this->_serverSocket = fd;
+	this->_readSocket = fd;
 	return (*this);
 }
 

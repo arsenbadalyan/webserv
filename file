@@ -11,6 +11,7 @@ server
 	return 301 ;
 	index file;
 	cgi on;
+	
 	location blabla 
 	{
 		return 301;
@@ -36,7 +37,7 @@ server
 	listen 9091;
 	listen 1212;
 	listen 1212;
-	server_name aaaaaa ;
+	server_name aaaaaa;
 	root temp;
 	allow_methods GET;
 	client_max_body_size 17179869183G ;
