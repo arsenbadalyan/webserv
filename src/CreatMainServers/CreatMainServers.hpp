@@ -26,6 +26,7 @@ private:
    static void	conectClient(std::vector<Server> & serverlist, fd_set &rfds);
    static void	readClient(std::vector<Server> & serverlist, fd_set &rfds);
    static void	writeClient(std::vector<Server> & serverlist, fd_set &wfds);
+   static void	algcat(std::vector<Server> & serverlist, int max, int &sokwrit ,int &sokread);
 };
 
 
