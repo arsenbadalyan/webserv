@@ -15,7 +15,7 @@ const std::string* HttpHeaders::getHeader(std::string & key) const {
 }
 
 HttpHeaders& HttpHeaders::setHeader(std::string & key, std::string & value) {
-	// this->headerValidator(key, value);
+	this->headerValidator(key, value);
 	this->headers[key] = value;
 
 	return (*this);
@@ -37,4 +37,10 @@ HttpHeaders& HttpHeaders::setHeader(std::string & line) {
 	}
 
 	return (this->setHeader(key, value));
+}
+
+bool HttpHeaders::headerValidator(std::string & key, std::string & value) const {
+
+	if ()
+
 }

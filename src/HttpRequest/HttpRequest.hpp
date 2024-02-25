@@ -3,6 +3,7 @@
 
 #include <sys/socket.h>
 #include <sstream>
+#include <istream>
 #include "HttpHeaders.hpp"
 #include "Util.hpp"
 #include "RootConfigs.hpp"
@@ -22,7 +23,8 @@ class HttpRequest {
 		~HttpRequest();
 
 	public:
-		std::string readSocket(int fd) const;
+		std::string parseRequest(int fd);
+		void parseBuffer(std::string &);
 		void requestStartLineParser(std::string &);
 
 	private:

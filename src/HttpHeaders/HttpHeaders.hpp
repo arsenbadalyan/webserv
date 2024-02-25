@@ -3,10 +3,10 @@
 
 #include <iostream>
 #include <map>
-
-#define INVALID_HEADER_KEY_CHARS "()<>@,;:\\\"/[]?={} "
+#include "RootConfigs.hpp"
 
 typedef std::map<std::string, std::string> HeadersMap;
+
 struct HttpHeaders {
 
 	public:
@@ -22,8 +22,8 @@ struct HttpHeaders {
 		HttpHeaders(const HttpHeaders &);
 		void operator=(const HttpHeaders &);
 
-	// private:
-	// 	bool headerValidator(std::string& key, std::string& value) const;
+	private:
+		bool headerValidator(std::string& key, std::string& value) const;
 
 	private:
 		HeadersMap headers;

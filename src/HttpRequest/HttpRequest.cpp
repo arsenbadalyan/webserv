@@ -7,17 +7,15 @@ HttpRequest::~HttpRequest() {}
 HttpRequest& HttpRequest::operator=(const HttpRequest &) { return (*this); }
 
 HttpRequest::HttpRequest(int fd) {
-	std::string readRes = this->readSocket(fd);
+	std::string readRes = this->parseRequest(fd);
 
-	std::cout << "|" << readRes << "|" << std::endl;
-	this->requestStartLineParser(readRes);
-	std::cout << "|" << readRes << "|" << std::endl;
 }
 
-std::string HttpRequest::readSocket(int fd) const {
+std::string HttpRequest::parseRequest(int fd) {
 	ssize_t readRes;
-	std::string resultStr = "";
+	std::string resultStr;
 	char buffer[BUFFER_SIZE];
+	bool isAlreadyReadStartLine = false;
 
 	while (true) {
 		bzero(&buffer, strlen(buffer));
@@ -27,12 +25,27 @@ std::string HttpRequest::readSocket(int fd) const {
 			break ;
 
 		resultStr += std::string(buffer);
+		if (!isAlreadyReadStartLine) {
+			this->requestStartLineParser(resultStr);
+			isAlreadyReadStartLine = true;
+		}
 
-		if (strnstr(buffer, TERMINATION_BUFFER, strlen(buffer)))
+		if (strnstr(buffer, TERMINATION_BUFFER, strlen(buffer))) {
+			this->parseBuffer(resultStr);
 			break ;
+		}
 	}
 
 	return (resultStr);
+}
+
+void HttpRequest::parseBuffer(std::string & buffer) {
+	std::stringstream is(buffer);
+	std::string readlineOutput;
+
+	while (std::getline(is, readlineOutput)) {
+		std::cout << readlineOutput << std::endl;
+	}
 }
 
 void HttpRequest::requestStartLineParser(std::string & request) {
@@ -45,7 +58,6 @@ void HttpRequest::requestStartLineParser(std::string & request) {
 	std::string *splittedFirstLine = splittedFirstLinePair.first;
 	size_t splittedFirstLineSize = splittedFirstLinePair.second;
 
-
 	if (splittedFirstLineSize < 2) {
 		throw std::runtime_error(ERR_INVALID_REQUEST);
 	}
@@ -57,11 +69,11 @@ void HttpRequest::requestStartLineParser(std::string & request) {
 	// TODO: url parser
 	// if (splittedFirstLine.second[1])
 
-	if (splittedFirstLineSize >= 3
-		&& RootConfigs::SupportedHttpProtocols.find(Util::toLower(splittedFirstLine[2])) == RootConfigs::SupportedHttpProtocols.end()) {
-			std::cout << (RootConfigs::SupportedHttpProtocols.find(Util::toLower(splittedFirstLine[2])) == RootConfigs::SupportedHttpProtocols.end()) << std::endl;
-			throw std::runtime_error(std::string(ERR_NOT_SUPPORTED_HTTP_PROTOCOL) + Util::toLower(splittedFirstLine[2]));
-		}
+	// if (splittedFirstLineSize >= 3
+	// 	&& RootConfigs::SupportedHttpProtocols.find(Util::toLower(splittedFirstLine[2])) == RootConfigs::SupportedHttpProtocols.end()) {
+	// 		std::cout << (RootConfigs::SupportedHttpProtocols.find(Util::toLower(splittedFirstLine[2])) == RootConfigs::SupportedHttpProtocols.end()) << std::endl;
+	// 		throw std::runtime_error(std::string(ERR_NOT_SUPPORTED_HTTP_PROTOCOL) + Util::toLower(splittedFirstLine[2]));
+	// 	}
 
 	request.erase(0, firstLine.length() + 1);
 }
