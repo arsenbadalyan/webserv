@@ -1,6 +1,9 @@
 #ifndef __REQUEST_POOL__
 #define __REQUEST_POOL__
 
+#include <iostream>
+#include "HttpRequest.hpp"
+
 class RequestPool {
 
     public:

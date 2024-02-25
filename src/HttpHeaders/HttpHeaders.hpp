@@ -3,6 +3,9 @@
 
 #include <iostream>
 #include <map>
+#include <cstring>
+#include "ExceptionHandler.hpp"
+#include "Util.hpp"
 #include "RootConfigs.hpp"
 
 typedef std::map<std::string, std::string> HeadersMap;
@@ -23,7 +26,7 @@ struct HttpHeaders {
 		void operator=(const HttpHeaders &);
 
 	private:
-		bool headerValidator(std::string& key, std::string& value) const;
+		void headerValidator(std::string& key, std::string& value) const;
 
 	private:
 		HeadersMap headers;

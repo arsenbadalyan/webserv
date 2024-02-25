@@ -8,11 +8,17 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <fstream>
+#include <algorithm>
 
-#define PORT 1111
+#define PORT 4444
 
 int main() {
 
+    std::string test = "test";
+    std::cout << *(std::remove(test.begin(), test.end(), ' ') + 1) << std::endl;
+    std::cout << *(test.erase(std::remove(test.begin(), test.end(), ' '), test.end())) << std::endl;
+
+    return (0);
     int socketFd = socket(AF_INET, SOCK_STREAM, 0);
     // HttpRequest request = new HttpRequest()
 

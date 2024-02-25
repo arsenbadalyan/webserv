@@ -7,4 +7,6 @@ RequestPool& RequestPool::operator=(const RequestPool &) { return (*this); }
 
 void RequestPool::newRequest(int clientSocket) {
     (void)clientSocket;
+
+    
 }

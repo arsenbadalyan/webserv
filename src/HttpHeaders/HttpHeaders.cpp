@@ -6,7 +6,7 @@ HttpHeaders::~HttpHeaders() { this->headers.clear(); }
 void HttpHeaders::operator=(const HttpHeaders &) {}
 
 const std::string* HttpHeaders::getHeader(std::string & key) const {
-	HeadersMap::const_iterator foundedKey = this->headers.find(key);
+	HeadersMap::const_iterator foundedKey = this->headers.find(Util::toLower(key));
 
 	if (foundedKey == this->headers.end())
 		return (NULL);
@@ -16,6 +16,9 @@ const std::string* HttpHeaders::getHeader(std::string & key) const {
 
 HttpHeaders& HttpHeaders::setHeader(std::string & key, std::string & value) {
 	this->headerValidator(key, value);
+	if (this->headers.find(Util::toLower(key)) != this->headers.end()) {
+		return (*this);
+	}
 	this->headers[key] = value;
 
 	return (*this);
@@ -29,6 +32,9 @@ HttpHeaders& HttpHeaders::setHeader(std::string & line) {
 	separatorPos = line.find(':');
 
 	if (separatorPos == std::string::npos) {
+		if (strpbrk(line.c_str(), RootConfigs::Whitespaces.c_str())) {
+			ExceptionHandler::WrongHeader();
+		}
 		key = line;
 		value = "";
 	} else {
@@ -39,8 +45,10 @@ HttpHeaders& HttpHeaders::setHeader(std::string & line) {
 	return (this->setHeader(key, value));
 }
 
-bool HttpHeaders::headerValidator(std::string & key, std::string & value) const {
+void HttpHeaders::headerValidator(std::string & key, std::string & value) const {
 
-	if ()
+	if (strpbrk(key.c_str(), RootConfigs::InvalidHeaderKeys.c_str()))
+		ExceptionHandler::InvalidHeaderKey();
 
+	(void)value;
 }

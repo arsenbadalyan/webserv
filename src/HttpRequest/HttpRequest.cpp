@@ -9,6 +9,10 @@ HttpRequest& HttpRequest::operator=(const HttpRequest &) { return (*this); }
 HttpRequest::HttpRequest(int fd) {
 	std::string readRes = this->parseRequest(fd);
 
+	
+
+	// HeadersMap::iterator it = this->headers
+	// while ()
 }
 
 std::string HttpRequest::parseRequest(int fd) {
@@ -44,7 +48,7 @@ void HttpRequest::parseBuffer(std::string & buffer) {
 	std::string readlineOutput;
 
 	while (std::getline(is, readlineOutput)) {
-		std::cout << readlineOutput << std::endl;
+		headers.setHeader(readlineOutput);
 	}
 }
 
