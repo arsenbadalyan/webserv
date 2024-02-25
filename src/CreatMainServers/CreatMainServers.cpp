@@ -1,6 +1,6 @@
 #include "CreatMainServers.hpp"
 
-#define BUFFER_SIZE 6000
+#define BUFFER_SIZE 10000
 #define COUNT_CHEACK 150
 
 bool CreatMainServers::startServer(std::vector<Server> & serverlist)
@@ -167,7 +167,6 @@ void CreatMainServers::readClient(std::vector<Server> &serverlist, fd_set &rfds)
 				}
 			}
 		}
-		
 	}
 }
 

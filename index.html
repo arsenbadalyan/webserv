@@ -1,14 +1,44 @@
 HTTP/1.1 200 OK
 Content-Type: text/HTML; charset=utf-8
-Content-Length: 156
+Content-Length: 1183
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <title>Den</title>
+<script>
+    // Function to handle form submission
+    function submitForm(event) {
+        event.preventDefault(); // Prevent the default form submission
+        
+        // Get form data
+        var formData = new FormData(document.getElementById("myForm"));
+        
+        // Make an AJAX request
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/", true);
+        xhr.onload = function () {
+            // Request finished. You can handle the response here.
+            if (xhr.status >= 200 && xhr.status < 300) {
+                // Request succeeded
+                console.log(xhr.responseText);
+            } else {
+                // Request failed
+                console.error(xhr.statusText);
+            }
+        };
+        xhr.onerror = function () {
+            // Request error
+            console.error("Request failed.");
+        };
+        xhr.send(formData); // Send form data
+    }
+</script>
 </head>
 <body>
-	<h1 style="color: green;">Davs brats senc a ashxatum!</h1>
+	<form id="myForm" enctype="multipart/form-data" onsubmit="submitForm(event)">
+		<input type="file" />
+		<input type="submit" value="send"/>
+	</form>
 </body>
 </html>
-
