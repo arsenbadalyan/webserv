@@ -28,11 +28,11 @@ HttpHeaders& HttpHeaders::setHeader(std::string & line) {
 	std::string key, value;
 	size_t separatorPos;
 
-	line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
+	Util::trim(line, RootConfigs::Whitespaces);
 	separatorPos = line.find(':');
 
 	if (separatorPos == std::string::npos) {
-		if (strpbrk(line.c_str(), RootConfigs::Whitespaces.c_str())) {
+		if (line.find_first_of(RootConfigs::Whitespaces) != std::string::npos) {
 			ExceptionHandler::WrongHeader();
 		}
 		key = line;
@@ -47,8 +47,9 @@ HttpHeaders& HttpHeaders::setHeader(std::string & line) {
 
 void HttpHeaders::headerValidator(std::string & key, std::string & value) const {
 
-	if (strpbrk(key.c_str(), RootConfigs::InvalidHeaderKeys.c_str()))
+	if (key.find_first_of(RootConfigs::InvalidHeaderKeys) != std::string::npos) {
 		ExceptionHandler::InvalidHeaderKey();
+	}
 
 	(void)value;
 }

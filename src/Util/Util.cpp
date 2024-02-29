@@ -33,3 +33,15 @@ std::string Util::toLower(const std::string& str) {
 
 	return (lowercasedStr);
 }
+
+std::string& Util::trim(std::string& str, const std::string& trimmerStr) {
+	size_t startPos = str.find_first_not_of(trimmerStr);
+	size_t endPos = str.find_last_not_of(trimmerStr);
+
+	if (startPos != std::string::npos && endPos != std::string::npos) {
+		str = str.substr(startPos, endPos - startPos + 1);
+	} else {
+		str.clear();
+	}
+	return (str);
+}
