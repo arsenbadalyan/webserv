@@ -23,9 +23,10 @@ class HttpRequest {
 		~HttpRequest();
 
 	public:
-		std::string parseRequest(int fd);
-		void parseBuffer(std::string &);
+		std::string requestInitialParsing(int fd);
+		void parseHeadersBuffer(std::string &);
 		void requestStartLineParser(std::string &);
+		void configureRequestByHeaders(void);
 
 	private:
 		HttpRequest(void);
@@ -37,6 +38,9 @@ class HttpRequest {
 		std::string method;
 		std::string endpoint;
 		std::string body;
+		bool isChunkedRequest;
+		std::string boundary;
+		std::string contentType;
 
 };
 

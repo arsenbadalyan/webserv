@@ -17,7 +17,7 @@ struct HttpHeaders {
 		~HttpHeaders();
 
 	public:
-		const std::string* getHeader(std::string& key) const;
+		const std::string* getHeader(const std::string key) const;
 		HttpHeaders& setHeader(std::string& key, std::string& value);
 		HttpHeaders& setHeader(std::string& line);
 

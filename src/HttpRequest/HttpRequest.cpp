@@ -6,13 +6,24 @@ HttpRequest::HttpRequest(const HttpRequest &) {}
 HttpRequest::~HttpRequest() {}
 HttpRequest& HttpRequest::operator=(const HttpRequest &) { return (*this); }
 
-HttpRequest::HttpRequest(int fd) {
-	std::string readRes = this->parseRequest(fd);
+HttpRequest::HttpRequest(int fd) :
+	isChunkedRequest(false),
+	boundary("")
+{
+	std::string readRes = this->requestInitialParsing(fd);
 
-	
+	this->configureRequestByHeaders();
+
+	std::cout << "<<<<<<<<<<<< REQUEST RESULTS" << std::endl;
+	std::cout << "method: " << this->method << std::endl;
+	std::cout << "endpoint: " << this->endpoint << std::endl;
+	std::cout << "isChunked: " << this->isChunkedRequest << std::endl;
+	std::cout << "boundary: " << this->boundary << std::endl;
+	std::cout << "content type: " << this->contentType << std::endl;
+	std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
 }
 
-std::string HttpRequest::parseRequest(int fd) {
+std::string HttpRequest::requestInitialParsing(int fd) {
 	ssize_t readRes;
 	std::string resultStr;
 	char buffer[BUFFER_SIZE];
@@ -32,7 +43,7 @@ std::string HttpRequest::parseRequest(int fd) {
 		}
 
 		if (strnstr(buffer, TERMINATION_BUFFER, strlen(buffer))) {
-			this->parseBuffer(resultStr);
+			this->parseHeadersBuffer(resultStr);
 			break ;
 		}
 	}
@@ -40,12 +51,11 @@ std::string HttpRequest::parseRequest(int fd) {
 	return (resultStr);
 }
 
-void HttpRequest::parseBuffer(std::string & buffer) {
+void HttpRequest::parseHeadersBuffer(std::string & buffer) {
 	std::stringstream is(buffer);
 	std::string readlineOutput;
 
 	while (std::getline(is, readlineOutput)) {
-		std::cout << readlineOutput << std::endl;
 		headers.setHeader(readlineOutput);
 	}
 }
@@ -72,13 +82,47 @@ void HttpRequest::requestStartLineParser(std::string & request) {
 		throw std::runtime_error(ERR_NOT_SUPPORTED_HTTP_METHOD);
 	}
 
-	// TODO: url parser
+	// TODO: url parser if needed
 	// if (splittedFirstLine.second[1])
 
 	if (splittedFirstLineSize >= 3
 		&& RootConfigs::SupportedHttpProtocols.find(Util::toLower(splittedFirstLine[2])) == RootConfigs::SupportedHttpProtocols.end()) {
 			throw std::runtime_error(std::string(ERR_NOT_SUPPORTED_HTTP_PROTOCOL) + Util::toLower(splittedFirstLine[2]));
 		}
+	
+	this->method = splittedFirstLine[0];
+	this->endpoint = splittedFirstLine[1];
 
 	request.erase(0, lineSize + 1);
+}
+
+void HttpRequest::configureRequestByHeaders(void) {
+	
+	const std::string* contentType = this->headers.getHeader("content-type");
+	const std::string* transferEncoding = this->headers.getHeader("transfer-encoding");
+
+	if (contentType) {
+		SplitPair splitRes = Util::split(*contentType, ';');
+
+		std::cout << "RES: " << splitRes.second << std::endl;
+
+		if (splitRes.second >= 1) {
+			this->contentType = splitRes.first[0];
+		}
+
+		if (splitRes.second >= 2
+			&& splitRes.first[0].find("multipart/form-data") != std::string::npos
+			&& splitRes.first[1].find("boundary=") != std::string::npos) {
+				SplitPair boundary = Util::split(Util::trim(splitRes.first[2], RootConfigs::Whitespaces), '=');
+
+				if (boundary.second == 2) {
+					this->isChunkedRequest = true;
+					this->boundary = boundary.first[1];
+				}
+		}
+	}
+
+	if (!this->isChunkedRequest && transferEncoding && *transferEncoding == "chunked") {
+		this->isChunkedRequest = true; 
+	}
 }

@@ -13,7 +13,6 @@
 #define PORT 2227
 
 int main() {
-
     int socketFd = socket(AF_INET, SOCK_STREAM, 0);
     // HttpRequest request = new HttpRequest()
 

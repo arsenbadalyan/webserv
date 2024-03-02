@@ -5,7 +5,7 @@ HttpHeaders::HttpHeaders(const HttpHeaders &) {}
 HttpHeaders::~HttpHeaders() { this->headers.clear(); }
 void HttpHeaders::operator=(const HttpHeaders &) {}
 
-const std::string* HttpHeaders::getHeader(std::string & key) const {
+const std::string* HttpHeaders::getHeader(const std::string key) const {
 	HeadersMap::const_iterator foundedKey = this->headers.find(Util::toLower(key));
 
 	if (foundedKey == this->headers.end())
