@@ -7,7 +7,7 @@ HttpRequest::~HttpRequest() {}
 HttpRequest& HttpRequest::operator=(const HttpRequest &) { return (*this); }
 
 HttpRequest::HttpRequest(int fd) :
-	isChunkedRequest(false),
+	chunking(HttpRequest::chunk_type::no_chunks),
 	boundary("")
 {
 	std::string readRes = this->requestInitialParsing(fd);
@@ -17,7 +17,7 @@ HttpRequest::HttpRequest(int fd) :
 	std::cout << "<<<<<<<<<<<< REQUEST RESULTS" << std::endl;
 	std::cout << "method: " << this->method << std::endl;
 	std::cout << "endpoint: " << this->endpoint << std::endl;
-	std::cout << "isChunked: " << this->isChunkedRequest << std::endl;
+	std::cout << "isChunked: " << this->chunking << std::endl;
 	std::cout << "boundary: " << this->boundary << std::endl;
 	std::cout << "content type: " << this->contentType << std::endl;
 	std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
@@ -104,8 +104,6 @@ void HttpRequest::configureRequestByHeaders(void) {
 	if (contentType) {
 		SplitPair splitRes = Util::split(*contentType, ';');
 
-		std::cout << "RES: " << splitRes.second << std::endl;
-
 		if (splitRes.second >= 1) {
 			this->contentType = splitRes.first[0];
 		}
@@ -116,13 +114,15 @@ void HttpRequest::configureRequestByHeaders(void) {
 				SplitPair boundary = Util::split(Util::trim(splitRes.first[2], RootConfigs::Whitespaces), '=');
 
 				if (boundary.second == 2) {
-					this->isChunkedRequest = true;
+					this->chunking = HttpRequest::chunk_type::dataForm_chunk;
 					this->boundary = boundary.first[1];
 				}
 		}
 	}
 
-	if (!this->isChunkedRequest && transferEncoding && *transferEncoding == "chunked") {
-		this->isChunkedRequest = true; 
+	if (this->chunking == HttpRequest::chunk_type::no_chunks
+		&& transferEncoding
+		&& *transferEncoding == "chunked") {
+		this->chunking = HttpRequest::chunk_type::encoding_chunk; 
 	}
 }

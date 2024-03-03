@@ -53,3 +53,16 @@ void HttpHeaders::headerValidator(std::string & key, std::string & value) const 
 
 	(void)value;
 }
+
+std::string HttpHeaders::toString(void) {
+	HeadersMap::iterator currentIt = this->headers.begin();
+	HeadersMap::const_iterator endIt = this->headers.end();
+	std::string result = "";
+
+	while (currentIt != endIt) {
+		result += currentIt->first + ": " + currentIt->second;
+		currentIt++;
+	}
+
+	return (result);
+}

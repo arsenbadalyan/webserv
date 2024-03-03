@@ -27,6 +27,7 @@ struct HttpHeaders {
 
 	private:
 		void headerValidator(std::string& key, std::string& value) const;
+		std::string toString(void);
 
 	private:
 		HeadersMap headers;

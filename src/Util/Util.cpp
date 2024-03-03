@@ -45,3 +45,13 @@ std::string& Util::trim(std::string& str, const std::string& trimmerStr) {
 	}
 	return (str);
 }
+
+size_t Util::getFileSize(std::istream& is) {
+	size_t size;
+
+	is.seekg(0, std::ios::end);
+	size = is.tellg();
+	is.seekg(0, std::ios::beg);
+
+	return (size);
+}

@@ -27,6 +27,9 @@ class HttpRequest {
 		void parseHeadersBuffer(std::string &);
 		void requestStartLineParser(std::string &);
 		void configureRequestByHeaders(void);
+	
+	public:
+		enum chunk_type { no_chunks, dataForm_chunk, encoding_chunk };
 
 	private:
 		HttpRequest(void);
@@ -38,9 +41,9 @@ class HttpRequest {
 		std::string method;
 		std::string endpoint;
 		std::string body;
-		bool isChunkedRequest;
 		std::string boundary;
 		std::string contentType;
+		chunk_type chunking;
 
 };
 
