@@ -58,6 +58,12 @@ server
 	G --> 17179869183
 	//index
 	-g3 -fsanitize=address
+
+	200
+	404
+	400
+	
+
 }
 
 

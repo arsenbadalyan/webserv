@@ -1,6 +1,6 @@
 HTTP/1.1 200 OK
 Content-Type: text/HTML; charset=utf-8
-Content-Length: 1183
+Content-Length: 670
 
 <!DOCTYPE html>
 <html lang="en">
@@ -8,37 +8,28 @@ Content-Length: 1183
 <title>Den</title>
 <script>
     // Function to handle form submission
-    function submitForm(event) {
-        event.preventDefault(); // Prevent the default form submission
-        
-        // Get form data
-        var formData = new FormData(document.getElementById("myForm"));
-        
-        // Make an AJAX request
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "/", true);
-        xhr.onload = function () {
-            // Request finished. You can handle the response here.
-            if (xhr.status >= 200 && xhr.status < 300) {
-                // Request succeeded
-                console.log(xhr.responseText);
-            } else {
-                // Request failed
-                console.error(xhr.statusText);
-            }
-        };
-        xhr.onerror = function () {
-            // Request error
-            console.error("Request failed.");
-        };
-        xhr.send(formData); // Send form data
-    }
+
+	function submitForm() {
+		const formData = new FormData(document.getElementById('myForm'));
+		fetch('/', {
+			method: 'POST',
+			body: formData
+		})
+		.then(response => response.text())
+		.then(data => {
+			console.log('success:');
+		})
+		.catch(error => {
+			console.error('Error:', error);
+		});
+
+	}
 </script>
 </head>
 <body>
-	<form id="myForm" enctype="multipart/form-data" onsubmit="submitForm(event)">
-		<input type="file" />
-		<input type="submit" value="send"/>
+	<form id="myForm" method="post" enctype="multipart/form-data" onsubmit="submitForm(event)">
+		<input type="file" name="uplaoded_file" />
+		<input type="submit" value="send" name="sending"/>
 	</form>
 </body>
 </html>
