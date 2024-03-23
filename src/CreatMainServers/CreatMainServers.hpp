@@ -3,6 +3,7 @@
 
 
 #include "Server.hpp"
+#include "HttpRequest.hpp"
 #include <dirent.h>
 #include <sstream>
 #include <cstdint>

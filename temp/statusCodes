@@ -1,0 +1,7 @@
+200 ok
+301 Moved Permanently
+400 bad request
+404 not found
+405 not allowed
+413 Request Entity Too Large
+502 bad getway
