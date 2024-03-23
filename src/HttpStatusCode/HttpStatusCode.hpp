@@ -2,6 +2,7 @@
 #define __HTTP_STATUS_CODE__HPP
 
 #include <iostream>
+#include <map>
 
 struct HttpStatusCode {
 

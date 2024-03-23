@@ -16,6 +16,12 @@
 #define ERR_NOT_SUPPORTED_HTTP_METHOD "http method is not supported"
 #define ERR_NOT_SUPPORTED_HTTP_PROTOCOL "http protocol is not supported"
 
+struct chunk_type {
+	static const size_t no_chunks = 0;
+	static const size_t dataForm_chunk = 1;
+	static const size_t encoding_chunk = 2;
+};
+
 class HttpRequest {
 
 	public:
@@ -27,9 +33,8 @@ class HttpRequest {
 		void parseHeadersBuffer(std::string &);
 		void requestStartLineParser(std::string &);
 		void configureRequestByHeaders(void);
-	
-	public:
-		enum chunk_type { no_chunks, dataForm_chunk, encoding_chunk };
+		void parseMultipartDataForm(int socket);
+		void parseChunkedData(int socket);
 
 	private:
 		HttpRequest(void);
@@ -43,7 +48,7 @@ class HttpRequest {
 		std::string body;
 		std::string boundary;
 		std::string contentType;
-		chunk_type chunking;
+		size_t chunking;
 
 };
 

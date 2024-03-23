@@ -9,9 +9,10 @@ class HttpResponse {
         HttpResponse(const HttpRequest& request);
     
     private:
-        HttpResponse* configureStartLine(void);
+        HttpResponse* configureStatusLine(void);
         HttpResponse* configureHeaders(void);
         HttpResponse* configureBody(void);
+        HttpResponse* makeResponse(void);
         void send(void);
     
     private:

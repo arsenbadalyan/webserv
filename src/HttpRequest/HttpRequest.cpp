@@ -7,8 +7,8 @@ HttpRequest::~HttpRequest() {}
 HttpRequest& HttpRequest::operator=(const HttpRequest &) { return (*this); }
 
 HttpRequest::HttpRequest(int fd) :
-	chunking(HttpRequest::chunk_type::no_chunks),
-	boundary("")
+	boundary(""),
+	chunking(chunk_type::no_chunks)
 {
 	std::string readRes = this->requestInitialParsing(fd);
 
@@ -23,6 +23,34 @@ HttpRequest::HttpRequest(int fd) :
 	std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
 }
 
+void HttpRequest::parseMultipartDataForm(int socket) {
+
+	ssize_t readBytes;
+	std::string readRes = "";
+	bool hasAlreadyFoundBoundary = false;
+	char buffer[BUFFER_SIZE];
+
+	while (true) {
+		bzero(&buffer, (BUFFER_SIZE * sizeof(char)));
+		readBytes = recv(socket, buffer, BUFFER_SIZE, 0);
+
+		if (readBytes <= 0)
+			break ;
+
+		readRes += std::string(buffer);
+		if (readRes.find(this->boundary) != std::string::npos) {
+			if (hasAlreadyFoundBoundary) {
+				std::istringstream is(readRes);
+				std::string cutPart;
+				std::getline(is, cutPart);
+				std::cout << cutPart << std::endl;
+			}
+		}
+
+	}
+
+}
+
 std::string HttpRequest::requestInitialParsing(int fd) {
 	ssize_t readRes;
 	std::string resultStr;
@@ -30,7 +58,7 @@ std::string HttpRequest::requestInitialParsing(int fd) {
 	bool isAlreadyReadStartLine = false;
 
 	while (true) {
-		bzero(&buffer, strlen(buffer));
+		bzero(&buffer, (BUFFER_SIZE * sizeof(char)));
 		readRes = recv(fd, buffer, BUFFER_SIZE, 0);
 
 		if (readRes <= 0)
@@ -114,15 +142,15 @@ void HttpRequest::configureRequestByHeaders(void) {
 				SplitPair boundary = Util::split(Util::trim(splitRes.first[2], RootConfigs::Whitespaces), '=');
 
 				if (boundary.second == 2) {
-					this->chunking = HttpRequest::chunk_type::dataForm_chunk;
+					this->chunking = chunk_type::dataForm_chunk;
 					this->boundary = boundary.first[1];
 				}
 		}
 	}
 
-	if (this->chunking == HttpRequest::chunk_type::no_chunks
+	if (this->chunking == chunk_type::no_chunks
 		&& transferEncoding
 		&& *transferEncoding == "chunked") {
-		this->chunking = HttpRequest::chunk_type::encoding_chunk; 
+		this->chunking = chunk_type::encoding_chunk; 
 	}
 }

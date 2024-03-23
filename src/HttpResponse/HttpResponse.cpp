@@ -8,12 +8,14 @@ void HttpResponse::operator=(const HttpResponse&) {}
 HttpResponse::HttpResponse(const HttpRequest& request) :
 	__responseTxt("")
 {
-	this->configureStartLine()
+	this->configureStatusLine()
 		->configureHeaders()
-		->configureBody();
+		->configureBody()
+		->makeResponse();
+
 }
 
-HttpResponse* HttpResponse::configureStartLine(void) {
+HttpResponse* HttpResponse::configureStatusLine(void) {
 	return (this);
 }
 
