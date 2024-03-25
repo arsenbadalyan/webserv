@@ -1,19 +1,22 @@
 #ifndef __HTTP_REQUEST__HPP__
 #define __HTTP_REQUEST__HPP__
 
+#include <iostream>
+#include <fstream>
 #include "HttpRequest.hpp"
+#include "RootConfigs.hpp"
+#include "HttpStatusCode.hpp"
+#include "Util.hpp"
 
 class HttpResponse {
 
     public:
-        HttpResponse(const HttpRequest& request);
-    
+        static void getResponse(const HttpRequest & request, int socketFd);
+
     private:
-        HttpResponse* configureStatusLine(void);
-        HttpResponse* configureHeaders(void);
-        HttpResponse* configureBody(void);
-        HttpResponse* makeResponse(void);
-        void send(void);
+        static std::string configureStatusLine(const HttpRequest & request);
+        static std::string configureHeaders(const HttpRequest & request, std::ifstream & ifs);
+        static void sendBody(const HttpRequest & request, std::ifstream & ifs, int socketFd);
     
     private:
         HttpResponse(void);

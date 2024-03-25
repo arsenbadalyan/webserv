@@ -3,7 +3,7 @@
 
 
 #include "Server.hpp"
-#include "HttpRequest.hpp"
+#include "RequestPool.hpp"
 #include <dirent.h>
 #include <sstream>
 #include <cstdint>
@@ -25,8 +25,8 @@ private:
    static bool	starting(std::vector<Server> & serverlist);
    static int	bindFD(std::vector<Server> & serverlist, fd_set &rfds, fd_set &wfds);
    static void	conectClient(std::vector<Server> & serverlist, fd_set &rfds);
-   static void	readClient(std::vector<Server> & serverlist, fd_set &rfds);
-   static void	writeClient(std::vector<Server> & serverlist, fd_set &wfds);
+   static void	readClient(std::vector<Server> & serverlist, fd_set &rfds, RequestPool &requestPool);
+   static void	writeClient(std::vector<Server> & serverlist, fd_set &wfds, RequestPool &requestPool);
    static void	algcat(std::vector<Server> & serverlist, int max, int &sokwrit ,int &sokread);
 };
 

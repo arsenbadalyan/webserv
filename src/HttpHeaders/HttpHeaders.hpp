@@ -20,6 +20,7 @@ struct HttpHeaders {
 		const std::string* getHeader(const std::string key) const;
 		HttpHeaders& setHeader(std::string& key, std::string& value);
 		HttpHeaders& setHeader(std::string& line);
+		std::string toString(void);
 
 	private:
 		HttpHeaders(const HttpHeaders &);
@@ -27,7 +28,6 @@ struct HttpHeaders {
 
 	private:
 		void headerValidator(std::string& key, std::string& value) const;
-		std::string toString(void);
 
 	private:
 		HeadersMap headers;

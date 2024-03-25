@@ -60,7 +60,7 @@ std::string HttpHeaders::toString(void) {
 	std::string result = "";
 
 	while (currentIt != endIt) {
-		result += currentIt->first + ": " + currentIt->second;
+		result += currentIt->first + ": " + currentIt->second + "\r\n";
 		currentIt++;
 	}
 

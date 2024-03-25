@@ -8,6 +8,9 @@ class ExceptionHandler {
     public:
         static void WrongHeader(void);    
         static void InvalidHeaderKey(void);
+        static void UnexpectedSendRequest(void);
+        static void CannotGetRequestToSendResponse(void);
+        static void CannotDestroyRequest(void);
 
 };
 

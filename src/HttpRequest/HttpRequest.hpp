@@ -36,6 +36,10 @@ class HttpRequest {
 		void parseMultipartDataForm(int socket);
 		void parseChunkedData(int socket);
 
+	public:
+		bool hasFinishedReceivingRequest(void) const;
+		const std::string& getEndpoint(void) const;
+
 	private:
 		HttpRequest(void);
 		HttpRequest& operator=(const HttpRequest &);
@@ -49,7 +53,7 @@ class HttpRequest {
 		std::string boundary;
 		std::string contentType;
 		size_t chunking;
-
+		bool _hasFinishedRead;
 };
 
 #endif // !__HTTP_REQUEST__
