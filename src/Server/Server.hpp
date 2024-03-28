@@ -6,6 +6,7 @@
 #include "Config.hpp"
 #include "LisenStruc.hpp"
 #include <vector>
+#include "Util.hpp"
 
 class Server 
 {
@@ -36,6 +37,8 @@ public:
 	Server(const Server& other);
 	Server& operator= (const Server& other);
 	~Server();
+
+	Config*	findLocations(const std::string & name);
 
 	Config& getServerConfig();
 	Server& setServerConfig(const Config& server_config);

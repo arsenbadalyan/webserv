@@ -14,6 +14,7 @@ class Util {
         static std::string toLower(const std::string& str);
         static std::string& trim(std::string& str, const std::string& trimmerStr); 
         static size_t getFileSize(std::istream& is);
+		static bool			in(const std::string& s1, const std::string& s2);
 
 };
 

@@ -1,6 +1,6 @@
 server 
 {
-	listen 127.0.0.1:8080 ;
+	listen 127.0.0.1:7070 ;
 #	listen 50;
 	server_name fdfsdfd ;
 	root temp;
@@ -33,10 +33,10 @@ server
 
 server 
 {
-	listen 127.0.0.1:5050 ;
-	listen 9091;
-	listen 1212;
-	listen 1212;
+	listen 127.0.0.1:6060 ;
+	listen 9090;
+	listen 1211;
+	listen 1211;
 	server_name aaaaaa;
 	root temp;
 	allow_methods GET;

@@ -1,5 +1,6 @@
 #include "Server.hpp"
 
+
 Server::Server():_host("127.0.0.1"),_host_flag(false),_port_flag(false)
  {
 	this->_port.push_back(8080);
@@ -25,6 +26,18 @@ Server& Server::operator= (const Server& other)
 }
 
 Server::~Server() {}
+
+Config *Server::findLocations(const std::string &name)
+{
+	for (size_t i = 0; i < this->_locations.size(); ++i)
+	{
+		if(Util::in(this->_locations[i].getLocation_name(),name))
+		{
+			return &(this->_locations[i]);
+		}
+	}
+	return (NULL);
+}
 
 Config& Server::getServerConfig()
 {

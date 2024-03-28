@@ -139,7 +139,7 @@ void CreatMainServers::conectClient(std::vector<Server> &serverlist, fd_set &rfd
 
 void CreatMainServers::readClient(std::vector<Server> &serverlist, fd_set &rfds)
 {
-	char buffer[BUFFER_SIZE];
+	// char buffer[BUFFER_SIZE];
 	for (size_t j = 0; j < serverlist.size(); j++)
 	{
 		for (size_t i = 0; i < serverlist[j].getReadSocket().size(); i++)
@@ -147,9 +147,10 @@ void CreatMainServers::readClient(std::vector<Server> &serverlist, fd_set &rfds)
 			if(FD_ISSET(serverlist[j].getReadSocket()[i]._fd, &rfds))
 			{
 				///// sra tex talisa funqcain kardalu hamar <----------------------------------
-				bzero(buffer,BUFFER_SIZE);
-				recv(serverlist[j].getReadSocket()[i]._fd, buffer, BUFFER_SIZE ,0);
-				std::cout << buffer << std::endl;
+				// bzero(buffer,BUFFER_SIZE);
+				// recv(serverlist[j].getReadSocket()[i]._fd, buffer, BUFFER_SIZE ,0);
+				// std::cout << buffer << std::endl;
+				HttpRequest(serverlist[j].getReadSocket()[i]._fd);
 				////
 				serverlist[j].getWritSocket().push_back(serverlist[j].getReadSocket()[i]._fd);
 				serverlist[j].getReadSocket().erase(serverlist[j].getReadSocket().begin() + i);
