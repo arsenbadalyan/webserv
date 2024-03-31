@@ -576,6 +576,9 @@ size_t ParsingConfigFile::statusCodes(std::string number)
 	}
 	if (size != number.size() || num < 100 || num > 599)
 		throw MyException(" ");
+	if (num != 200 && num != 301 && num != 400 && num != 404 && \
+						num != 405 && num != 413 && num != 502 )
+		throw MyException(" ");
 	return (static_cast<size_t>(num));
 }
 
@@ -977,7 +980,7 @@ bool ParsingConfigFile::chekAndSavePort(std::string port)
 
 bool ParsingConfigFile::chekHostNumber(std::string number)
 {
-	std::cout << "=============================== " << number << std::endl;
+	// std::cout << "=============================== " << number << std::endl;
 	size_t  size = number.size();
 	int num;
 	if (!size || number[0] == '-')
