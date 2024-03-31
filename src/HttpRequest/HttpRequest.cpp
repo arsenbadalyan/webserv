@@ -114,9 +114,6 @@ void HttpRequest::requestStartLineParser(std::string & request) {
 		throw std::runtime_error(ERR_NOT_SUPPORTED_HTTP_METHOD);
 	}
 
-	// TODO: url parser if needed
-	// if (splittedFirstLine.second[1])
-
 	if (splittedFirstLineSize >= 3
 		&& Util::toLower(splittedFirstLine[2]) != RootConfigs::SupportedHttpProtocol) {
 			throw std::runtime_error(std::string(ERR_NOT_SUPPORTED_HTTP_PROTOCOL) + Util::toLower(splittedFirstLine[2]));

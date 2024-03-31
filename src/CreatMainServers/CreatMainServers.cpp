@@ -181,8 +181,8 @@ void CreatMainServers::writeClient(std::vector<Server> &serverlist, fd_set &wfds
 			if(FD_ISSET(serverlist[j].getWritSocket()[i], &wfds))
 			{
 				///// sra tex talisa funqcain grelu hamar <-------------------------------
-				requestPool.getResponse(serverlist[j].getReadSocket()[i]._fd);
-				requestPool.destroyRequest(serverlist[j].getReadSocket()[i]._fd);
+				requestPool.getResponse(serverlist[j].getWritSocket()[i]);
+				requestPool.destroyRequest(serverlist[j].getWritSocket()[i]);
 				// int file = open("index.html", O_RDONLY);
 				// bzero(buffer,BUFFER_SIZE);
 				// if (file >= 0)
