@@ -2,6 +2,8 @@
 
 DirStruct::DirStruct	() {}
 
+DirStruct::~DirStruct() {}
+
 DirStruct::DirStruct	(const std::string & name, const std::string& data, const std::string& size) \
 						: _name(name), _data(data), _size(size) {}
 
