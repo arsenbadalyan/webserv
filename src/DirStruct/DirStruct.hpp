@@ -16,7 +16,7 @@ public:
 	DirStruct & operator=(const DirStruct & other);
 
 	std::string	getName();
-	std::string getData();
+	std::string& getData();
 	std::string	getSize();
 
 	void		setName(const std::string& name);

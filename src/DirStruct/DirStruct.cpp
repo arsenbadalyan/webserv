@@ -25,7 +25,7 @@ std::string	DirStruct::getName()
 {
 	return this->_name;
 }
-std::string DirStruct::getData()
+std::string & DirStruct::getData()
 {
 	return this->_data;
 }
