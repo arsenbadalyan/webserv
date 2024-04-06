@@ -21,7 +21,7 @@ StatusCollection& StatusCollection::operator= (const StatusCollection& other)
 
 StatusCollection::~StatusCollection() {}
 
-size_t& StatusCollection::getStatusTypes()
+int& StatusCollection::getStatusTypes()
 {
 	return (this->_statusTypes);
 }
