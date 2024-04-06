@@ -538,8 +538,8 @@ size_t ParsingConfigFile::checkErrorPage(size_t pos_start, size_t pos_end, bool 
 			if(page.size() || !statCod.size())
 				throw MyException("Error Sintexsis ErrorPage" + this->getErrorline(pos_start));
 	
-			if (access(val.c_str(), F_OK))
-				throw MyException("Error Sintexsis ErrorPage no file" + this->getErrorline(pos_start));
+			// if (access(val.c_str(), F_OK))
+			// 	throw MyException("Error Sintexsis ErrorPage no file" + this->getErrorline(pos_start)); // verchum em stugelu
 			page = val;
 		}
 	}

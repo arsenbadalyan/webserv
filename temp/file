@@ -42,13 +42,13 @@ server
 															--> example.org  www.example.org;
 	root: Set the root path of the server directory.   --> /www/data; --> defolt /var/www; ??
 	allow_methods: Explicitly define allowed HTTP methods for this server. --> GET, POST, DELETE --> defolt all
-	upload_dir: Configure the directory where the server should store files from multipart form data. --> defold none
-	error_page: Craft custom error pages based on response status codes. --> error_page 500 502 503 504 /custom_50x.html;   ////
+	upload_dir: Configure the directory where the server should store files from multipart form data. --> defold none  //// <-- avelacnel root
+	error_page: Craft custom error pages based on response status codes. --> error_page 500 502 503 504 /custom_50x.html;   //// <-- avelacnel root
 													--> error_page 404 /custom_404.html;  --> defolt your
 	return: Set up redirection URLs for specific scenarios.  --> return 301 http://www.example.com/moved/here;     /////
 															--> defolt none
 	cgi: Enable CGI script execution for handling Python and PHP scripts. --> defold ?? --->> on kam off sarqel
-	index: Specify the default index file.     --> defolt   index index.html index2.html; -->> sarqel vector<string>
+	index: Specify the default index file.     --> defolt   index index.html index2.html; -->> sarqel vector<string>  //// <-- avelacnel root
 	autoindex: Enable directory listing when no index file is found. --> defold off  --> on
 	client_max_body_size: Set the maximum allowed size of the client request body. --> 2KB ?? --> defold 1MB
 
@@ -66,62 +66,3 @@ server
 	
 
 }
-
-
-	std::string dir = "./webser";
-	struct dirent *dr;
-	{
-		/* data */
-	};
-	
-	// int b=  access("./ma.cpp",F_OK);
-	DIR *a = opendir(dir.c_str());
-	std::cout << "a->__dd_len  " << a->__dd_len << std::endl;
-	std::cout << "a->__dd_buf  " << a->__dd_buf << std::endl;
-	std::cout << "a->__dd_fd  " << a->__dd_fd << std::endl;
-	std::cout << "a->__dd_flags  " << a->__dd_flags << std::endl;
-	std::cout << "a->__dd_loc  " << a->__dd_loc << std::endl;
-	std::cout << "a->__dd_lock.__opaque  " << a->__dd_lock.__opaque << std::endl;
-	std::cout << "a->__dd_lock.__sig  " << a->__dd_lock.__sig << std::endl;
-	std::cout << "a->__dd_seek  " << a->__dd_seek << std::endl;
-	std::cout << "a->__dd_size  " << a->__dd_size << std::endl;
-	std::cout << "a->__dd_td  " << a->__dd_td << std::endl;
-	std::cout << "a->__padding  " << a->__padding << "\n\n";
-	// while(1)
-	// {
-		dr = readdir(a);
-		// if (!dr)
-		// 	break;
-		// std::cout << "dr = " << dr << "\n";
-		// std::cout << "dr->d_ino " << dr->d_ino << std::endl;
-		std::cout << "dr->d_name " << dr->d_name << std::endl;
-		// std::cout << "dr->d_namlen " << dr->d_namlen << std::endl;
-		// std::cout << "dr->d_reclen " << dr->d_reclen << std::endl;
-		// std::cout << "dr->d_seekoff " << dr->d_seekoff << std::endl;
-		// std::cout << "dr->d_type " << dr->d_type << std::endl;
-		// std::cout << "a = " << a << std::endl;
-		std::cout << std::endl;
-	// }
-
-
-
-
-	struct stat info;
-	// std::cout << "stat = " <<  stat(dr->d_name, &info) << std::endl;
-	if (stat("./webser", &info) != 0)
-    	perror("stat() error");
-	else {
-		std::cout <<  "		info.st_size " << info.st_size << std::endl;
-		std::cout <<  "		info.st_mtimespec.tv_sec" << info.st_mtimespec.tv_sec << std::endl;
-		// std::time_t now = std::time(NULL);
-		std::tm * ptm = std::localtime(&info.st_mtimespec.tv_sec);
-		char buffer[32];
-		// Format: Mo, 15.06.2009 20:20:00
-		// std::strftime(buffer, 32, "%d.%m.%Y %H:%M:%S", ptm);
-		std::strftime(buffer, 32, "%d.%m.%Y %H:%M", ptm);
-		std::cout <<  "		time = " << buffer << std::endl;
-		char *a = std::ctime(&info.st_mtimespec.tv_sec);
-		std::cout <<  "		info.st_blksize " << info.st_blksize << std::endl;
-	}
-
-	closedir(a);
