@@ -36,7 +36,7 @@ Config *Server::findLocations(const std::string &name)
 			return &(this->_locations[i]);
 		}
 	}
-	return (NULL);
+	return &(this->getServerConfig());
 }
 
 Config& Server::getServerConfig()

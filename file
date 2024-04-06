@@ -8,13 +8,13 @@ server
 	client_max_body_size 17179869183G;
 	upload_dir temp;
 	error_page 502 404 400 200 file;
-#	return 301 ;
+#	return 200 ;
 	index file;
 	cgi on;
 	autoindex on ;
 	location blabla 
 	{
-		return 301;
+		return 404;
 	}
 
 	location /test/barev
