@@ -55,3 +55,40 @@ size_t Util::getFileSize(std::istream& is) {
 
 	return (size);
 }
+
+std::string Util::getDateTime(std::time_t &currentTime) 
+{
+    std::ostringstream oss;
+    std::tm* timeinfo = std::localtime(&currentTime);
+
+    const char* weekdays[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+    const char* months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+
+    oss << weekdays[timeinfo->tm_wday] << ", ";
+    oss << std::setfill('0') << std::setw(2) << timeinfo->tm_mday << " ";
+    oss << months[timeinfo->tm_mon] << " ";
+    oss << 1900 + timeinfo->tm_year << " ";
+    oss << std::setfill('0') << std::setw(2) << timeinfo->tm_hour << ":";
+    oss << std::setfill('0') << std::setw(2) << timeinfo->tm_min << ":";
+    oss << std::setfill('0') << std::setw(2) << timeinfo->tm_sec << " ";
+    oss << "GMT";
+
+    return oss.str();
+}
+
+std::string Util::getDateTime()
+{
+    std::time_t currentTime = std::time(NULL);
+    return (getDateTime(currentTime));
+}
+
+std::string Util::checkFileLastModifyDate(const std::string& filepath)
+{
+    struct stat fileInfo;
+
+    if (stat(filepath.c_str(), &fileInfo) != 0) 
+		ExceptionHandler::InvalidFileInfo();
+
+    std::time_t lastModifiedTime = fileInfo.st_mtime;
+    return (getDateTime(lastModifiedTime));
+}

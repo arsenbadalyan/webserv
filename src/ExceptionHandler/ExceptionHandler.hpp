@@ -8,7 +8,7 @@ class ExceptionHandler {
     public:
         static void WrongHeader(void);    
         static void InvalidHeaderKey(void);
-
+        static void InvalidFileInfo(void);
 };
 
 #endif // !__EXCEPTION_HANDLER__HPP__
