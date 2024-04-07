@@ -13,7 +13,7 @@ std::list<DirStruct> ForAutoIndex::getDirStruct(std::string root)
 	DIR *fi = opendir(root.c_str());
 	if (!fi)
 		throw MyException("Nod open root for creat Html file for autoindex");
-	for(size_t i = 0; 1; ++i)
+	for(; 1; )
 	{
 		dr = readdir(fi);
 		if (!dr)

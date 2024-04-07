@@ -75,6 +75,7 @@ bool Util::in(const std::string& s1, const std::string& s2)
 			return (true);
 	}
 	return false;
+}
 
 std::string Util::getDateTime(std::time_t &currentTime) 
 {
