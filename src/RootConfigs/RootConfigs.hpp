@@ -7,9 +7,10 @@
 struct RootConfigs {
 
     static const std::set<std::string> AvailableMethods;
-    static const std::set<std::string> SupportedHttpProtocols;
+    static const std::string SupportedHttpProtocol;
     static const std::string InvalidHeaderKeys;
     static const std::string Whitespaces;
+    static const std::string SERVER_NAME;
 
 };
 

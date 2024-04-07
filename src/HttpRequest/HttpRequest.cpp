@@ -6,13 +6,18 @@ HttpRequest::HttpRequest(const HttpRequest &) {}
 HttpRequest::~HttpRequest() {}
 HttpRequest& HttpRequest::operator=(const HttpRequest &) { return (*this); }
 
-HttpRequest::HttpRequest(int fd) :
+HttpRequest::HttpRequest(Server* currentServer, int readSocketFd) :
 	boundary(""),
-	chunking(chunk_type::no_chunks)
+	chunking(chunk_type::no_chunks),
+	_hasFinishedRead(false),
+	_server(currentServer)
 {
-	std::string readRes = this->requestInitialParsing(fd);
+	std::string readRes = this->requestInitialParsing(readSocketFd);
 
 	this->configureRequestByHeaders();
+
+	if (this->chunking == chunk_type::no_chunks)
+		this->_hasFinishedRead = true;
 
 	std::cout << "<<<<<<<<<<<< REQUEST RESULTS" << std::endl;
 	std::cout << "method: " << this->method << std::endl;
@@ -110,11 +115,8 @@ void HttpRequest::requestStartLineParser(std::string & request) {
 		throw std::runtime_error(ERR_NOT_SUPPORTED_HTTP_METHOD);
 	}
 
-	// TODO: url parser if needed
-	// if (splittedFirstLine.second[1])
-
 	if (splittedFirstLineSize >= 3
-		&& RootConfigs::SupportedHttpProtocols.find(Util::toLower(splittedFirstLine[2])) == RootConfigs::SupportedHttpProtocols.end()) {
+		&& Util::toLower(splittedFirstLine[2]) != RootConfigs::SupportedHttpProtocol) {
 			throw std::runtime_error(std::string(ERR_NOT_SUPPORTED_HTTP_PROTOCOL) + Util::toLower(splittedFirstLine[2]));
 		}
 	
@@ -153,4 +155,20 @@ void HttpRequest::configureRequestByHeaders(void) {
 		&& *transferEncoding == "chunked") {
 		this->chunking = chunk_type::encoding_chunk; 
 	}
+}
+
+bool HttpRequest::hasFinishedReceivingRequest(void) const {
+	return (this->_hasFinishedRead);
+}
+
+const std::string HttpRequest::getEndpoint(void) const {
+	return (this->endpoint);
+}
+
+const std::string HttpRequest::getFullFilePath(void) const {
+	return (this->_server->getServerConfig().getRoot() + this->getEndpoint());
+}
+
+Server * HttpRequest::getServer(void) const {
+	return (this->_server);
 }

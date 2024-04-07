@@ -56,6 +56,26 @@ size_t Util::getFileSize(std::istream& is) {
 	return (size);
 }
 
+
+bool Util::in(const std::string& s1, const std::string& s2)
+{
+	std::string name	= Util::toLower(s1);
+	std::string fi 		= Util::toLower(s2);
+	for (size_t i = 0; i <= name.size() - fi.size(); i++)
+	{
+		size_t j = 0;
+		for (; j < fi.size(); ++j)
+		{
+			if(name[i + j] != fi[j])
+			{
+				break;
+			}
+		}
+		if (j == fi.size())
+			return (true);
+	}
+	return false;
+
 std::string Util::getDateTime(std::time_t &currentTime) 
 {
     std::ostringstream oss;
@@ -91,4 +111,5 @@ std::string Util::checkFileLastModifyDate(const std::string& filepath)
 
     std::time_t lastModifiedTime = fileInfo.st_mtime;
     return (getDateTime(lastModifiedTime));
+
 }

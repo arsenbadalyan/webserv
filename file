@@ -1,13 +1,13 @@
 server 
 {
-	listen 127.0.0.1:8080 ;
+	listen 127.0.0.1:7070 ;
 #	listen 50;
 	server_name fdfsdfd ;
 	root temp;
 	allow_methods GET;
 	client_max_body_size 17179869183G;
 	upload_dir temp;
-	error_page 550 400 300 200 file;
+	error_page 502 404 400 200 file;
 	return 301 ;
 	index file;
 	cgi on;
@@ -33,16 +33,16 @@ server
 
 server 
 {
-	listen 127.0.0.1:5050 ;
-	listen 9091;
-	listen 1212;
-	listen 1212;
+	listen 127.0.0.1:6060 ;
+	listen 9090;
+	listen 1211;
+	listen 1211;
 	server_name aaaaaa;
 	root temp;
 	allow_methods GET;
 	client_max_body_size 17179869183G ;
 	upload_dir temp;
-	error_page 550 400 300 200 file;
+	error_page 200 301 400 404 405 413 502 file;
 	return 301;
 	index file;
 	cgi on;
