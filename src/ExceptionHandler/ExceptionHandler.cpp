@@ -19,3 +19,7 @@ void ExceptionHandler::CannotGetRequestToSendResponse(void) {
 void ExceptionHandler::CannotDestroyRequest(void) {
     throw std::runtime_error("There are no such request to destroy.");
 }
+
+void ExceptionHandler::InvalidFileInfo(void) {
+    throw std::runtime_error("Unable to get file information.");
+}

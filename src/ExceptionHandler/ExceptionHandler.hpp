@@ -11,6 +11,7 @@ class ExceptionHandler {
         static void UnexpectedSendRequest(void);
         static void CannotGetRequestToSendResponse(void);
         static void CannotDestroyRequest(void);
+        static void InvalidFileInfo(void);
 
 };
 
