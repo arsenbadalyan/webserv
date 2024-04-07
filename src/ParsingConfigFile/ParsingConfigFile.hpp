@@ -35,7 +35,7 @@ private:
 	size_t	CheckCorecktLocation(size_t pos_start, size_t pos_end);
 	size_t	CheckCorecktConfig(std::string config, size_t pos_start, size_t pos_end, bool controlFlag);
 
-	// void	CheckAndCreatCorektPath();
+	void	CheckAndCreatCorektPath();
 
 	size_t	checkListen(size_t pos_start, size_t pos_end, bool controlFlag);
 
