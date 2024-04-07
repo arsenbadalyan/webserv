@@ -7,25 +7,37 @@
 #include "RootConfigs.hpp"
 #include "HttpStatusCode.hpp"
 #include "Util.hpp"
+#include "Server.hpp"
+#include "Config.hpp"
+#include "HttpHeaderNames.hpp"
 
 class HttpResponse {
 
-    public:
-        static void getResponse(const HttpRequest & request, int socketFd);
+	public:
+		HttpResponse(const HttpRequest* request, int writeSocketFd);
+		~HttpResponse();
 
-    private:
-        static std::string configureStatusLine(const HttpRequest & request);
-        static std::string configureHeaders(const HttpRequest & request, std::ifstream & ifs);
-        static void sendBody(const HttpRequest & request, std::ifstream & ifs, int socketFd);
-    
-    private:
-        HttpResponse(void);
-        HttpResponse(const HttpResponse&);
-        ~HttpResponse();
-        void operator=(const HttpResponse&);
+	public:
+		void getResponse(void);
 
-    private:
-        std::string __responseTxt;
+	private:
+		std::string configureStatusLine();
+		std::string configureHeaders();
+		void configureDefaultHeaders(void);
+		void sendBody();
+	
+	private:
+		HttpResponse(const HttpResponse&);
+		void operator=(const HttpResponse&);
+
+	private:
+		HttpHeaders _headers;
+		Server *_server;
+		Config *_configs;
+		const HttpRequest *_request;
+		int _writeSocketFd;
+		bool _isReturnTerminatedResponse;
+		std::ifstream _requestedFile;
 };
 
 #endif // !__HTTP_REQUEST__HPP__

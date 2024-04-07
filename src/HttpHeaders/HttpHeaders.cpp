@@ -14,7 +14,7 @@ const std::string* HttpHeaders::getHeader(const std::string key) const {
 	return (&foundedKey->second);
 }
 
-HttpHeaders& HttpHeaders::setHeader(std::string & key, std::string & value) {
+HttpHeaders& HttpHeaders::setHeader(const std::string key, const std::string value) {
 	this->headerValidator(key, value);
 	if (this->headers.find(Util::toLower(key)) != this->headers.end()) {
 		return (*this);
@@ -45,7 +45,7 @@ HttpHeaders& HttpHeaders::setHeader(std::string & line) {
 	return (this->setHeader(key, value));
 }
 
-void HttpHeaders::headerValidator(std::string & key, std::string & value) const {
+void HttpHeaders::headerValidator(const std::string & key, const std::string & value) const {
 
 	if (key.find_first_of(RootConfigs::InvalidHeaderKeys) != std::string::npos) {
 		ExceptionHandler::InvalidHeaderKey();

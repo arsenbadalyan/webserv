@@ -6,12 +6,13 @@ HttpRequest::HttpRequest(const HttpRequest &) {}
 HttpRequest::~HttpRequest() {}
 HttpRequest& HttpRequest::operator=(const HttpRequest &) { return (*this); }
 
-HttpRequest::HttpRequest(int fd) :
+HttpRequest::HttpRequest(Server* currentServer, int readSocketFd) :
 	boundary(""),
 	chunking(chunk_type::no_chunks),
-	_hasFinishedRead(false)
+	_hasFinishedRead(false),
+	_server(currentServer)
 {
-	std::string readRes = this->requestInitialParsing(fd);
+	std::string readRes = this->requestInitialParsing(readSocketFd);
 
 	this->configureRequestByHeaders();
 
@@ -160,6 +161,14 @@ bool HttpRequest::hasFinishedReceivingRequest(void) const {
 	return (this->_hasFinishedRead);
 }
 
-const std::string& HttpRequest::getEndpoint(void) const {
+const std::string HttpRequest::getEndpoint(void) const {
 	return (this->endpoint);
+}
+
+const std::string HttpRequest::getFullFilePath(void) const {
+	return (this->_server->getServerConfig().getRoot() + this->getEndpoint());
+}
+
+Server * HttpRequest::getServer(void) const {
+	return (this->_server);
 }

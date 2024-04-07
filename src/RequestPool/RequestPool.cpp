@@ -20,7 +20,7 @@ bool RequestPool::sendRequest(int clientSocket, Server & server) {
 	RequestPoolMap::iterator requestIt = this->requestPool.find(clientSocket);
 
 	if (requestIt == this->requestPool.end()) {
-		request = new HttpRequest(clientSocket);
+		request = new HttpRequest(&server, clientSocket);
 		this->requestPool[clientSocket] = request;
 	} else {
 		request = requestIt->second;
@@ -40,7 +40,10 @@ void RequestPool::getResponse(int clientSocket) {
 	if (targetRequest == this->requestPool.end())
 		ExceptionHandler::CannotGetRequestToSendResponse();
 
-	HttpResponse::getResponse(*targetRequest->second, targetRequest->first);
+	HttpResponse *response = new HttpResponse(targetRequest->second, targetRequest->first);
+	
+	response->getResponse();
+	delete response;
 }
 
 void RequestPool::destroyRequest(int clientSocket) {

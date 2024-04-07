@@ -7,6 +7,7 @@
 #include "HttpHeaders.hpp"
 #include "Util.hpp"
 #include "RootConfigs.hpp"
+#include "Server.hpp"
 
 #define READ_BUFFER_SIZE 1024
 #define TERMINATION_BUFFER "\r\n\r\n"
@@ -25,7 +26,7 @@ struct chunk_type {
 class HttpRequest {
 
 	public:
-		HttpRequest(int fd);
+		HttpRequest(Server* currentServer, int readSocketFd);
 		~HttpRequest();
 
 	public:
@@ -37,8 +38,12 @@ class HttpRequest {
 		void parseChunkedData(int socket);
 
 	public:
+		Server * getServer(void) const;
+
+	public:
 		bool hasFinishedReceivingRequest(void) const;
-		const std::string& getEndpoint(void) const;
+		const std::string getEndpoint(void) const;
+		const std::string getFullFilePath(void) const;
 
 	private:
 		HttpRequest(void);
@@ -54,6 +59,8 @@ class HttpRequest {
 		std::string contentType;
 		size_t chunking;
 		bool _hasFinishedRead;
+		Server *_server;
+
 };
 
 #endif // !__HTTP_REQUEST__

@@ -12,3 +12,5 @@ const std::set<std::string> RootConfigs::AvailableMethods(
 );
 
 const std::string RootConfigs::SupportedHttpProtocol = "http/1.1";
+
+const std::string RootConfigs::SERVER_NAME = "webserv";

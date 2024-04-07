@@ -10,6 +10,7 @@ struct RootConfigs {
     static const std::string SupportedHttpProtocol;
     static const std::string InvalidHeaderKeys;
     static const std::string Whitespaces;
+    static const std::string SERVER_NAME;
 
 };
 
