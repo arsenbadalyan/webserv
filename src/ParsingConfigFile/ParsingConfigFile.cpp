@@ -30,6 +30,7 @@ std::vector<Server> ParsingConfigFile::startPars()
 		throw MyException("Sintexs ERROR");
 	if (!this->CheckCorecktServer())
 		throw MyException("Corect Error");
+	this->CheckAndCreatCorektPath();
 	return (this->_serverList);
 }
 
@@ -243,7 +244,8 @@ size_t	ParsingConfigFile::CheckCorecktConfig(std::string config, size_t pos_star
 	} 
 	else if (std::string("root") == config)
 	{
-
+		if (controlFlag)
+			throw MyException("Error Root in location" + this->getErrorline(pos_start));
 		res = checkRoot(pos_start, pos_end, controlFlag);
 
 		if (SIZE_MAX != res)
@@ -272,7 +274,8 @@ size_t	ParsingConfigFile::CheckCorecktConfig(std::string config, size_t pos_star
 	}
 	else if (std::string("return") == config)
 	{
-
+		if (!controlFlag)
+			throw MyException("Error return in server " + this->getErrorline(pos_start));
 		res = checkReturn(pos_start, pos_end, controlFlag);
 		if (SIZE_MAX != res)
 			return (res);
@@ -286,7 +289,6 @@ size_t	ParsingConfigFile::CheckCorecktConfig(std::string config, size_t pos_star
 	}
 	else if (std::string("index") == config)
 	{
-
 		res = checkIndex(pos_start, pos_end, controlFlag);
 		if (SIZE_MAX != res)
 			return (res);
@@ -310,6 +312,74 @@ size_t	ParsingConfigFile::CheckCorecktConfig(std::string config, size_t pos_star
 	return (SIZE_MAX);
 }
 
+void ParsingConfigFile::CheckAndCreatCorektPath()
+{
+	//upload_dir
+	for (std::vector<Server>::iterator it = this->_serverList.begin(); it != this->_serverList.end(); ++it)
+	{
+		if(it->getServerConfig().getUpload_dir().size())
+			it->getServerConfig().setUpload_dir(it->getServerConfig().getRoot() + "/" + it->getServerConfig().getUpload_dir());
+			DIR *dir = opendir(it->getServerConfig().getUpload_dir().c_str());
+			if (!dir)
+				throw MyException("Error Sintexsis Upload_Dir not direktory Server " + it->getServerName());
+			closedir(dir);
+		for (std::vector<Config>::iterator itc = it->getLocations().begin(); itc != it->getLocations().end(); ++itc)
+		{
+			if (itc->getUpload_dir().size())
+			{
+				itc->setUpload_dir(it->getServerConfig().getRoot() + "/" + itc->getUpload_dir());
+				DIR *dir = opendir(itc->getUpload_dir().c_str());
+				if (!dir)
+					throw MyException("Error Sintexsis Upload_Dir not direktory Server " + it->getServerName() + " location " + itc->getLocation_name());
+				closedir(dir);
+			}
+		}
+	}
+
+	// error_pag
+	for (std::vector<Server>::iterator it = this->_serverList.begin(); it != this->_serverList.end(); ++it)
+	{
+		for (std::map<int, std::string>::iterator itm = it->getServerConfig().getError_page().begin();\
+			itm != it->getServerConfig().getError_page().end(); ++itm)
+		{
+			itm->second = it->getServerConfig().getRoot() + "/" + itm->second;
+			if (access(itm->second.c_str(), F_OK))
+				throw MyException("Error Sintexsis ErrorPage no file in Server " + it->getServerName());
+		}
+		for (std::vector<Config>::iterator itc = it->getLocations().begin(); itc != it->getLocations().end(); ++itc)
+		{
+			for (std::map<int, std::string>::iterator itm = itc->getError_page().begin();\
+				itm != itc->getError_page().end(); ++itm)
+			{
+				itm->second = it->getServerConfig().getRoot() + "/" + itm->second;
+				if (access(itm->second.c_str(), F_OK))
+					throw MyException("Error Sintexsis ErrorPage no file in Server " + it->getServerName() + " location " + itc->getLocation_name());
+			}
+		}
+		
+	}
+	//index
+	for (std::vector<Server>::iterator it = this->_serverList.begin(); it != this->_serverList.end(); ++it)
+	{
+		for (std::vector<std::string>::iterator itm = it->getServerConfig().getIndex().begin();\
+			itm != it->getServerConfig().getIndex().end(); ++itm)
+		{
+			*itm = it->getServerConfig().getRoot() + "/" + *itm;
+			// if (access(itm->c_str(), F_OK))
+			// 	throw MyException("Error Sintexsis Index no file in Server " + it->getServerName());
+		}
+		for (std::vector<Config>::iterator itc = it->getLocations().begin(); itc != it->getLocations().end(); ++itc)
+		{
+			for (std::vector<std::string>::iterator itm = itc->getIndex().begin();\
+				itm != itc->getIndex().end(); ++itm)
+			{
+				*itm = it->getServerConfig().getRoot() + "/" + *itm;
+				// if (access(itm->c_str(), F_OK))
+				// 	throw MyException("Error Sintexsis Index no file in Server " + it->getServerName() + " location " + itc->getLocation_name());
+			}
+		}
+	}
+}
 
 /*
 	server {  lisen             127.0.0.1:8080   ;  }
@@ -490,10 +560,10 @@ size_t ParsingConfigFile::checkUploadDir(size_t pos_start, size_t pos_end, bool 
 	str >> check;
 	if (check.size())
 		throw MyException("Error Sintexsis Upload_Dir arguments" + this->getErrorline(pos_start));
-	DIR *dir = opendir(val.c_str());
-	if (!dir)
-		throw MyException("Error Sintexsis Upload_Dir not direktory" + this->getErrorline(pos_start));
-	closedir(dir);
+	// DIR *dir = opendir(val.c_str());
+	// if (!dir)
+	// 	throw MyException("Error Sintexsis Upload_Dir not direktory" + this->getErrorline(pos_start));
+	// closedir(dir);
 	if (controlFlag)
 		this->_serverList[this->_serverList.size() - 1].getLocations()\
 		[this->_serverList[this->_serverList.size() - 1].getLocations().size() - 1].setUpload_dir(val);
@@ -537,8 +607,8 @@ size_t ParsingConfigFile::checkErrorPage(size_t pos_start, size_t pos_end, bool 
 			if(page.size() || !statCod.size())
 				throw MyException("Error Sintexsis ErrorPage" + this->getErrorline(pos_start));
 	
-			if (access(val.c_str(), F_OK))
-				throw MyException("Error Sintexsis ErrorPage no file" + this->getErrorline(pos_start));
+			// if (access(val.c_str(), F_OK))
+			// 	throw MyException("Error Sintexsis ErrorPage no file" + this->getErrorline(pos_start)); // verchum em stugelu
 			page = val;
 		}
 	}

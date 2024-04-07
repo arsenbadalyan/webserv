@@ -3,18 +3,19 @@ server
 	listen 127.0.0.1:7070 ;
 #	listen 50;
 	server_name fdfsdfd ;
-	root temp;
+	root src;
 	allow_methods GET;
 	client_max_body_size 17179869183G;
-	upload_dir temp;
-	error_page 502 404 400 200 file;
-	return 301 ;
-	index file;
+	upload_dir Config;
+	error_page 502 404 400 200 main.cpp;
+#	return 200 ;
+	index main.cpp;
 	cgi on;
-	
+	autoindex on ;
 	location blabla 
 	{
-		return 301;
+		index main.cpp;
+		return 404;
 	}
 
 	location /test/barev
@@ -26,6 +27,7 @@ server
 
 	location /test/index.html
 	{
+		index main.cpp;
 		return 301;
 	}
 
@@ -38,13 +40,13 @@ server
 	listen 1211;
 	listen 1211;
 	server_name aaaaaa;
-	root temp;
+	root src;
 	allow_methods GET;
-	client_max_body_size 17179869183G ;
-	upload_dir temp;
-	error_page 200 301 400 404 405 413 502 file;
-	return 301;
-	index file;
+	client_max_body_size 17179869183G;
+	upload_dir Config;
+	error_page 200 301 400 404 405 413 502 main.cpp;
+#	return 301;
+	index main.cpp;
 	cgi on;
 	location blabla 
 	{

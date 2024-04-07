@@ -1,5 +1,6 @@
 #include "ParsingConfigFile.hpp"
 #include "CreatMainServers.hpp"
+#include "ForAutoIndex.hpp"
 void print_struct(std::vector<Server> & s);
 
 int main() {
@@ -27,6 +28,7 @@ int main() {
 	
     return (0);
 }
+
 
 void print_struct(std::vector<Server> & s)
 {

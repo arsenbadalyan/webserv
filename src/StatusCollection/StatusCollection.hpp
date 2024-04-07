@@ -5,10 +5,12 @@
 #include <string>
 #include <vector>
 
+#define NO_CUSTOM_STATUS_CODE -1
+
 class StatusCollection
 {
 private:
-	size_t		_statusTypes;
+	int		_statusTypes;
 	std::string	_path;
 public:
 	StatusCollection();
@@ -16,7 +18,8 @@ public:
 	StatusCollection(const StatusCollection& other);
 	StatusCollection& operator=  (const StatusCollection& other);
 	~StatusCollection();
-	size_t& getStatusTypes();
+	bool	isRedirection();
+	int& getStatusTypes();
 	std::string &getPath();
 	StatusCollection& setStatusTypes(const size_t statusType);
 	StatusCollection& setPath(const std::string& path);
