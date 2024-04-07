@@ -1,6 +1,6 @@
 #include "StatusCollection.hpp"
 
-StatusCollection::StatusCollection(): _statusTypes(0) {}
+StatusCollection::StatusCollection(): _statusTypes(NO_CUSTOM_STATUS_CODE) {}
 
 StatusCollection::StatusCollection(const size_t &statusTypes, const std::string &path):_statusTypes(statusTypes),_path(path) {}
 
@@ -20,6 +20,13 @@ StatusCollection& StatusCollection::operator= (const StatusCollection& other)
 }
 
 StatusCollection::~StatusCollection() {}
+
+bool StatusCollection::isRedirection()
+{
+	if (this->_statusTypes > 299 && this->_statusTypes < 400)
+		return (true);
+	return false;
+}
 
 int& StatusCollection::getStatusTypes()
 {
