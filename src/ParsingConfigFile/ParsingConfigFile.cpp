@@ -30,6 +30,7 @@ std::vector<Server> ParsingConfigFile::startPars()
 		throw MyException("Sintexs ERROR");
 	if (!this->CheckCorecktServer())
 		throw MyException("Corect Error");
+	// this->CheckAndCreatCorektPath();
 	return (this->_serverList);
 }
 
@@ -311,6 +312,14 @@ size_t	ParsingConfigFile::CheckCorecktConfig(std::string config, size_t pos_star
 	return (SIZE_MAX);
 }
 
+// void ParsingConfigFile::CheckAndCreatCorektPath()
+// {
+// 	for (std::vector<Server>::iterator it = this->_serverList.begin(); it != this->_serverList.end(); ++it)
+// 	{
+		
+// 	}
+	
+// }
 
 /*
 	server {  lisen             127.0.0.1:8080   ;  }
@@ -491,10 +500,10 @@ size_t ParsingConfigFile::checkUploadDir(size_t pos_start, size_t pos_end, bool 
 	str >> check;
 	if (check.size())
 		throw MyException("Error Sintexsis Upload_Dir arguments" + this->getErrorline(pos_start));
-	DIR *dir = opendir(val.c_str());
-	if (!dir)
-		throw MyException("Error Sintexsis Upload_Dir not direktory" + this->getErrorline(pos_start));
-	closedir(dir);
+	// DIR *dir = opendir(val.c_str());
+	// if (!dir)
+	// 	throw MyException("Error Sintexsis Upload_Dir not direktory" + this->getErrorline(pos_start));
+	// closedir(dir);
 	if (controlFlag)
 		this->_serverList[this->_serverList.size() - 1].getLocations()\
 		[this->_serverList[this->_serverList.size() - 1].getLocations().size() - 1].setUpload_dir(val);

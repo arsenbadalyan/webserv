@@ -29,19 +29,6 @@ int main() {
     return (0);
 }
 
-// int main()
-// {
-// 	ReadFile r("./fi.html");
-// 	Config a;
-// 	a.setRoot("/System");
-// 	r.setResult(ForAutoIndex::ChreatHtmlFile(a));
-// 	r.Write();
-// 	std::string g;
-// 	std::cin >> g;
-// 	(void)g;
-// 	r.cleanFile();
-
-// }
 
 void print_struct(std::vector<Server> & s)
 {
