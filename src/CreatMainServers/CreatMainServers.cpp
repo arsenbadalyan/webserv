@@ -10,7 +10,9 @@ bool CreatMainServers::startServer(std::vector<Server> & serverlist)
 		return (false);
 	}
 	// struct timeval  tv;
+	RequestPool *requestPool = new RequestPool();
 	fd_set	rfds, wfds;
+
 	// tv.tv_sec = 0;
 	// tv.tv_usec = 0;
 	while(1)
@@ -23,8 +25,8 @@ bool CreatMainServers::startServer(std::vector<Server> & serverlist)
 
 		if (res >= 0)
 		{
-			CreatMainServers::writeClient(serverlist, wfds);
-			CreatMainServers::readClient(serverlist, rfds);
+			CreatMainServers::writeClient(serverlist, wfds, *requestPool);
+			CreatMainServers::readClient(serverlist, rfds, *requestPool);
 			CreatMainServers::conectClient(serverlist, rfds);
 		}
 	}
@@ -137,7 +139,7 @@ void CreatMainServers::conectClient(std::vector<Server> &serverlist, fd_set &rfd
 	}
 }
 
-void CreatMainServers::readClient(std::vector<Server> &serverlist, fd_set &rfds)
+void CreatMainServers::readClient(std::vector<Server> &serverlist, fd_set &rfds, RequestPool & requestPool)
 {
 	// char buffer[BUFFER_SIZE];
 	for (size_t j = 0; j < serverlist.size(); j++)
@@ -147,10 +149,7 @@ void CreatMainServers::readClient(std::vector<Server> &serverlist, fd_set &rfds)
 			if(FD_ISSET(serverlist[j].getReadSocket()[i]._fd, &rfds))
 			{
 				///// sra tex talisa funqcain kardalu hamar <----------------------------------
-				// bzero(buffer,BUFFER_SIZE);
-				// recv(serverlist[j].getReadSocket()[i]._fd, buffer, BUFFER_SIZE ,0);
-				// std::cout << buffer << std::endl;
-				HttpRequest(serverlist[j].getReadSocket()[i]._fd);
+				requestPool.sendRequest(serverlist[j].getReadSocket()[i]._fd, serverlist[j]);
 				////
 				serverlist[j].getWritSocket().push_back(serverlist[j].getReadSocket()[i]._fd);
 				serverlist[j].getReadSocket().erase(serverlist[j].getReadSocket().begin() + i);
@@ -171,10 +170,10 @@ void CreatMainServers::readClient(std::vector<Server> &serverlist, fd_set &rfds)
 	}
 }
 
-void CreatMainServers::writeClient(std::vector<Server> &serverlist, fd_set &wfds)
+void CreatMainServers::writeClient(std::vector<Server> &serverlist, fd_set &wfds, RequestPool & requestPool)
 {
 	// stugum em clienti fd grelu hamar
-	char buffer[BUFFER_SIZE];
+	// char buffer[BUFFER_SIZE];
 	for (size_t j = 0; j < serverlist.size(); j++)
 	{
 		for (size_t i = 0; i < serverlist[j].getWritSocket().size(); i++)
@@ -182,16 +181,18 @@ void CreatMainServers::writeClient(std::vector<Server> &serverlist, fd_set &wfds
 			if(FD_ISSET(serverlist[j].getWritSocket()[i], &wfds))
 			{
 				///// sra tex talisa funqcain grelu hamar <-------------------------------
-				int file = open("index.html", O_RDONLY);
-				bzero(buffer,BUFFER_SIZE);
-				if (file >= 0)
-				{
-					read(file, buffer, BUFFER_SIZE);
-					std::string resp;
-					resp += buffer;
-					send(serverlist[j].getWritSocket()[i], resp.c_str(), resp.size(), 0);
-					close(file);
-				}
+				requestPool.getResponse(serverlist[j].getWritSocket()[i]);
+				requestPool.destroyRequest(serverlist[j].getWritSocket()[i]);
+				// int file = open("index.html", O_RDONLY);
+				// bzero(buffer,BUFFER_SIZE);
+				// if (file >= 0)
+				// {
+				// 	read(file, buffer, BUFFER_SIZE);
+				// 	std::string resp;
+				// 	resp += buffer;
+				// 	send(serverlist[j].getWritSocket()[i], resp.c_str(), resp.size(), 0);
+				// 	close(file);
+				// }
 				//////
 			}
 			close(serverlist[j].getWritSocket()[i]);

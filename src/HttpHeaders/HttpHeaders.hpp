@@ -18,16 +18,16 @@ struct HttpHeaders {
 
 	public:
 		const std::string* getHeader(const std::string key) const;
-		HttpHeaders& setHeader(std::string& key, std::string& value);
+		HttpHeaders& setHeader(const std::string key, const std::string value);
 		HttpHeaders& setHeader(std::string& line);
+		std::string toString(void);
 
 	private:
 		HttpHeaders(const HttpHeaders &);
 		void operator=(const HttpHeaders &);
 
 	private:
-		void headerValidator(std::string& key, std::string& value) const;
-		std::string toString(void);
+		void headerValidator(const std::string& key, const std::string& value) const;
 
 	private:
 		HeadersMap headers;
