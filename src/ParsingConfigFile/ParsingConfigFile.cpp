@@ -365,8 +365,8 @@ void ParsingConfigFile::CheckAndCreatCorektPath()
 			itm != it->getServerConfig().getIndex().end(); ++itm)
 		{
 			*itm = it->getServerConfig().getRoot() + "/" + *itm;
-			if (access(itm->c_str(), F_OK))
-				throw MyException("Error Sintexsis Index no file in Server " + it->getServerName());
+			// if (access(itm->c_str(), F_OK))
+			// 	throw MyException("Error Sintexsis Index no file in Server " + it->getServerName());
 		}
 		for (std::vector<Config>::iterator itc = it->getLocations().begin(); itc != it->getLocations().end(); ++itc)
 		{
@@ -374,8 +374,8 @@ void ParsingConfigFile::CheckAndCreatCorektPath()
 				itm != itc->getIndex().end(); ++itm)
 			{
 				*itm = it->getServerConfig().getRoot() + "/" + *itm;
-				if (access(itm->c_str(), F_OK))
-					throw MyException("Error Sintexsis Index no file in Server " + it->getServerName() + " location " + itc->getLocation_name());
+				// if (access(itm->c_str(), F_OK))
+				// 	throw MyException("Error Sintexsis Index no file in Server " + it->getServerName() + " location " + itc->getLocation_name());
 			}
 		}
 	}
