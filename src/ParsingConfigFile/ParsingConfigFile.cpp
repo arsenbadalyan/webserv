@@ -321,7 +321,7 @@ void ParsingConfigFile::CheckAndCreatCorektPath()
 			it->getServerConfig().setUpload_dir(it->getServerConfig().getRoot() + "/" + it->getServerConfig().getUpload_dir());
 			DIR *dir = opendir(it->getServerConfig().getUpload_dir().c_str());
 			if (!dir)
-				throw MyException("Error Sintexsis Upload_Dir not direktory Server " + it->getServerName());
+				throw MyException("Syntax Error Upload_Dir not directory Server " + it->getServerName());
 			closedir(dir);
 		for (std::vector<Config>::iterator itc = it->getLocations().begin(); itc != it->getLocations().end(); ++itc)
 		{
@@ -330,7 +330,7 @@ void ParsingConfigFile::CheckAndCreatCorektPath()
 				itc->setUpload_dir(it->getServerConfig().getRoot() + "/" + itc->getUpload_dir());
 				DIR *dir = opendir(itc->getUpload_dir().c_str());
 				if (!dir)
-					throw MyException("Error Sintexsis Upload_Dir not direktory Server " + it->getServerName() + " location " + itc->getLocation_name());
+					throw MyException("Syntax Error Upload_Dir not directory Server " + it->getServerName() + " location " + itc->getLocation_name());
 				closedir(dir);
 			}
 		}
@@ -344,7 +344,7 @@ void ParsingConfigFile::CheckAndCreatCorektPath()
 		{
 			itm->second = it->getServerConfig().getRoot() + "/" + itm->second;
 			if (access(itm->second.c_str(), F_OK))
-				throw MyException("Error Sintexsis ErrorPage no file in Server " + it->getServerName());
+				throw MyException("Syntax Error ErrorPage no file in Server " + it->getServerName());
 		}
 		for (std::vector<Config>::iterator itc = it->getLocations().begin(); itc != it->getLocations().end(); ++itc)
 		{
@@ -353,7 +353,7 @@ void ParsingConfigFile::CheckAndCreatCorektPath()
 			{
 				itm->second = it->getServerConfig().getRoot() + "/" + itm->second;
 				if (access(itm->second.c_str(), F_OK))
-					throw MyException("Error Sintexsis ErrorPage no file in Server " + it->getServerName() + " location " + itc->getLocation_name());
+					throw MyException("Syntax Error ErrorPage no file in Server " + it->getServerName() + " location " + itc->getLocation_name());
 			}
 		}
 		
@@ -366,7 +366,7 @@ void ParsingConfigFile::CheckAndCreatCorektPath()
 		{
 			*itm = it->getServerConfig().getRoot() + "/" + *itm;
 			// if (access(itm->c_str(), F_OK))
-			// 	throw MyException("Error Sintexsis Index no file in Server " + it->getServerName());
+			// 	throw MyException("Syntax Error Index no file in Server " + it->getServerName());
 		}
 		for (std::vector<Config>::iterator itc = it->getLocations().begin(); itc != it->getLocations().end(); ++itc)
 		{
@@ -375,7 +375,7 @@ void ParsingConfigFile::CheckAndCreatCorektPath()
 			{
 				*itm = it->getServerConfig().getRoot() + "/" + *itm;
 				// if (access(itm->c_str(), F_OK))
-				// 	throw MyException("Error Sintexsis Index no file in Server " + it->getServerName() + " location " + itc->getLocation_name());
+				// 	throw MyException("Syntax Error Index no file in Server " + it->getServerName() + " location " + itc->getLocation_name());
 			}
 		}
 	}
@@ -399,10 +399,10 @@ size_t ParsingConfigFile::checkListen(size_t pos_start, size_t pos_end, bool con
 			break;
 		}
 		if (this->_data[i] == '\n')
-			throw MyException("Error Sintexsis Listen" + this->getErrorline(pos_start));
+			throw MyException("Syntax Error Listen" + this->getErrorline(pos_start));
 	}
 	if (i >= pos_end)
-		throw MyException("Error Sintexsis Listen" + this->getErrorline(pos_start));
+		throw MyException("Syntax Error Listen" + this->getErrorline(pos_start));
 	pos_end = end;
 	for (; start < end && (this->_data[start] == '\t' || this->_data[start] == ' '); ++start);
 	if (start >= end)
@@ -429,18 +429,18 @@ size_t ParsingConfigFile::checkServerName(size_t pos_start, size_t pos_end, bool
 			break;
 		}
 		if (this->_data[i] == '\n')
-			throw MyException("Error Sintexsis ServerName" + this->getErrorline(pos_start));
+			throw MyException("Syntax Error ServerName" + this->getErrorline(pos_start));
 	}
 	if (i >= pos_end)
-		throw MyException("Error Sintexsis ServerName" + this->getErrorline(pos_start));
+		throw MyException("Syntax Error ServerName" + this->getErrorline(pos_start));
 	std::stringstream str(std::string(this->_data.begin() + pos_start, this->_data.begin() + end));
 	std::string val, check;
 	str >> val;
 	str >> check;
 	if (check.size())
-		throw MyException("Error Sintexsis ServerName arguments" + this->getErrorline(pos_start));
+		throw MyException("Syntax Error ServerName arguments" + this->getErrorline(pos_start));
 	if (!checkSinv(val))
-		throw MyException("Error Sintexsis ServerName arguments" + this->getErrorline(pos_start));
+		throw MyException("Syntax Error ServerName arguments" + this->getErrorline(pos_start));
 	this->_serverList[this->_serverList.size() - 1].setServerName(val);
 	return size_t(end + 1);
 }
@@ -457,19 +457,19 @@ size_t ParsingConfigFile::checkRoot(size_t pos_start, size_t pos_end, bool contr
 			break;
 		}
 		if (this->_data[i] == '\n')
-			throw MyException("Error Sintexsis root" + this->getErrorline(pos_start));
+			throw MyException("Syntax Error root" + this->getErrorline(pos_start));
 	}
 	if (i >= pos_end)
-		throw MyException("Error Sintexsis root" + this->getErrorline(pos_start));
+		throw MyException("Syntax Error root" + this->getErrorline(pos_start));
 	std::stringstream str(std::string(this->_data.begin() + pos_start, this->_data.begin() + end));
 	std::string val, check;
 	str >> val;
 	str >> check;
 	if (check.size())
-		throw MyException("Error Sintexsis root arguments" + this->getErrorline(pos_start));
+		throw MyException("Syntax Error root arguments" + this->getErrorline(pos_start));
 	DIR *dir = opendir(val.c_str());
 	if (!dir)
-		throw MyException("Error Sintexsis root not direktory" + this->getErrorline(pos_start));
+		throw MyException("Syntax Error root not directory" + this->getErrorline(pos_start));
 	closedir(dir);
 	if (controlFlag)
 	{
@@ -497,7 +497,7 @@ size_t ParsingConfigFile::checkAllowMethods(size_t pos_start, size_t pos_end, bo
 
 	std::string methods = this->_data.substr(pos_start, this->_data.find('\n', pos_start) - pos_start);
 	if ((end = methods.find(';') ) == std::string::npos)
-		throw MyException("Error Sintexsis Allow_method" + this->getErrorline(pos_start));
+		throw MyException("Syntax Error Allow_method" + this->getErrorline(pos_start));
 	methods = methods.substr(0, end);
 	std::istringstream iss(methods);
 	
@@ -506,12 +506,12 @@ size_t ParsingConfigFile::checkAllowMethods(size_t pos_start, size_t pos_end, bo
 		words.push_back(word);
 
 	if (words.empty())
-		throw MyException("Error Sintexsis Allow_method" + this->getErrorline(pos_start));
+		throw MyException("Syntax Error Allow_method" + this->getErrorline(pos_start));
 
 	for (size_t i = 0; i < words.size(); i++)
 	{
 		if (words[i] != "GET" && words[i] != "POST" && words[i] != "DELETE")
-            throw MyException("Error Sintexsis Allow_method" + this->getErrorline(pos_start));
+            throw MyException("Syntax Error Allow_method" + this->getErrorline(pos_start));
 		if (words[i] == "GET")
 			g = true;
 		if (words[i] == "POST")
@@ -550,19 +550,19 @@ size_t ParsingConfigFile::checkUploadDir(size_t pos_start, size_t pos_end, bool 
 			break;
 		}
 		if (this->_data[i] == '\n')
-			throw MyException("Error Sintexsis Upload_Dir" + this->getErrorline(pos_start));
+			throw MyException("Syntax Error Upload_Dir" + this->getErrorline(pos_start));
 	}
 	if (i >= pos_end)
-		throw MyException("Error Sintexsis Upload_Dir" + this->getErrorline(pos_start));
+		throw MyException("Syntax Error Upload_Dir" + this->getErrorline(pos_start));
 	std::stringstream str(std::string(this->_data.begin() + pos_start, this->_data.begin() + end));
 	std::string val, check;
 	str >> val;
 	str >> check;
 	if (check.size())
-		throw MyException("Error Sintexsis Upload_Dir arguments" + this->getErrorline(pos_start));
+		throw MyException("Syntax Error Upload_Dir arguments" + this->getErrorline(pos_start));
 	// DIR *dir = opendir(val.c_str());
 	// if (!dir)
-	// 	throw MyException("Error Sintexsis Upload_Dir not direktory" + this->getErrorline(pos_start));
+	// 	throw MyException("Syntax Error Upload_Dir not directory" + this->getErrorline(pos_start));
 	// closedir(dir);
 	if (controlFlag)
 		this->_serverList[this->_serverList.size() - 1].getLocations()\
@@ -585,10 +585,10 @@ size_t ParsingConfigFile::checkErrorPage(size_t pos_start, size_t pos_end, bool 
 			break;
 		}
 		if (this->_data[i] == '\n')
-			throw MyException("Error Sintexsis ErrorPage" + this->getErrorline(pos_start));
+			throw MyException("Syntax Error ErrorPage" + this->getErrorline(pos_start));
 	}
 	if (i >= pos_end)
-		throw MyException("Error Sintexsis ErrorPage" + this->getErrorline(pos_start));
+		throw MyException("Syntax Error ErrorPage" + this->getErrorline(pos_start));
 	std::stringstream str(std::string(this->_data.begin() + pos_start, this->_data.begin() + end));
 	std::string val, page;
 	std::vector<size_t> statCod;
@@ -605,15 +605,15 @@ size_t ParsingConfigFile::checkErrorPage(size_t pos_start, size_t pos_end, bool 
 		catch(...)
 		{
 			if(page.size() || !statCod.size())
-				throw MyException("Error Sintexsis ErrorPage" + this->getErrorline(pos_start));
+				throw MyException("Syntax Error ErrorPage" + this->getErrorline(pos_start));
 	
 			// if (access(val.c_str(), F_OK))
-			// 	throw MyException("Error Sintexsis ErrorPage no file" + this->getErrorline(pos_start)); // verchum em stugelu
+			// 	throw MyException("Syntax Error ErrorPage no file" + this->getErrorline(pos_start)); // verchum em stugelu
 			page = val;
 		}
 	}
 	if (!statCod.size() || !page.size())
-		throw MyException("Error Sintexsis ErrorPage" + this->getErrorline(pos_start));
+		throw MyException("Syntax Error ErrorPage" + this->getErrorline(pos_start));
 	std::map<int, std::string> *_map;
 	if (controlFlag)
 	{
@@ -665,10 +665,10 @@ size_t ParsingConfigFile::checkReturn(size_t pos_start, size_t pos_end, bool con
 			break;
 		}
 		if (this->_data[i] == '\n')
-			throw MyException("Error Sintexsis Return" + this->getErrorline(pos_start));
+			throw MyException("Syntax Error Return" + this->getErrorline(pos_start));
 	}
 	if (i >= pos_end)
-		throw MyException("Error Sintexsis Return" + this->getErrorline(pos_start));
+		throw MyException("Syntax Error Return" + this->getErrorline(pos_start));
 
 	std::stringstream str(std::string(this->_data.begin() + pos_start, this->_data.begin() + end));
 	std::string val, page;
@@ -686,12 +686,12 @@ size_t ParsingConfigFile::checkReturn(size_t pos_start, size_t pos_end, bool con
 		catch(...)
 		{
 			if(page.size() || !statCod)
-				throw MyException("Error Sintexsis Return" + this->getErrorline(pos_start));
+				throw MyException("Syntax Error Return" + this->getErrorline(pos_start));
 			page = val;
 			continue;
 		}
 		if (ival && statCod)
-			throw MyException("Error Sintexsis Return" + this->getErrorline(pos_start));
+			throw MyException("Syntax Error Return" + this->getErrorline(pos_start));
 		if (ival && !statCod)
 			statCod = ival;
 		ival = 0;
@@ -727,16 +727,16 @@ size_t ParsingConfigFile::checkCgi(size_t pos_start, size_t pos_end, bool contro
 			break;
 		}
 		if (this->_data[i] == '\n')
-			throw MyException("Error Sintexsis Upload_Dir" + this->getErrorline(pos_start));
+			throw MyException("Syntax Error Upload_Dir" + this->getErrorline(pos_start));
 	}
 	if (i >= pos_end)
-		throw MyException("Error Sintexsis Upload_Dir" + this->getErrorline(pos_start));
+		throw MyException("Syntax Error Upload_Dir" + this->getErrorline(pos_start));
 	std::stringstream str(std::string(this->_data.begin() + pos_start, this->_data.begin() + end));
 	std::string val, check;
 	str >> val;
 	str >> check;
 	if (check.size())
-		throw MyException("Error Sintexsis Upload_Dir arguments" + this->getErrorline(pos_start));
+		throw MyException("Syntax Error Upload_Dir arguments" + this->getErrorline(pos_start));
 	bool *res;
 	if (controlFlag)
 		res = &(this->_serverList[this->_serverList.size() - 1].getLocations()\
@@ -749,7 +749,7 @@ size_t ParsingConfigFile::checkCgi(size_t pos_start, size_t pos_end, bool contro
 	else if(val == std::string("off"))
 		*res = (false);
 	else
-		throw MyException("Error Sintexsis Upload_Dir arguments" + this->getErrorline(pos_start));
+		throw MyException("Syntax Error Upload_Dir arguments" + this->getErrorline(pos_start));
 	return (end + 1);
 }
 
@@ -765,10 +765,10 @@ size_t ParsingConfigFile::checkIndex(size_t pos_start, size_t pos_end, bool cont
 			break;
 		}
 		if (this->_data[i] == '\n')
-			throw MyException("Error Sintexsis Index" + this->getErrorline(pos_start));
+			throw MyException("Syntax Error Index" + this->getErrorline(pos_start));
 	}
 	if (i >= pos_end)
-		throw MyException("Error Sintexsis Index" + this->getErrorline(pos_start));
+		throw MyException("Syntax Error Index" + this->getErrorline(pos_start));
 	std::stringstream str(std::string(this->_data.begin() + pos_start, this->_data.begin() + end));
 	std::string val;
 	std::vector<std::string> *res;
@@ -786,7 +786,7 @@ size_t ParsingConfigFile::checkIndex(size_t pos_start, size_t pos_end, bool cont
 		res->push_back(val);
 	}
 	if (!res->size())
-		throw MyException("Error Sintexsis Index" + this->getErrorline(pos_start));
+		throw MyException("Syntax Error Index" + this->getErrorline(pos_start));
 	return (end + 1);
 }
 
@@ -796,17 +796,17 @@ size_t ParsingConfigFile::checkAutoindex(size_t pos_start, size_t pos_end, bool 
 	size_t end;
 	std::string autoindex = this->_data.substr(pos_start, this->_data.find('\n', pos_start) - pos_start);
 	if ((end = autoindex.find(';') ) == std::string::npos)
-		throw MyException("Error Sintexsis Autoindex" + this->getErrorline(pos_start));
+		throw MyException("Syntax Error Autoindex" + this->getErrorline(pos_start));
 	autoindex = autoindex.substr(0, end);
 	std::string check;
 	std::istringstream iss(autoindex);
 	iss >> autoindex;
 	iss >> check;
 	if (check.size())
-		throw MyException("Error Sintexsis Autoindex arguments" + this->getErrorline(pos_start));
+		throw MyException("Syntax Error Autoindex arguments" + this->getErrorline(pos_start));
 	
 	if (autoindex != "off" && autoindex != "on")
-		throw MyException("Error Sintexsis Autoindex" + this->getErrorline(pos_start));
+		throw MyException("Syntax Error Autoindex" + this->getErrorline(pos_start));
 	if (!controlFlag)
 		this->_serverList[this->_serverList.size() - 1].getServerConfig().setAutoindex(autoindex == "off" ? false : true);
 	else
@@ -820,7 +820,7 @@ size_t ParsingConfigFile::checkGigabyte(std::string &BodySize, size_t pos_start)
 	size_t numb = std::stoul(BodySize);
 	std::string result = std::to_string(numb);
 	if (result.size() > 11 || numb > 17179869183)
-		throw MyException("Error Sintexsis ClientBodySize" + this->getErrorline(pos_start));
+		throw MyException("Syntax Error ClientBodySize" + this->getErrorline(pos_start));
 	return (numb);
 }
 
@@ -829,7 +829,7 @@ size_t ParsingConfigFile::checkMegabyte(std::string &BodySize, size_t pos_start)
 	size_t numb = std::stoul(BodySize);
 	std::string result = std::to_string(numb);
 	if (result.size() > 14 || numb > 17592186044415)
-		throw MyException("Error Sintexsis ClientBodySize" + this->getErrorline(pos_start));
+		throw MyException("Syntax Error ClientBodySize" + this->getErrorline(pos_start));
 	return (numb);
 }
 
@@ -838,7 +838,7 @@ size_t ParsingConfigFile::checkKilobyte(std::string &BodySize, size_t pos_start)
 	size_t numb = std::stoul(BodySize);
 	std::string result = std::to_string(numb);
 	if (result.size() > 17 || numb > 18014398509481983)
-		throw MyException("Error Sintexsis ClientBodySize" + this->getErrorline(pos_start));
+		throw MyException("Syntax Error ClientBodySize" + this->getErrorline(pos_start));
 	return (numb);
 }
 
@@ -854,7 +854,7 @@ size_t ParsingConfigFile::checkByte(std::string &BodySize, size_t pos_start)
 	size_t numb = static_cast<size_t>(std::strtoull(BodySize.c_str(), nullptr, 10));
 	std::string check = std::to_string(numb);
 	if (check != BodySize)
-		throw MyException("Error Sintexsis ClientBodySize" + this->getErrorline(pos_start));
+		throw MyException("Syntax Error ClientBodySize" + this->getErrorline(pos_start));
 	return (numb);
 }
 
@@ -871,7 +871,7 @@ size_t	ParsingConfigFile::findSimbol(std::string &BodySize, size_t pos_start)
 	else if ((BodySize[pos] == 'G' || BodySize[pos] == 'g') && BodySize[pos + 1] == '\0')
 		result = checkGigabyte(BodySize, pos_start) * 1024 * 1024 * 1024;
 	else
-		throw MyException("Error Sintexsis ClientBodySize" + this->getErrorline(pos_start));
+		throw MyException("Syntax Error ClientBodySize" + this->getErrorline(pos_start));
 	return (result);
 }
 
@@ -906,14 +906,14 @@ size_t ParsingConfigFile::checkClientMaxBodySize(size_t pos_start, size_t pos_en
 	(void)pos_end;
 	std::string BodySize = this->_data.substr(pos_start, this->_data.find('\n', pos_start) - pos_start);
 	if ((end = BodySize.find(';') ) == std::string::npos)
-		throw MyException("Error Sintexsis ClientBodySize" + this->getErrorline(pos_start));
+		throw MyException("Syntax Error ClientBodySize" + this->getErrorline(pos_start));
 	BodySize = BodySize.substr(0, end);
 	std::string check;
 	std::istringstream iss(BodySize);
 	iss >> BodySize;
 	iss >> check;
 	if (check.size())
-		throw MyException("Error Sintexsis Autoindex arguments" + this->getErrorline(pos_start));
+		throw MyException("Syntax Error Autoindex arguments" + this->getErrorline(pos_start));
 	result = findSimbol(BodySize, pos_start);
 
 	if (controlFlag)
@@ -952,7 +952,7 @@ bool ParsingConfigFile::checCorectHostAndPort(size_t pos_start, size_t pos_end, 
 	(void)controlFlag;
 	std::string::iterator  it = std::find(this->_data.begin() + pos_start, this->_data.begin() + pos_end, ':');
 	// if (it == this->_data.end())
-	// 	throw MyException("Error Sintexsis Listen -> :" + this->getErrorline(pos_start));
+	// 	throw MyException("Syntax Error Listen -> :" + this->getErrorline(pos_start));
 	// std::cout << "string == " << std::string(this->_data.begin() + pos_start, this->_data.begin() + pos_end) << std::endl;
 	// std::cout << "it = " << *it << "  end == " << *(this->_data.begin() + pos_end) << std::endl;
 	size_t	pos_period = it - this->_data.begin();
@@ -960,15 +960,15 @@ bool ParsingConfigFile::checCorectHostAndPort(size_t pos_start, size_t pos_end, 
 	{
 		// std::cout << "Error 3.1\n";
 		if (!chekAndSavePort(std::string(this->_data.begin() + pos_start, this->_data.begin() + pos_end)))
-			throw MyException("Error Sintexsis Listen Host" + this->getErrorline(pos_start));
+			throw MyException("Syntax Error Listen Host" + this->getErrorline(pos_start));
 	}
 	else
 	{
 		// std::cout << "Error 3.2\n";
 		if (!chekAndSaveHost(std::string(this->_data.begin() + pos_start, this->_data.begin() + pos_period)))
-			throw MyException("Error Sintexsis Listen Host" + this->getErrorline(pos_start));
+			throw MyException("Syntax Error Listen Host" + this->getErrorline(pos_start));
 		if (!chekAndSavePort(std::string(this->_data.begin() + pos_period + 1, this->_data.begin() + pos_end)))
-			throw MyException("Error Sintexsis Listen Host" + this->getErrorline(pos_start));
+			throw MyException("Syntax Error Listen Host" + this->getErrorline(pos_start));
 	}
 	// std::cout << "Error 3.3\n";
 	return (true);
@@ -982,7 +982,7 @@ bool u(char a)
 bool ParsingConfigFile::chekAndSaveHost(std::string host)
 {
 	if (this->_serverList[this->_serverList.size() - 1].getHostFlag())
-		throw MyException("Error Sintexsis Listen Host double host");
+		throw MyException("Syntax Error Listen Host double host");
 	this->_serverList[this->_serverList.size() - 1].setHostFlag(true);
 	size_t count = std::count_if(host.begin(), host.end(), u);
 	std::stringstream str(host);
@@ -994,11 +994,11 @@ bool ParsingConfigFile::chekAndSaveHost(std::string host)
 			val.clear();
 			std::getline(str, val, '.');
 			if (!chekHostNumber(val))
-				throw MyException("Error Sintexsis Listen Host");
+				throw MyException("Syntax Error Listen Host");
 		}
 	}
 	else
-		throw MyException("Error Sintexsis Listen Host -> . <-");
+		throw MyException("Syntax Error Listen Host -> . <-");
 	this->_serverList[this->_serverList.size() - 1].setHost(host);
 	return (true);
 }
@@ -1025,11 +1025,11 @@ bool ParsingConfigFile::chekAndSavePort(std::string port)
 	}
 	catch(...)
 	{
-		throw MyException("Error Sintexsis Listen Port");
+		throw MyException("Syntax Error Listen Port");
 	}
 	// std::cout << "Error 2.7\n";
 	if (size != port.size() || number < 1 || number > 65535)
-		throw MyException("Error Sintexsis Listen Port");
+		throw MyException("Syntax Error Listen Port");
 	// std::cout << "Error 2.8\n";
 	if (this->_serverList[this->_serverList.size() - 1].getPort().size() && \
 	this->_serverList[this->_serverList.size() - 1].getPort().end() != \
@@ -1061,10 +1061,10 @@ bool ParsingConfigFile::chekHostNumber(std::string number)
 	}
 	catch(...)
 	{
-		throw MyException("Error Sintexsis Listen Host");
+		throw MyException("Syntax Error Listen Host");
 	}
 	if (size != number.size() || num < 0 || num > 255)
-		throw MyException("Error Sintexsis Listen Host");
+		throw MyException("Syntax Error Listen Host");
 	return (true);
 }
 

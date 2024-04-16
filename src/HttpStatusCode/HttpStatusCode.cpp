@@ -34,3 +34,7 @@ const StatusCodesMap HttpStatusCode::StatusCode(
 std::string HttpStatusCode::getStatusCode(const int16_t& code) {
     return (HttpStatusCode::StatusCode.find(code)->second);
 }
+
+bool HttpStatusCode::isErrorStatusCode(const int16_t& code) {
+    return (code >= 400 && code <= 599);
+}

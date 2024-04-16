@@ -8,6 +8,8 @@ typedef std::map<int16_t, std::string> StatusCodesMap;
 
 struct HttpStatusCode {
 
+	static const int16_t INVALID_STATUS_CODE = -1;
+
 	static const int16_t OK = 200;
 	// static const int16_t CREATED = 201;
 	// static const int16_t NO_CONTENT = 204;
@@ -25,6 +27,7 @@ struct HttpStatusCode {
 	static const StatusCodesMap StatusCode;
 
 	static std::string getStatusCode(const int16_t& code);
+	static bool isErrorStatusCode(const int16_t& code);
 
 	private:
 		HttpStatusCode(void);

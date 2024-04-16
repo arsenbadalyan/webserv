@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <map>
 #include "HttpRequest.hpp"
 #include "RootConfigs.hpp"
 #include "HttpStatusCode.hpp"
@@ -38,6 +39,9 @@ class HttpResponse {
 		int _writeSocketFd;
 		bool _isReturnTerminatedResponse;
 		std::ifstream _requestedFile;
+		std::string _requestedFileType;
+		std::string _requestedFilePath;
+		int16_t _statusCode;
 };
 
 #endif // !__HTTP_REQUEST__HPP__

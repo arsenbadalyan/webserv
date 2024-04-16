@@ -1,20 +1,20 @@
 server 
 {
-	listen 127.0.0.1:7070 ;
+	listen 127.0.0.1:2222 ;
 #	listen 50;
-	server_name fdfsdfd ;
-	root src;
+	server_name test_server ;
+	root ./www;
 	allow_methods GET;
 	client_max_body_size 17179869183G;
-	upload_dir Config;
-	error_page 502 404 400 200 main.cpp;
+	upload_dir upload;
+	error_page 502 404 400 200 error.html;
 #	return 200 ;
-	index main.cpp;
+	index index.html;
 	cgi on;
 	autoindex on ;
 	location blabla 
 	{
-		index main.cpp;
+		index index.html test.html test2.html;
 		return 404;
 	}
 
