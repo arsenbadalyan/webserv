@@ -78,6 +78,7 @@ private:
 
 	bool	checkSinv(const std::string &sin);
 	bool	checkLocName(const std::string &sin);
+	void	addErrorPathForLocation();
 
 	class MyException : public std::exception
 	{

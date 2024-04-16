@@ -31,6 +31,7 @@ std::vector<Server> ParsingConfigFile::startPars()
 	if (!this->CheckCorecktServer())
 		throw MyException("Corect Error");
 	this->CheckAndCreatCorektPath();
+	this->addErrorPathForLocation();
 	return (this->_serverList);
 }
 
@@ -318,11 +319,13 @@ void ParsingConfigFile::CheckAndCreatCorektPath()
 	for (std::vector<Server>::iterator it = this->_serverList.begin(); it != this->_serverList.end(); ++it)
 	{
 		if(it->getServerConfig().getUpload_dir().size())
+		{
 			it->getServerConfig().setUpload_dir(it->getServerConfig().getRoot() + "/" + it->getServerConfig().getUpload_dir());
 			DIR *dir = opendir(it->getServerConfig().getUpload_dir().c_str());
 			if (!dir)
 				throw MyException("Error Sintexsis Upload_Dir not direktory Server " + it->getServerName());
 			closedir(dir);
+		}
 		for (std::vector<Config>::iterator itc = it->getLocations().begin(); itc != it->getLocations().end(); ++itc)
 		{
 			if (itc->getUpload_dir().size())
@@ -592,7 +595,6 @@ size_t ParsingConfigFile::checkErrorPage(size_t pos_start, size_t pos_end, bool 
 	std::stringstream str(std::string(this->_data.begin() + pos_start, this->_data.begin() + end));
 	std::string val, page;
 	std::vector<size_t> statCod;
-
 	for (; !str.eof() ;)
 	{
 		str >> val;
@@ -618,7 +620,7 @@ size_t ParsingConfigFile::checkErrorPage(size_t pos_start, size_t pos_end, bool 
 	if (controlFlag)
 	{
 		_map = &(this->_serverList[this->_serverList.size() - 1].getLocations()\
-		[this->_serverList[this->_serverList.size() - 1].getLocations().size()].getError_page());
+		[this->_serverList[this->_serverList.size() - 1].getLocations().size() - 1].getError_page());
 	}
 	else{
 		_map = &(this->_serverList[this->_serverList.size() - 1].getServerConfig().getError_page());
@@ -897,6 +899,18 @@ bool ParsingConfigFile::checkLocName(const std::string &sin)
 			return (false);
 	}
 	return (true);
+}
+
+void ParsingConfigFile::addErrorPathForLocation()
+{
+	for(std::vector<Server>::iterator it = this->_serverList.begin(); it != this->_serverList.end();++it)
+	{
+		for (std::vector<Config>::iterator itm = it->getLocations().begin(); itm != it->getLocations().end() ; ++itm)
+		{
+			if (!itm->getError_page().size())
+				itm->setError_page(it->getServerConfig().getError_page());
+		}
+	}
 }
 
 size_t ParsingConfigFile::checkClientMaxBodySize(size_t pos_start, size_t pos_end, bool controlFlag)

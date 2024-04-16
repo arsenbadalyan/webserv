@@ -27,6 +27,7 @@ server
 
 	location /test/index.html
 	{
+		error_page 404 main.cpp;
 		index main.cpp;
 		return 301;
 	}

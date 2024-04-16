@@ -8,6 +8,7 @@
 // #include <sys/types.h>
 #include <sys/stat.h>
 #include "ReadFile.hpp"
+#include <ctime>
 
 class ForAutoIndex
 {
