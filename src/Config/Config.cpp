@@ -3,7 +3,7 @@
 Config::Config():
 	_root("/var/www"),
 	_root_flag(false),
-	_autoindex(true),_client_max_body_size(1024*1024) 
+	_autoindex(true),_client_max_body_size(1024*1024), _cmbs_flaf(false)
 {
 	this->_index.push_back("index.html");
 	
@@ -19,6 +19,7 @@ Config::Config(const Config& other):
 	_return(other._return), _cgi(other._cgi) ,
 	_index(other._index),_location_name(other._location_name),
 	_autoindex(other._autoindex),
+	_cmbs_flaf(other._cmbs_flaf),
 	_client_max_body_size(other._client_max_body_size) {}
 
 Config& Config::operator= (const Config& other)
@@ -35,6 +36,7 @@ Config& Config::operator= (const Config& other)
 		this->_index = other._index;
 		this->_location_name = other._location_name;
 		this->_autoindex = other._autoindex;
+		this->_cmbs_flaf = other._cmbs_flaf;
 		this->_client_max_body_size = other._client_max_body_size;
 	}
 	return (*this);
@@ -149,6 +151,17 @@ bool Config::getAutoindex() const
 Config& Config::setAutoindex(const bool autoindex)
 {
 	this->_autoindex = autoindex;
+	return (*this);
+}
+
+bool Config::getcmbsFlag() const
+{
+	return (this->_cmbs_flaf);
+}
+
+Config& Config::setcmbsFlag(const bool cmbs_flaf)
+{
+	this->_cmbs_flaf = cmbs_flaf;
 	return (*this);
 }
 
