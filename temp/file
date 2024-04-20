@@ -53,6 +53,8 @@ server
 	client_max_body_size: Set the maximum allowed size of the client request body. --> 2KB ?? --> defold 1MB
 
 
+	ete chka poxel serverinov -->> client_max_body_size, 
+
 	byte --> 18446744073709551615
 	kilo --> 18014398509481983
 	M --> 17592186044415

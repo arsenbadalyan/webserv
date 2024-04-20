@@ -21,6 +21,7 @@ private:
 	std::vector<std::string>	_index;
 	std::string					_location_name;
 	bool						_autoindex;
+	bool						_cmbs_flaf;
 	unsigned long				_client_max_body_size;
 public:
 	Config();
@@ -57,6 +58,9 @@ public:
 
 	bool getAutoindex() const;
 	Config& setAutoindex(const bool autoindex);
+
+	bool getcmbsFlag() const;
+	Config& setcmbsFlag(const bool cmbs_flaf);
 
 	unsigned long getClient_max_body_size() const;
 	Config& setClient_max_body_size(const unsigned long client_max_body_size);

@@ -4,8 +4,8 @@ server
 #	listen 50;
 	server_name fdfsdfd ;
 	root src;
-	allow_methods GET;
-	client_max_body_size 17179869183G;
+#	allow_methods GET;
+#	client_max_body_size 1 ;
 	upload_dir Config;
 	error_page 502 404 400 200 main.cpp;
 #	return 200 ;
@@ -14,6 +14,7 @@ server
 	autoindex on ;
 	location blabla 
 	{
+		client_max_body_size 1 ;
 		index main.cpp;
 		return 404;
 	}
@@ -42,7 +43,7 @@ server
 	listen 1211;
 	server_name aaaaaa;
 	root src;
-	allow_methods GET;
+#	allow_methods GET;
 	client_max_body_size 17179869183G;
 	upload_dir Config;
 	error_page 200 301 400 404 405 413 502 main.cpp;

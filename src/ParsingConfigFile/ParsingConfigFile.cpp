@@ -254,7 +254,8 @@ size_t	ParsingConfigFile::CheckCorecktConfig(std::string config, size_t pos_star
 	}
 	else if (std::string("allow_methods") == config)
 	{
-
+		if (!controlFlag)
+			throw MyException("Error allow_methods in server " + this->getErrorline(pos_start));
 		res = checkAllowMethods(pos_start, pos_end, controlFlag);
 		if (SIZE_MAX != res)
 			return (res);
@@ -911,6 +912,17 @@ void ParsingConfigFile::addErrorPathForLocation()
 				itm->setError_page(it->getServerConfig().getError_page());
 		}
 	}
+	for(std::vector<Server>::iterator it = this->_serverList.begin(); it != this->_serverList.end();++it)
+	{
+		for (std::vector<Config>::iterator itm = it->getLocations().begin(); itm != it->getLocations().end() ; ++itm)
+		{
+			std::cout << "flag = |" <<  itm->getcmbsFlag() << "|" << std::endl;
+			if (!itm->getcmbsFlag())
+			{
+				itm->setClient_max_body_size(it->getServerConfig().getClient_max_body_size());
+			}
+		}
+	}
 }
 
 size_t ParsingConfigFile::checkClientMaxBodySize(size_t pos_start, size_t pos_end, bool controlFlag)
@@ -934,6 +946,8 @@ size_t ParsingConfigFile::checkClientMaxBodySize(size_t pos_start, size_t pos_en
 	{
 		this->_serverList[this->_serverList.size() - 1].getLocations()\
 		[this->_serverList[this->_serverList.size() - 1].getLocations().size() - 1].setClient_max_body_size(result);
+		this->_serverList[this->_serverList.size() - 1].getLocations()\
+		[this->_serverList[this->_serverList.size() - 1].getLocations().size() - 1].setcmbsFlag(true);
 	}
 	else
 		this->_serverList[this->_serverList.size() - 1].getServerConfig().setClient_max_body_size(result);
