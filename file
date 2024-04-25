@@ -12,7 +12,7 @@ server
 	index main.cpp;
 	cgi on;
 	autoindex on ;
-	location blabla 
+	location a
 	{
 		client_max_body_size 1 ;
 		index main.cpp;
@@ -26,7 +26,7 @@ server
 		allow_methods POST;
 	}
 
-	location /test/index.html
+	location /test/index.html///////
 	{
 		error_page 404 main.cpp;
 		index main.cpp;
