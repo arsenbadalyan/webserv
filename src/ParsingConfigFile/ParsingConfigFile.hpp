@@ -77,7 +77,8 @@ private:
 	size_t findSimbol(std::string &BodySize, size_t pos_start);
 
 	bool	checkSinv(const std::string &sin);
-	bool	checkLocName(const std::string &sin);
+	void	CleaningTheLocationName(std::string &loc_name);
+	bool	checkLocName(const std::string sin);
 	void	addErrorPathForLocation();
 
 	class MyException : public std::exception

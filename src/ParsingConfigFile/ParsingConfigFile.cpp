@@ -190,7 +190,8 @@ size_t ParsingConfigFile::CheckCorecktLocation(size_t pos_start, size_t pos_end)
 				this->_data[end] != '\n' && this->_data[end] != ' ' && this->_data[end] != '{'; ++end);
 			//Location_name set
 			std::string loc_name = std::string(this->_data.begin() + start, this->_data.begin() + end);
-			if (!checkLocName(loc_name))
+			CleaningTheLocationName(loc_name);
+			if (!checkLocName(std::string(loc_name.begin() + 1, loc_name.end())))
 				throw MyException("Error name location" + this->getErrorline(pos_start));
 			this->_serverList[this->_serverList.size() -1].getLocations()\
 			[this->_serverList[this->_serverList.size() -1].getLocations().size() - 1].\
@@ -890,8 +891,43 @@ bool ParsingConfigFile::checkSinv(const std::string &sin)
 	return (true);
 }
 
-bool ParsingConfigFile::checkLocName(const std::string &sin)
+void ParsingConfigFile::CleaningTheLocationName(std::string &loc_name)
 {
+	for (size_t i = 0; i < loc_name.size();)
+	{
+		if (i == 0)
+		{
+			if (loc_name[0] != '/')
+			{
+				loc_name = '/' + loc_name;
+				++i;
+			}else if (loc_name.size() > 1 && loc_name[1] == '/') {
+				loc_name = std::string(loc_name.begin() + 1, loc_name.end());
+			}
+			else
+				++i;
+		} else if (loc_name[i] == '/')
+		{
+			size_t j = i + 1;
+			while(j < loc_name.size() && loc_name[j] == '/')
+				++j;
+			if (j == loc_name.size())
+			{
+				//uremn i ic heto sax "/" es nshanna ktrel
+				loc_name = std::string(loc_name.begin(), loc_name.begin() + i);
+				return ;
+			}else
+				i = j;
+		}
+		else
+			++i;
+	}
+}
+
+bool ParsingConfigFile::checkLocName(const std::string sin)
+{
+	if (!sin.size())
+		return (false);
 	for (size_t i = 0; i < sin.size(); i++)
 	{
 		if (sin[i] == '\\' || sin[i] == ':' || sin[i] == '?' \
