@@ -3,7 +3,7 @@
 Config::Config():
 	_root("/var/www"),
 	_root_flag(false),
-	_autoindex(true),_client_max_body_size(1024*1024), _cmbs_flaf(false)
+	_autoindex(true), _cmbs_flaf(false), _client_max_body_size(1024*1024)
 {
 	this->_index.push_back("index.html");
 	

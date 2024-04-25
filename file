@@ -16,7 +16,9 @@ server
 
 	location /yey 
 	{
-		return 404;
+		client_max_body_size 1 ;
+		index main.cpp;
+		return 404 "ok";
 	}
 
 	location /test/barev
