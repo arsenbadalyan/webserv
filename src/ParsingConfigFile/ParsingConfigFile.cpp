@@ -916,7 +916,6 @@ void ParsingConfigFile::addErrorPathForLocation()
 	{
 		for (std::vector<Config>::iterator itm = it->getLocations().begin(); itm != it->getLocations().end() ; ++itm)
 		{
-			std::cout << "flag = |" <<  itm->getcmbsFlag() << "|" << std::endl;
 			if (!itm->getcmbsFlag())
 			{
 				itm->setClient_max_body_size(it->getServerConfig().getClient_max_body_size());

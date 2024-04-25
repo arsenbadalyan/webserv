@@ -33,9 +33,11 @@ int& StatusCollection::getStatusTypes()
 	return (this->_statusTypes);
 }
 
-std::string& StatusCollection::getPath()
+std::string* StatusCollection::getPath()
 {
-	return (this->_path);
+	if (!this->_path.size())
+		return (NULL);
+	return &(this->_path);
 }
 
 StatusCollection& StatusCollection::setStatusTypes(const size_t statusType)

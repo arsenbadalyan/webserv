@@ -20,7 +20,7 @@ public:
 	~StatusCollection();
 	bool	isRedirection();
 	int& getStatusTypes();
-	std::string &getPath();
+	std::string *getPath();
 	StatusCollection& setStatusTypes(const size_t statusType);
 	StatusCollection& setPath(const std::string& path);
 };
