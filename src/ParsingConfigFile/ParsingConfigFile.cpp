@@ -1,11 +1,21 @@
 #include "ParsingConfigFile.hpp"
 
-ParsingConfigFile::ParsingConfigFile(const std::string & filename) : _file(filename)	{}
+ParsingConfigFile::ParsingConfigFile(const std::string & filename) : _file(filename)
+{
+	this->_statusCode.insert(200);
+	this->_statusCode.insert(301);
+	this->_statusCode.insert(400);
+	this->_statusCode.insert(404);
+	this->_statusCode.insert(405);
+	this->_statusCode.insert(413);
+	this->_statusCode.insert(502);
+}
 
 ParsingConfigFile::ParsingConfigFile(const ParsingConfigFile & other) 
 {
 	this->_file = other._file;
 	this->_data = other._data;
+	this->_statusCode = other._statusCode;
 }
 
 ParsingConfigFile & ParsingConfigFile::operator=(const ParsingConfigFile & other)
@@ -14,6 +24,7 @@ ParsingConfigFile & ParsingConfigFile::operator=(const ParsingConfigFile & other
 	{
 		this->_file = other._file;
 		this->_data = other._data;
+		this->_statusCode = other._statusCode;
 	}
 	return (*this);
 }
@@ -648,10 +659,18 @@ size_t ParsingConfigFile::statusCodes(std::string number)
 	{
 		throw MyException(" ");
 	}
-	if (size != number.size() || num < 100 || num > 599)
-		throw MyException(" ");
-	if (num != 200 && num != 301 && num != 400 && num != 404 && \
-						num != 405 && num != 413 && num != 502 )
+	// if (size != number.size() || num < 100 || num > 599)
+	// 	throw MyException(" ");
+	// if (num != 200 && num != 301 && num != 400 && num != 404 && \
+	// 					num != 405 && num != 413 && num != 502 )
+	// 	throw MyException(" ");
+	std::set<int>::iterator it = this->_statusCode.begin();
+	for (; it != this->_statusCode.end(); ++it)
+	{
+		if (*it == num)
+			break;
+	}
+	if (size != number.size() || it == this->_statusCode.end())
 		throw MyException(" ");
 	return (static_cast<size_t>(num));
 }

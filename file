@@ -7,7 +7,7 @@ server
 #	allow_methods GET;
 #	client_max_body_size 1 ;
 	upload_dir Config;
-	error_page 502 404 400 200 main.cpp;
+	error_page 502 413 400 200 main.cpp;
 #	return 200 ;
 	index main.cpp;
 	cgi on;
