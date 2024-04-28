@@ -4,6 +4,10 @@
 #include <iostream>
 #include <fstream>
 #include <map>
+#include <list>
+#include "ForAutoIndex.hpp"
+#include "ActiveMetods.hpp"
+#include "ExceptionHandler.hpp"
 #include "HttpRequest.hpp"
 #include "RootConfigs.hpp"
 #include "HttpStatusCode.hpp"
@@ -22,10 +26,12 @@ class HttpResponse {
 		void getResponse(void);
 
 	private:
-		std::string configureStatusLine();
-		std::string configureHeaders();
+		void configureStatusLine(void);
+		void configureHeaders(void);
 		void configureDefaultHeaders(void);
-		void sendBody();
+		void sendBody(void);
+		void sendFailedRequest(void);
+		void sendResponseRootSlice(void);
 	
 	private:
 		HttpResponse(const HttpResponse&);
@@ -42,6 +48,7 @@ class HttpResponse {
 		std::string _requestedFileType;
 		std::string _requestedFilePath;
 		int16_t _statusCode;
+		std::string *_folderStructure;
 };
 
 #endif // !__HTTP_REQUEST__HPP__

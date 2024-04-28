@@ -11,3 +11,5 @@ const std::string HttpHeaderNames::DATE = "Date";
 const std::string HttpHeaderNames::SERVER = "Server";
 const std::string HttpHeaderNames::EXPIRES = "Expires";
 const std::string HttpHeaderNames::LAST_MODIFIED = "Last-Modified";
+const std::string HttpHeaderNames::LOCATION = "Location";
+const std::string HttpHeaderNames::CONNECTION = "Connection";

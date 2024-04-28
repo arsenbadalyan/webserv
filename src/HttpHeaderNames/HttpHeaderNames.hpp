@@ -12,6 +12,8 @@ class HttpHeaderNames {
 		static const std::string SERVER;
 		static const std::string EXPIRES;
 		static const std::string LAST_MODIFIED;
+		static const std::string LOCATION;
+		static const std::string CONNECTION;
 
 	private:
 		HttpHeaderNames(void);

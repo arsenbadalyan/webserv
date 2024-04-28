@@ -38,3 +38,7 @@ std::string HttpStatusCode::getStatusCode(const int16_t& code) {
 bool HttpStatusCode::isErrorStatusCode(const int16_t& code) {
     return (code >= 400 && code <= 599);
 }
+
+bool HttpStatusCode::isRedirectStatusCode(const int16_t& code) {
+    return (code >= 300 && code < 400);
+}

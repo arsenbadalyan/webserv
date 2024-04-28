@@ -12,6 +12,7 @@ HttpRequest::HttpRequest(Server* currentServer, int readSocketFd) :
 	_hasFinishedRead(false),
 	_server(currentServer)
 {
+	std::cout << "<<<<<<<<<<<< REQUEST RESULTS" << std::endl;
 	std::string readRes = this->requestInitialParsing(readSocketFd);
 
 	this->configureRequestByHeaders();
@@ -19,7 +20,6 @@ HttpRequest::HttpRequest(Server* currentServer, int readSocketFd) :
 	if (this->chunking == chunk_type::no_chunks)
 		this->_hasFinishedRead = true;
 
-	std::cout << "<<<<<<<<<<<< REQUEST RESULTS" << std::endl;
 	std::cout << "method: " << this->method << std::endl;
 	std::cout << "endpoint: " << this->endpoint << std::endl;
 	std::cout << "isChunked: " << this->chunking << std::endl;
@@ -171,4 +171,8 @@ const std::string HttpRequest::getFullFilePath(void) const {
 
 Server * HttpRequest::getServer(void) const {
 	return (this->_server);
+}
+
+const std::string HttpRequest::getMethod(void) const {
+	return (this->method);
 }

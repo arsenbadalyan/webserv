@@ -22,6 +22,22 @@ SplitPair Util::split(const std::string& str, char delimiter) {
 	return (SplitPair(dividedList, size));
 }
 
+std::string Util::joinSplittedPartsBy(std::string *splittedParts, size_t joinSize, char joinBy) {
+	std::string result = "";
+	size_t idx = 0;
+
+	while (idx < joinSize)
+	{
+		if (splittedParts[idx].length()) {
+			result += joinBy;
+			result += splittedParts[idx];
+		}
+		idx++;
+	}
+
+	return (result);
+}
+
 std::string Util::toLower(const std::string& str) {
 	std::string lowercasedStr = "";
 	size_t idx = 0;
@@ -167,6 +183,7 @@ std::string Util::generateDefaultErrorPage(const int16_t & statusCode) {
     htmlStream << "<body>\n";
     htmlStream << "    <div class=\"container\">\n";
     htmlStream << "        <h1>" << statusCode << " " << HttpStatusCode::getStatusCode(statusCode) << "</h1>\n";
+	htmlStream << "        <hr />\n";
     htmlStream << "        <p>" << RootConfigs::SERVER_NAME << "</p>\n";
     htmlStream << "    </div>\n";
     htmlStream << "</body>\n";

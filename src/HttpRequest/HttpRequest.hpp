@@ -44,6 +44,7 @@ class HttpRequest {
 		bool hasFinishedReceivingRequest(void) const;
 		const std::string getEndpoint(void) const;
 		const std::string getFullFilePath(void) const;
+		const std::string getMethod(void) const;
 
 	private:
 		HttpRequest(void);

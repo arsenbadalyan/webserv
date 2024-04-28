@@ -12,6 +12,7 @@ class ExceptionHandler {
         static void CannotGetRequestToSendResponse(void);
         static void CannotDestroyRequest(void);
         static void InvalidFileInfo(void);
+        static void OutOfMaxBodyRange(void);
 
 };
 

@@ -28,6 +28,7 @@ struct HttpStatusCode {
 
 	static std::string getStatusCode(const int16_t& code);
 	static bool isErrorStatusCode(const int16_t& code);
+	static bool isRedirectStatusCode(const int16_t& code);
 
 	private:
 		HttpStatusCode(void);

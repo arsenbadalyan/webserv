@@ -31,9 +31,15 @@ Config *Server::findLocations(const std::string &name)
 {
 	for (size_t i = 0; i < this->_locations.size(); ++i)
 	{
-		if(Util::in(this->_locations[i].getLocation_name(),name))
-		{
-			return &(this->_locations[i]);
+		SplitPair splittedLocationName = Util::split(name, '/');
+
+		while (splittedLocationName.second) {
+			std::string joined = Util::joinSplittedPartsBy(splittedLocationName.first, splittedLocationName.second, '/');
+
+			if (this->_locations[i].getLocation_name() == joined) {
+				return &(this->_locations[i]);
+			}
+			splittedLocationName.second--;
 		}
 	}
 	return &(this->getServerConfig());
