@@ -374,27 +374,27 @@ void ParsingConfigFile::CheckAndCreatCorektPath()
 		}
 		
 	}
-	//index
-	for (std::vector<Server>::iterator it = this->_serverList.begin(); it != this->_serverList.end(); ++it)
-	{
-		for (std::vector<std::string>::iterator itm = it->getServerConfig().getIndex().begin();\
-			itm != it->getServerConfig().getIndex().end(); ++itm)
-		{
-			*itm = it->getServerConfig().getRoot() + "/" + *itm;
-			// if (access(itm->c_str(), F_OK))
-			// 	throw MyException("Syntax Error Index no file in Server " + it->getServerName());
-		}
-		for (std::vector<Config>::iterator itc = it->getLocations().begin(); itc != it->getLocations().end(); ++itc)
-		{
-			for (std::vector<std::string>::iterator itm = itc->getIndex().begin();\
-				itm != itc->getIndex().end(); ++itm)
-			{
-				*itm = it->getServerConfig().getRoot() + "/" + *itm;
-				// if (access(itm->c_str(), F_OK))
-				// 	throw MyException("Syntax Error Index no file in Server " + it->getServerName() + " location " + itc->getLocation_name());
-			}
-		}
-	}
+	// index
+	// for (std::vector<Server>::iterator it = this->_serverList.begin(); it != this->_serverList.end(); ++it)
+	// {
+	// 	for (std::vector<std::string>::iterator itm = it->getServerConfig().getIndex().begin();\
+	// 		itm != it->getServerConfig().getIndex().end(); ++itm)
+	// 	{
+	// 		*itm = it->getServerConfig().getRoot() + "/" + *itm;
+	// 		// if (access(itm->c_str(), F_OK))
+	// 		// 	throw MyException("Error Sintexsis Index no file in Server " + it->getServerName());
+	// 	}
+	// 	for (std::vector<Config>::iterator itc = it->getLocations().begin(); itc != it->getLocations().end(); ++itc)
+	// 	{
+	// 		for (std::vector<std::string>::iterator itm = itc->getIndex().begin();\
+	// 			itm != itc->getIndex().end(); ++itm)
+	// 		{
+	// 			*itm = it->getServerConfig().getRoot() + "/" + *itm;
+	// 			// if (access(itm->c_str(), F_OK))
+	// 			// 	throw MyException("Error Sintexsis Index no file in Server " + it->getServerName() + " location " + itc->getLocation_name());
+	// 		}
+	// 	}
+	// }
 }
 
 /*
