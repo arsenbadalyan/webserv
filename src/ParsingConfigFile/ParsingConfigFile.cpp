@@ -720,6 +720,9 @@ size_t ParsingConfigFile::checkReturn(size_t pos_start, size_t pos_end, bool con
 		ival = 0;
 		val.clear();
 	}
+	// ete cgpt asuma vor aranc chakerti chi kareli eror qci ete aranc chakerta
+
+	
 	if (controlFlag)
 	{
 

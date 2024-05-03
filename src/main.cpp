@@ -1,6 +1,7 @@
 #include "ParsingConfigFile.hpp"
 #include "CreatMainServers.hpp"
 #include "ForAutoIndex.hpp"
+#include <string>
 void print_struct(std::vector<Server> & s);
 
 int main() {
@@ -61,7 +62,11 @@ void print_struct(std::vector<Server> & s)
         }
         std::cout << "Server " << i << " Location_name = " << s[i].getServerConfig().getLocation_name() << std::endl;
         std::cout << "Server " << i << " Return = " << s[i].getServerConfig().getReturn().getStatusTypes()\
-        << " " << s[i].getServerConfig().getReturn().getPath() << std::endl;
+        << " ";
+		if (s[i].getServerConfig().getReturn().getPath())
+			std::cout << s[i].getServerConfig().getReturn().getPath()->c_str() << std::endl;
+		else
+			std::cout <<"NULLptr\n";
         std::cout << "Server " << i << " Root = " << s[i].getServerConfig().getRoot() << std::endl;
         std::cout << "Server " << i << " Upload_dir = " << s[i].getServerConfig().getUpload_dir() << std::endl;
         for (size_t j = 0; j < s[i].getLocations().size(); j++)
@@ -84,7 +89,11 @@ void print_struct(std::vector<Server> & s)
             }
             std::cout << "  Server " << i << " Location_name = " << s[i].getLocations()[j].getLocation_name() << std::endl;
             std::cout << "  Server " << i << " Return = " << s[i].getLocations()[j].getReturn().getStatusTypes()\
-            << " " << s[i].getLocations()[j].getReturn().getPath() << std::endl;
+            << " " ;
+			if (s[i].getLocations()[j].getReturn().getPath())
+				std::cout << s[i].getLocations()[j].getReturn().getPath()->c_str() << std::endl;
+			else
+				std::cout << s[i].getLocations()[j].getReturn().getPath() << std::endl;
             std::cout << "  Server " << i << " Root = " << s[i].getLocations()[j].getRoot() << std::endl;
             std::cout << "  Server " << i << " Upload_dir = " << s[i].getLocations()[j].getUpload_dir() << std::endl;
 
