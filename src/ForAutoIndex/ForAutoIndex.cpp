@@ -3,7 +3,7 @@
 std::string ForAutoIndex::ChreatHtmlFile(const Config & loc)
 {
 	std::list<DirStruct> str = ForAutoIndex::getDirStruct(loc.getRoot());
-	return(Chreatstring(str));
+	return(Chreatstring(str, loc.getRoot().c_str()));
 }
 
 std::list<DirStruct> ForAutoIndex::getDirStruct(std::string root)
@@ -41,16 +41,25 @@ std::list<DirStruct> ForAutoIndex::getDirStruct(std::string root)
 	return(res);
 }
 
-std::string	ForAutoIndex::Chreatstring(std::list<DirStruct> & ls)
+std::string	ForAutoIndex::Chreatstring(std::list<DirStruct> & ls, std::string root)
 {
 	ReadFile rdFi("temp/start");
 	std::string res(rdFi.Read());
+	res += root;
+	rdFi.setFilename("temp/first");
+	res += rdFi.Read();
+	res += root;
+	rdFi.setFilename("temp/second");
+	res += rdFi.Read();
 	rdFi.setFilename("temp/end");
 	std::string	end(rdFi.Read());
 
 	for (std::list<DirStruct>::iterator it = ls.begin(); it != ls.end(); ++it)
 	{
-		res += std::string("    <li>\n      <a href=\"#\" class=\"filename\">");
+		res += std::string("    <li>\n      <a href=\"");
+		// res += root + std::string("//") ;
+		res += it->getName();
+		res += std::string("\" class=\"filename\">");
 		res += it->getName();
 		res += std::string("</a>\n");
 		if (it->getName() != ".")
