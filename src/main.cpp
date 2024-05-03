@@ -7,24 +7,25 @@ int main() {
 
 	std::vector<Server> t;
 	ParsingConfigFile  a("file");
-	// t = a.startPars();
 	try
 	{
 		t = a.startPars();
-		// std::cout << "Error 1\n";
 	}
 	catch(const std::exception& e)
 	{
-		// std::cout << "Error 2\n";
 		std::cerr << e.what() << '\n';
-		// std::cout << "Error 3\n";
 	}
 	print_struct(t);
 	CreatMainServers::startServer(t);
-	// std::string q;
-	// std::cin >> q;
-	// (void)q;
+
 	CreatMainServers::closeFullPorts(t);
+
+	// Config a;
+	// a.setRoot("./temp");
+
+	// ReadFile fi("./in.html", ForAutoIndex::ChreatHtmlFile(a));
+	// fi.cleanFile();
+	// fi.Write();
 	
     return (0);
 }

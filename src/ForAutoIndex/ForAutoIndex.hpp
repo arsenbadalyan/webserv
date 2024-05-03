@@ -17,7 +17,7 @@ public:
 private:
 	ForAutoIndex(){};
 	static	std::list<DirStruct>	getDirStruct(const std::string root);
-	static std::string				Chreatstring(std::list<DirStruct> &ls);
+	static std::string				Chreatstring(std::list<DirStruct> &ls, std::string root);
 
 	class MyException : public std::exception
 	{
@@ -30,6 +30,7 @@ private:
 		const char * what() const throw();
 	};
 };
+
 
 
 #endif
