@@ -24,7 +24,7 @@ int main() {
 	// Config a;
 	// a.setRoot("./temp");
 
-	// ReadFile fi("./in.html", ForAutoIndex::ChreatHtmlFile(a));
+	// ReadFile fi("./in.html", ForAutoIndex::CreatHtmlFile(a));
 	// fi.cleanFile();
 	// fi.Write();
 	

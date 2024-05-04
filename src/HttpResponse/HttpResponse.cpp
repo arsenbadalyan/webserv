@@ -16,7 +16,6 @@ HttpResponse::HttpResponse(const HttpRequest * request, int writeSocketFd)
 	this->_requestedFilePath = request->getFullFilePath();
 	this->_configs = this->_server->findLocations(request->getEndpoint());
 	this->_isReturnTerminatedResponse = !(this->_configs->getReturn().getStatusTypes() == NO_CUSTOM_STATUS_CODE);
-	std::cout << "<<<<<<<< IS CGI ON: " << this->_configs->getCgi() << std::endl;
 }
 
 HttpResponse::~HttpResponse() {
@@ -28,18 +27,14 @@ HttpResponse::~HttpResponse() {
 
 void HttpResponse::getResponse(void) {
 
-	std::cout << std::endl << "RESPONSE START <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
-
 	try {
 		if (this->_isReturnTerminatedResponse) {
-			std::cout << "<<<<<<<<<<<< RETURN TERMINATED RESPONSE: " << this->_configs->getReturn().getStatusTypes() << std::endl;
 			this->_statusCode = this->_configs->getReturn().getStatusTypes();
 			HttpResponse::configureDefaultHeaders();
-			// TODO: add check has return location or not
-			if (HttpStatusCode::isRedirectStatusCode(this->_statusCode))
-				this->_headers.setHeader(HttpHeaderNames::LOCATION, this->_configs->getReturn().getPath());
+			if (HttpStatusCode::isRedirectStatusCode(this->_statusCode)
+				&& this->_configs->getReturn().getPath())
+				this->_headers.setHeader(HttpHeaderNames::LOCATION, *this->_configs->getReturn().getPath());
 			this->sendResponseRootSlice();
-			this->sendFailedRequest();
 			return ;
 		}
 
@@ -67,16 +62,12 @@ void HttpResponse::getResponse(void) {
 			this->sendBody();
 		}
 	} catch (std::exception &reason) {
-		std::cout << "REQUEST FAILED" << std::endl;
 		std::cout << reason.what() << std::endl;
 	}
-
-	std::cout << "RESPONSE END <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl << std::endl;
 
 }
 
 void HttpResponse::sendResponseRootSlice(void) {
-	std::cout << "GETTING RESPONSE ROOT SLICE" << std::endl;
 	std::string response = "";
 	const std::string *contentLength = this->_headers.getHeader(HttpHeaderNames::CONTENT_LENGTH);
 
@@ -94,12 +85,11 @@ void HttpResponse::sendResponseRootSlice(void) {
 
 	response += RootConfigs::SupportedHttpProtocol + " ";
 	response += Util::intToString(this->_statusCode) + " ";
-	// TODO: add check has return status code message or not
 	if (this->_isReturnTerminatedResponse
-		&& !HttpStatusCode::isRedirectStatusCode(this->_statusCode)) {
-		response += this->_configs->getReturn().getPath() + "\r\n";
-	}
-	else {
+		&& !HttpStatusCode::isRedirectStatusCode(this->_statusCode)
+		&& this->_configs->getReturn().getPath()) {
+		response += *this->_configs->getReturn().getPath() + "\r\n";
+	} else {
 		response += HttpStatusCode::getStatusCode(this->_statusCode) + "\r\n";
 	}
 	response += this->_headers.toString() + "\r\n";
@@ -127,7 +117,7 @@ void HttpResponse::configureStatusLine(void) {
 
 			this->_requestedFile.close();
 			while (indexFilesIt != indexFiles.end()) {
-				this->_requestedFile.open(*indexFilesIt);
+				this->_requestedFile.open(this->_request->getFullFilePath() + (*indexFilesIt));
 				if (this->_requestedFile.is_open()) {
 					statusCode = HttpStatusCode::OK;
 					this->_requestedFilePath = *indexFilesIt;
@@ -139,11 +129,8 @@ void HttpResponse::configureStatusLine(void) {
 			if (statusCode == HttpStatusCode::INVALID_STATUS_CODE) {
 				if (this->_configs->getAutoindex()) {
 					try {
-						this->_folderStructure = new std::string(ForAutoIndex::ChreatHtmlFile(*this->_configs));
+						this->_folderStructure = new std::string(ForAutoIndex::CreatHtmlFile(this->_request->getFullFilePath(), this->_request->getEndpoint()));
 						statusCode = HttpStatusCode::OK;
-						std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<<< HTML" << std::endl;
-						std::cout << *this->_folderStructure << std::endl;
-						std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<<< HTML" << std::endl;
 					} catch (std::exception & reason) {
 						statusCode = HttpStatusCode::FORBIDDEN;
 					}
@@ -158,8 +145,6 @@ void HttpResponse::configureStatusLine(void) {
 	} else {
 		statusCode = HttpStatusCode::NOT_FOUND;
 	}
-
-	std::cout << "<<<<<<<<<< STATUS CODE: " << statusCode << std::endl;
 
 	this->_statusCode = statusCode;
 }
@@ -207,15 +192,12 @@ void HttpResponse::sendBody() {
 
 	(void)length;
 	(void)this->_request;
-	std::cout << "<<<<<<<<<< SENDING BODY" << std::endl;
 	bzero(&buffer, sizeof(buffer));
 	while ((bytesRead = this->_requestedFile.read(buffer, sizeof(buffer)).gcount()) > 0) {
-		std::cout << strlen(buffer) << std::endl;
 		length += strlen(buffer);
 		send(this->_writeSocketFd, &buffer, sizeof(buffer), 0);
 		bzero(&buffer, sizeof(buffer));
 	}
-	std::cout << "<<<<<<<<<< FINISHED SENDING BODY" << std::endl;
 }
 
 void HttpResponse::sendFailedRequest(void) {

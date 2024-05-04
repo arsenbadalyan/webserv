@@ -1,34 +1,24 @@
 #ifndef __FOR_AUTO_INDEX__
 #define __FOR_AUTO_INDEX__
 
-#include "Config.hpp"
-#include "DirStruct.hpp"
 #include <list>
 #include <dirent.h>
-// #include <sys/types.h>
 #include <sys/stat.h>
-#include "ReadFile.hpp"
 #include <ctime>
+#include "Util.hpp"
+#include "ReadFile.hpp"
+#include "Config.hpp"
+#include "DirStruct.hpp"
+#include "ExceptionHandler.hpp"
 
-class ForAutoIndex
-{
-public:
-	static	std::string ChreatHtmlFile(const Config & loc);
-private:
-	ForAutoIndex(){};
-	static	std::list<DirStruct>	getDirStruct(const std::string root);
-	static std::string				Chreatstring(std::list<DirStruct> &ls, std::string root);
-
-	class MyException : public std::exception
-	{
-	private:
-		std::string _error;
+class ForAutoIndex {
 	public:
-		MyException(const std::string & error);
-		~MyException() throw();
+		static	std::string CreatHtmlFile(std::string rootHref, std::string endpoint);
 
-		const char * what() const throw();
-	};
+	private:
+		ForAutoIndex(){};
+		static	std::list<DirStruct>	getDirStruct(const std::string & rootHref, const std::string & endpoint);
+		static std::string				CreateStringFromFile(std::list<DirStruct> &ls, std::string root);
 };
 
 

@@ -192,8 +192,6 @@ std::string Util::generateDefaultErrorPage(const int16_t & statusCode) {
     // Get the resulting HTML string
     std::string html = htmlStream.str();
 
-	std::cout << "ERROR PAGE LENGTH: " << html.length() << std::endl;
-
 	return (html);
 }
 
@@ -201,4 +199,18 @@ std::string Util::intToString(int value) {
     std::stringstream ss;
     ss << value;
     return ss.str();
+}
+
+std::string Util::removeAddnSlashes(std::string str) {
+	std::string res = "";
+	char prevChr = 0;
+
+	for (size_t i = 0; i < str.length(); i++) {
+		if (prevChr == '/' && str[i] == '/')
+			continue ;
+		prevChr = str[i];
+		res += str[i];
+	}
+
+	return (res);
 }

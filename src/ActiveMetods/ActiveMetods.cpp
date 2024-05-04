@@ -64,10 +64,6 @@ ActiveMetods& ActiveMetods::setDelete(const bool DeleteData)
 bool ActiveMetods::isAvailableMethod(std::string methodName) {
 	methodName = Util::toLower(methodName);
 
-	std::cout << "POST: " << this->getPost() << std::endl;
-	std::cout << "GET: " << this->getGet() << std::endl;
-	std::cout << "DELETE: " << this->getDelete() << std::endl;
-
 	if (RootConfigs::AvailableMethods.find(methodName) == RootConfigs::AvailableMethods.end())
 		return (false);
 

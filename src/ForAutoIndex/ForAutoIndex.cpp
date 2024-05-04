@@ -1,20 +1,21 @@
 #include <ForAutoIndex.hpp>
 
-std::string ForAutoIndex::ChreatHtmlFile(const Config & loc)
+std::string ForAutoIndex::CreatHtmlFile(std::string rootHref, std::string endpoint)
 {
-	std::list<DirStruct> str = ForAutoIndex::getDirStruct(loc.getRoot());
-	return(Chreatstring(str, loc.getRoot().c_str()));
+	std::list<DirStruct> str = ForAutoIndex::getDirStruct(rootHref, endpoint);
+	return(CreateStringFromFile(str, rootHref));
 }
 
-std::list<DirStruct> ForAutoIndex::getDirStruct(std::string root)
+std::list<DirStruct> ForAutoIndex::getDirStruct(const std::string & rootHref, const std::string & endpoint)
 {
 	std::list<DirStruct> res;
 	struct dirent *dr;
-	DIR *fi = opendir(root.c_str());
+	DIR *fi = opendir(rootHref.c_str());
+
 	if (!fi)
-		throw MyException("Nod open root for creat Html file for autoindex");
-	for(; 1; )
-	{
+		ExceptionHandler::FailedToReadDir();
+
+	while(1) {
 		dr = readdir(fi);
 		if (!dr)
 			break;
@@ -22,11 +23,12 @@ std::list<DirStruct> ForAutoIndex::getDirStruct(std::string root)
 			continue;
 		DirStruct ds;
 		ds.setName(dr->d_name);
-		if (ds.getName() != "..")
-		{
+		if (ds.getName() != "..") {
+			ds.setHref(Util::removeAddnSlashes(endpoint + "/" + dr->d_name));
 			struct stat info;
-			if (stat(std::string(root + "/" + dr->d_name).c_str(), &info)  != 0) 
-				throw MyException("Nod read root for creat Html file for autoindex");
+
+			if (stat(std::string(Util::removeAddnSlashes(rootHref + "/" + dr->d_name)).c_str(), &info)  != 0) 
+				ExceptionHandler::FailedToReadDir();
 			else {
 				ds.setSize(std::to_string(info.st_size));
 				std::tm * ptm = std::localtime(&info.st_mtimespec.tv_sec);
@@ -35,13 +37,15 @@ std::list<DirStruct> ForAutoIndex::getDirStruct(std::string root)
 				ds.setData(std::ctime(&info.st_mtimespec.tv_sec));
 				(void)ds.getData().pop_back();
 			}
+		} else {
+			ds.setHref("../");
 		}
 		res.push_back(ds);
 	}
 	return(res);
 }
 
-std::string	ForAutoIndex::Chreatstring(std::list<DirStruct> & ls, std::string root)
+std::string	ForAutoIndex::CreateStringFromFile(std::list<DirStruct> & ls, std::string root)
 {
 	ReadFile rdFi("temp/start");
 	std::string res(rdFi.Read());
@@ -58,7 +62,7 @@ std::string	ForAutoIndex::Chreatstring(std::list<DirStruct> & ls, std::string ro
 	{
 		res += std::string("    <li>\n      <a href=\"");
 		// res += root + std::string("//") ;
-		res += it->getName();
+		res += it->getHref();
 		res += std::string("\" class=\"filename\">");
 		res += it->getName();
 		res += std::string("</a>\n");
@@ -75,11 +79,3 @@ std::string	ForAutoIndex::Chreatstring(std::list<DirStruct> & ls, std::string ro
 	res += end;
 	return (res);
 }
-
-
-
-ForAutoIndex::MyException::MyException(const std::string &error) : _error(error) {}
-
-ForAutoIndex::MyException::~MyException() throw() {}
-
-const char * ForAutoIndex::MyException::what() const throw() { return ((this->_error.data())); }

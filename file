@@ -1,33 +1,36 @@
 server 
 {
-	listen 127.0.0.1:1234 ;
+	listen 127.0.0.1:2222 ;
 #	listen 50;
 	server_name test_server ;
 	root ./www;
-	allow_methods GET;
 	upload_dir upload;
-	error_page 502 404 400 200 error.html;
+	error_page 502 404 400 404 error.html;
 	autoindex on ;
 
-	location /blabla
+	location //blabla//
 	{
-		return 400 ;
+		index test.html test2.html yey.php;
 	}
 
-	location /yey 
+	location ////////yey 
 	{
 		client_max_body_size 1 ;
 		index main.cpp;
 		return 404 "ok";
 	}
 
-	location /test/barev
+	location /test////////barev////////////
 	{
 		autoindex on ;
 		allow_methods POST GET;
 	}
 
-	location /upload {
+	location upload//////////////// {
+		autoindex on;
+	}
+
+	location /static {
 		autoindex on;
 	}
 
