@@ -45,6 +45,7 @@ class HttpRequest {
 		const std::string getEndpoint(void) const;
 		const std::string getFullFilePath(void) const;
 		const std::string getMethod(void) const;
+		std::string getHeader(std::string headerName) const;
 
 	private:
 		HttpRequest(void);

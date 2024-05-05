@@ -159,6 +159,11 @@ void HttpResponse::configureDefaultHeaders(void) {
 	if (this->_requestedFile.is_open()) {
 		this->_headers.setHeader(HttpHeaderNames::LAST_MODIFIED, Util::checkFileLastModifyDate(this->_requestedFilePath));
 	}
+
+	std::string cookieHeader = this->_request->getHeader(HttpHeaderNames::COOKIE);
+	if (cookieHeader.length()) {
+		this->_headers.setHeader(HttpHeaderNames::COOKIE, cookieHeader);
+	}
 }
 
 void HttpResponse::configureHeaders() {

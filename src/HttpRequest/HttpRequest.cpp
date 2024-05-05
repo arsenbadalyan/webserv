@@ -176,3 +176,13 @@ Server * HttpRequest::getServer(void) const {
 const std::string HttpRequest::getMethod(void) const {
 	return (this->method);
 }
+
+// returns empty string if header not found
+std::string HttpRequest::getHeader(std::string headerName) const {
+	const std::string* headerValue = this->headers.getHeader(headerName);
+
+	if (!headerValue)	
+		return ("");
+
+	return (*headerValue);
+}

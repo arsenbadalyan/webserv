@@ -14,6 +14,7 @@ class HttpHeaderNames {
 		static const std::string LAST_MODIFIED;
 		static const std::string LOCATION;
 		static const std::string CONNECTION;
+		static const std::string COOKIE;
 
 	private:
 		HttpHeaderNames(void);
