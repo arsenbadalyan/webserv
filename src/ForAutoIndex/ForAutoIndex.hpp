@@ -17,8 +17,12 @@ class ForAutoIndex {
 
 	private:
 		ForAutoIndex(){};
-		static	std::list<DirStruct>	getDirStruct(const std::string & rootHref, const std::string & endpoint);
-		static std::string				CreateStringFromFile(std::list<DirStruct> &ls, std::string root);
+		static std::list<DirStruct>	getDirStruct(const std::string & rootHref, const std::string & endpoint);
+		static std::string			CreateStringFromFile(std::list<DirStruct> &ls, std::string root);
+		static std::string			getStart();
+		static std::string			getFirst();
+		static std::string			getSecond();
+		static std::string			getEnd();
 };
 
 
