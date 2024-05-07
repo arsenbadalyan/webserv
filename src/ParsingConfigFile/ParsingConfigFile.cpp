@@ -939,7 +939,10 @@ void ParsingConfigFile::CleaningTheLocationName(std::string &loc_name)
 				loc_name = std::string(loc_name.begin(), loc_name.begin() + i);
 				return ;
 			}else
-				i = j;
+			{
+				loc_name = std::string(loc_name.begin(), loc_name.begin() + i + 1) + std::string(loc_name.begin() + j, loc_name.end());
+				++i;
+			}
 		}
 		else
 			++i;

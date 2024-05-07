@@ -9,7 +9,7 @@ server
 	error_page 502 404 400 404 error.html;
 	autoindex on ;
 
-	location //blabla//
+	location //1blabla//2aaa////3adasdasdasd//////4asfasfasf/5asdasdasd/6asdsadsad/////////
 	{
 		index test.html test2.html yey.php;
 	}
