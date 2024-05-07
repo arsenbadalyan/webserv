@@ -4,28 +4,36 @@
 #include <string>
 void print_struct(std::vector<Server> & s);
 
-int main() {
-
-	std::vector<Server> t;
-	ParsingConfigFile  a("file");
+int main(int argc, char ** argv) 
+{
+	ParsingConfigFile  conf_file;
+	std::vector<Server> list_server;
+	if (argc == 2)
+		conf_file.setFile(argv[1]);
+	if (argc > 2)
+	{
+		std::cerr << "Shat argumentner" << std::endl;
+		return (1);
+	}
 	try
 	{
-		t = a.startPars();
+		list_server = conf_file.startPars();
 	}
 	catch(const std::exception& e)
 	{
-		std::cerr << e.what() << '\n';
+		std::cerr << e.what() << std::endl;
 	}
-	print_struct(t);
-	CreatMainServers::startServer(t);
-
-	CreatMainServers::closeFullPorts(t);
-
+	catch(...)
+	{
+		std::cerr << "Another Error ??" << std::endl;
+	}
+	print_struct(list_server);
+	CreatMainServers::startServer(list_server);
+	CreatMainServers::closeFullPorts(list_server);
 
 	// ReadFile fi("./in.html", ForAutoIndex::CreatHtmlFile("./temp","./temp"));
 	// fi.cleanFile();
 	// fi.Write();
-	
     return (0);
 }
 

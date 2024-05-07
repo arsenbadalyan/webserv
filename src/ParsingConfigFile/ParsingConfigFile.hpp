@@ -20,12 +20,13 @@ private:
 	// size_t				_sizeList;
 
 public:
-
+	ParsingConfigFile();
 	ParsingConfigFile(const std::string & filename);
 	ParsingConfigFile( const ParsingConfigFile & other);
 	ParsingConfigFile & operator=(const ParsingConfigFile & other);
 	~ParsingConfigFile();
 
+	void				setFile(const std::string & filename);
 	std::vector<Server>	startPars();
 
 private:
