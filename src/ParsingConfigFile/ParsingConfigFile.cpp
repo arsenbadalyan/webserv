@@ -722,7 +722,12 @@ size_t ParsingConfigFile::checkReturn(size_t pos_start, size_t pos_end, bool con
 	}
 	// ete cgpt asuma vor aranc chakerti chi kareli eror qci ete aranc chakerta
 
-	
+	if ((val[0] == '"' && val[val.size() - 1] == '"') || (val[0] == '\'' && val[val.size() - 1] == '\''))
+	{
+    	val.erase(0, 1);
+		val.erase(val.size() - 1, 1);
+	}
+
 	if (controlFlag)
 	{
 
