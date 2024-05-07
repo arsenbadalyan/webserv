@@ -6,25 +6,25 @@ void print_struct(std::vector<Server> & s);
 
 int main() {
 
-	// std::vector<Server> t;
-	// ParsingConfigFile  a("file");
-	// try
-	// {
-	// 	t = a.startPars();
-	// }
-	// catch(const std::exception& e)
-	// {
-	// 	std::cerr << e.what() << '\n';
-	// }
-	// print_struct(t);
-	// CreatMainServers::startServer(t);
+	std::vector<Server> t;
+	ParsingConfigFile  a("file");
+	try
+	{
+		t = a.startPars();
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << '\n';
+	}
+	print_struct(t);
+	CreatMainServers::startServer(t);
 
-	// CreatMainServers::closeFullPorts(t);
+	CreatMainServers::closeFullPorts(t);
 
 
-	ReadFile fi("./in.html", ForAutoIndex::CreatHtmlFile("./temp","./temp"));
-	fi.cleanFile();
-	fi.Write();
+	// ReadFile fi("./in.html", ForAutoIndex::CreatHtmlFile("./temp","./temp"));
+	// fi.cleanFile();
+	// fi.Write();
 	
     return (0);
 }
