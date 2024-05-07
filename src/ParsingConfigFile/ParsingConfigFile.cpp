@@ -1,6 +1,6 @@
 #include "ParsingConfigFile.hpp"
 
-ParsingConfigFile::ParsingConfigFile(const std::string & filename) : _file(filename)
+ParsingConfigFile::ParsingConfigFile() : _file("temp/webserv.conf")
 {
 	this->_statusCode.insert(200);
 	this->_statusCode.insert(301);
@@ -10,6 +10,17 @@ ParsingConfigFile::ParsingConfigFile(const std::string & filename) : _file(filen
 	this->_statusCode.insert(413);
 	this->_statusCode.insert(502);
 }
+
+// ParsingConfigFile::ParsingConfigFile(const std::string &filename) : _file(filename)
+// {
+// 	this->_statusCode.insert(200);
+// 	this->_statusCode.insert(301);
+// 	this->_statusCode.insert(400);
+// 	this->_statusCode.insert(404);
+// 	this->_statusCode.insert(405);
+// 	this->_statusCode.insert(413);
+// 	this->_statusCode.insert(502);
+// }
 
 ParsingConfigFile::ParsingConfigFile(const ParsingConfigFile & other) 
 {
@@ -31,9 +42,21 @@ ParsingConfigFile & ParsingConfigFile::operator=(const ParsingConfigFile & other
 
 ParsingConfigFile::~ParsingConfigFile() { }
 
+void ParsingConfigFile::setFile(const std::string &filename)
+{
+	this->_file.setFilename(filename);
+}
+
 std::vector<Server> ParsingConfigFile::startPars()
 {
-	this->_data = this->_file.Read();
+	try
+	{
+		this->_data = this->_file.Read();
+	}
+	catch(...)
+	{
+		throw MyException("No file \"" + this->_file.getFilename() + "\" in Directoe");
+	}
 	if (!this->_data.size())
 		throw MyException("Emty File ERROR");
 	this->removeComent();
