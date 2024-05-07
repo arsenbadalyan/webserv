@@ -288,8 +288,8 @@ size_t	ParsingConfigFile::CheckCorecktConfig(std::string config, size_t pos_star
 	}
 	else if (std::string("return") == config)
 	{
-		if (!controlFlag)
-			throw MyException("Error return in server " + this->getErrorline(pos_start));
+		// if (!controlFlag)
+		// 	throw MyException("Error return in server " + this->getErrorline(pos_start));
 		res = checkReturn(pos_start, pos_end, controlFlag);
 		if (SIZE_MAX != res)
 			return (res);

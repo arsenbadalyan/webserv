@@ -4,7 +4,8 @@ server
 #	listen 50;
 	server_name test_server ;
 	root ./www;
-	upload_dir upload;
+#	upload_dir www;
+	return 404 "ok";
 	error_page 502 404 400 404 error.html;
 	autoindex on ;
 
