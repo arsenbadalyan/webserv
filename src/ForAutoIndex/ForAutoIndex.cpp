@@ -47,16 +47,16 @@ std::list<DirStruct> ForAutoIndex::getDirStruct(const std::string & rootHref, co
 
 std::string	ForAutoIndex::CreateStringFromFile(std::list<DirStruct> & ls, std::string root)
 {
-	ReadFile rdFi("temp/start");
-	std::string res(rdFi.Read());
+	// ReadFile rdFi("temp/start");
+	std::string res(ForAutoIndex::getStart());
 	res += root;
-	rdFi.setFilename("temp/first");
-	res += rdFi.Read();
+	// rdFi.setFilename("temp/first");
+	res += ForAutoIndex::getFirst();
 	res += root;
-	rdFi.setFilename("temp/second");
-	res += rdFi.Read();
-	rdFi.setFilename("temp/end");
-	std::string	end(rdFi.Read());
+	// rdFi.setFilename("temp/second");
+	res += ForAutoIndex::getSecond();
+	// rdFi.setFilename("temp/end");
+	// std::string	end(rdFi.Read());
 
 	for (std::list<DirStruct>::iterator it = ls.begin(); it != ls.end(); ++it)
 	{
@@ -76,6 +76,65 @@ std::string	ForAutoIndex::CreateStringFromFile(std::list<DirStruct> & ls, std::s
 		}
 		res += std::string("    </li>\n");
 	}
-	res += end;
+	res += ForAutoIndex::getEnd();
 	return (res);
+}
+
+std::string ForAutoIndex::getStart()
+{
+	return std::string("<!DOCTYPE html>\n\
+<html lang=\"ru\">\n\
+<head>\n\
+  <meta charset=\"UTF-8\">\n\
+  <title>Index of ");
+}
+
+std::string ForAutoIndex::getFirst()
+{
+	return std::string("</title>\n\
+  <style>\n\
+    hr {\n\
+      border: 0;\n\
+      border-top: 1px solid #ddd;\n\
+      border-bottom: 1px solid #ddd;\n\
+      margin: 10px 0;\n\
+    }\n\
+    ul {\n\
+      list-style: none;\n\
+      padding: 0;\n\
+    }\n\
+    li {\n\
+      display: flex;\n\
+      align-items: center;\n\
+      margin-bottom: 5px;\n\
+    }\n\
+    .filename {\n\
+      flex: 1;\n\
+    }\n\
+    .date {\n\
+      margin: 0 100px;\n\
+    }\n\
+    .size {\n\
+      width: 50px;\n\
+      text-align: right;\n\
+    }\n\
+  </style>\n\
+</head>\n\
+<body>\n\
+  <h1>Index of ");
+}
+
+std::string ForAutoIndex::getSecond()
+{
+	return std::string("</h1>\n\
+  <hr>\n\
+  <ul>\n");
+}
+
+std::string ForAutoIndex::getEnd()
+{
+	return std::string("</ul>\n\
+<hr>\n\
+</body>\n\
+</html>\n\n");
 }
