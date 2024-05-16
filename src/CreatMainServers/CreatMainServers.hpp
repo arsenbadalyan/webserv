@@ -20,7 +20,7 @@ class CreatMainServers
 public:
 
 	static bool startServer(std::vector<Server> & serverlist);
-	static void	closeFullPorts(std::vector<Server> * serverlist);
+	static void	closeFullPorts(std::vector<Server> serverlist);
 
 private:
    CreatMainServers(){}

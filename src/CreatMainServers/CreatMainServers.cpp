@@ -33,7 +33,7 @@ bool CreatMainServers::startServer(std::vector<Server> & serverlist)
 	return true;
 }
 
-void CreatMainServers::closeFullPorts(std::vector<Server> * serverlist)
+void CreatMainServers::closeFullPorts(std::vector<Server> serverlist)
 {
 	// for (size_t j = 0; j < serverlist.size(); j++)
 	// {
@@ -42,12 +42,12 @@ void CreatMainServers::closeFullPorts(std::vector<Server> * serverlist)
 	// 		serverlist[j].getMainServer()[i].close();
 	// 	}
 	// }
-	for (size_t j = 0; j < serverlist->size(); j++)
+	for (size_t j = 0; j < serverlist.size(); j++)
 	{
-		for (size_t i = 0; i < (*serverlist)[j].getMainServer().size(); i++)
+		for (size_t i = 0; i < serverlist[j].getMainServer().size(); i++)
 		{
 			// std::cout << "close ports i = " << i << std::endl;
-			(*serverlist)[j].getMainServer()[i].close();
+			serverlist[j].getMainServer()[i].close();
 		}
 	}
 }

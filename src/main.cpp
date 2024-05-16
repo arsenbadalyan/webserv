@@ -4,14 +4,14 @@
 #include <string>
 void print_struct(std::vector<Server> & s);
 
-static std::vector<Server> * clo = NULL;
+// static std::vector<Server> * clo = NULL;
 
-void	sigint_pars(int sig)
-{
-	(void)sig;
-	CreatMainServers::closeFullPorts(clo);
-	exit(0);
-}
+// void	sigint_pars(int sig)
+// {
+// 	(void)sig;
+// 	CreatMainServers::closeFullPorts(clo);
+// 	exit(0);
+// }
 
 int main(int argc, char ** argv) 
 {
@@ -37,11 +37,11 @@ int main(int argc, char ** argv)
 		std::cerr << "Another Error ??" << std::endl;
 	}
 	print_struct(list_server);
-	clo = &list_server;
-	signal(SIGINT, sigint_pars);
-	signal(SIGQUIT, SIG_IGN);
+	// clo = &list_server;
+	// signal(SIGINT, sigint_pars);
+	// signal(SIGQUIT, SIG_IGN);
 	CreatMainServers::startServer(list_server);
-	// CreatMainServers::closeFullPorts(list_server);
+	CreatMainServers::closeFullPorts(list_server);
 
 	// ReadFile fi("./in.html", ForAutoIndex::CreatHtmlFile("./temp","./temp"));
 	// fi.cleanFile();
