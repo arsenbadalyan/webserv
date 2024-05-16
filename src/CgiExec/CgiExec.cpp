@@ -1,6 +1,6 @@
 #include "CgiExec.hpp"
 
-void CgiExec::executeCGI(std::string filePath, std::string fileType)
+std::string CgiExec::executeCGI(std::string filePath, std::string *fileType)
 {
 
 	(void)fileType;
@@ -10,7 +10,7 @@ void CgiExec::executeCGI(std::string filePath, std::string fileType)
 	std::string res;
 	ssize_t bytesRead;
 
-	char *args[] = {strdup(PYTHONPATH), strdup(filePath.c_str()), NULL};
+	char *args[] = {strdup(PYTHONPATH), strdup(filePath.c_str()), NULL,NULL};
 
 	if (pipe(pipefd) == -1) 
 	    throw std::runtime_error("pipe");
@@ -39,5 +39,5 @@ void CgiExec::executeCGI(std::string filePath, std::string fileType)
 
 	free(args[0]);
 	free(args[1]);
-	std::cout << res <<std::endl;
+	return res;
 }

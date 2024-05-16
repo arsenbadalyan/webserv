@@ -1,6 +1,6 @@
 #include "ParsingConfigFile.hpp"
 
-ParsingConfigFile::ParsingConfigFile() : _file("temp/webserv.conf")
+ParsingConfigFile::ParsingConfigFile() : _file("webserv.conf")
 {
 	this->_statusCode.insert(200);
 	this->_statusCode.insert(301);

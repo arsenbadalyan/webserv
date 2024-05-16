@@ -2,19 +2,14 @@
 #include "CreatMainServers.hpp"
 #include "ForAutoIndex.hpp"
 #include <string>
+#include "CgiExec.hpp"
 void print_struct(std::vector<Server> & s);
 
-static std::vector<Server> * clo = NULL;
-
-void	sigint_pars(int sig)
-{
-	(void)sig;
-	CreatMainServers::closeFullPorts(clo);
-	exit(0);
-}
 
 int main(int argc, char ** argv) 
 {
+	// (void)argc;
+	// (void)argv;
 	ParsingConfigFile  conf_file;
 	std::vector<Server> list_server;
 	if (argc == 2)
@@ -37,11 +32,20 @@ int main(int argc, char ** argv)
 		std::cerr << "Another Error ??" << std::endl;
 	}
 	print_struct(list_server);
-	clo = &list_server;
-	signal(SIGINT, sigint_pars);
-	signal(SIGQUIT, SIG_IGN);
 	CreatMainServers::startServer(list_server);
-	// CreatMainServers::closeFullPorts(list_server);
+	CreatMainServers::closeFullPorts(list_server);
+
+
+	// try
+	// {
+	// 	ReadFile fil("./porc.html", CgiExec::executeCGI("./mmm.py", NULL));
+	// 	fil.cleanFile();
+	// 	fil.Write();
+	// }
+	// catch(const std::exception& e)
+	// {
+	// 	std::cerr << e.what() << std::endl;
+	// }
 
 	// ReadFile fi("./in.html", ForAutoIndex::CreatHtmlFile("./temp","./temp"));
 	// fi.cleanFile();

@@ -5,12 +5,12 @@
 #include <string>
 #include <unistd.h>
 
-#define PYTHONPATH "./CGI_interpritatrs/python-cgi-mac"
+#define PYTHONPATH "./src/CGI_interpritatrs/python-cgi-mac"
 
 class CgiExec
 {
 public:
-	static void executeCGI(std::string filePath, std::string fileType);
+	static std::string executeCGI(std::string filePath, std::string * fileType);
 };
 
 #endif
