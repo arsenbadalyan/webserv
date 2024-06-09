@@ -14,3 +14,4 @@ const std::string HttpHeaderNames::LAST_MODIFIED = "Last-Modified";
 const std::string HttpHeaderNames::LOCATION = "Location";
 const std::string HttpHeaderNames::CONNECTION = "Connection";
 const std::string HttpHeaderNames::COOKIE = "Cookie";
+const std::string HttpHeaderNames::TRANSFER_ENCODING = "Transfer-Encoding";

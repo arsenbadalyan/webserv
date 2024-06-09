@@ -8,14 +8,13 @@ HttpRequest& HttpRequest::operator=(const HttpRequest &) { return (*this); }
 
 HttpRequest::HttpRequest(Server* currentServer, int readSocketFd) :
 	boundary(""),
+	contentLength(0),
 	chunking(chunk_type::no_chunks),
 	_hasFinishedRead(false),
 	_server(currentServer)
 {
-	std::cout << "<<<<<<<<<<<< REQUEST RESULTS" << std::endl;
-	std::string readRes = this->requestInitialParsing(readSocketFd);
-
-	this->configureRequestByHeaders();
+	std::cout << "<<<<<<<<<<<< NEW REQUEST" << std::endl;
+	this->requestInitialParsing(readSocketFd);
 
 	if (this->chunking == chunk_type::no_chunks)
 		this->_hasFinishedRead = true;
@@ -56,11 +55,13 @@ void HttpRequest::parseMultipartDataForm(int socket) {
 
 }
 
-std::string HttpRequest::requestInitialParsing(int fd) {
+HttpRequest& HttpRequest::requestInitialParsing(int fd) {
 	ssize_t readRes;
 	std::string resultStr;
 	char buffer[READ_BUFFER_SIZE];
 	bool isAlreadyReadStartLine = false;
+	char *terminationBufferPtr = NULL;
+	size_t terminationBufferPos = 0;
 
 	while (true) {
 		bzero(&buffer, (READ_BUFFER_SIZE * sizeof(char)));
@@ -75,13 +76,60 @@ std::string HttpRequest::requestInitialParsing(int fd) {
 			isAlreadyReadStartLine = true;
 		}
 
-		if (strnstr(buffer, TERMINATION_BUFFER, strlen(buffer))) {
-			this->parseHeadersBuffer(resultStr);
+		terminationBufferPtr = strnstr(resultStr.c_str(), TERMINATION_BUFFER, strlen(resultStr.c_str()));
+		if (terminationBufferPtr) {
+			terminationBufferPos = terminationBufferPtr - resultStr.c_str();
+			std::string headersSection = resultStr.substr(0, terminationBufferPos);
+
+			this->parseHeadersBuffer(headersSection);
+			this->configureRequestByHeaders();
+			if (this->contentLength) {
+				terminationBufferPos += strlen(TERMINATION_BUFFER);
+				resultStr = resultStr.substr(terminationBufferPos, strlen(resultStr.c_str() - terminationBufferPos));
+			}
 			break ;
 		}
 	}
 
-	return (resultStr);
+	if (this->contentLength) {
+		if (this->chunking == chunk_type::no_chunks)
+			this->extractBody(fd, resultStr);
+		else
+			this->extractChunk(fd, resultStr);
+	}
+
+	return (*this);
+}
+
+HttpRequest& HttpRequest::extractBody(int sockFd, std::string initialData) {
+	if (initialData.length() > this->contentLength)
+		this->body = initialData.substr(0, this->contentLength);
+	else if (initialData.length() == this->contentLength)
+		this->body = initialData;
+	else {
+		size_t remainingBytes = this->contentLength - initialData.length();
+		char *buffer = new char[remainingBytes];
+		recv(sockFd, buffer, remainingBytes, 0);
+		this->body = initialData + std::string(buffer);
+		delete[] buffer;
+	}
+
+	return (*this);
+}
+
+HttpRequest& HttpRequest::extractChunk(int sockFd, std::string initialData) {
+	if (!this->hasEndBoundary(initialData)) {
+		char buffer[READ_BUFFER_SIZE];
+
+		while (true) {
+			recv(sockFd, buffer, READ_BUFFER_SIZE, 0);
+			initialData += std::string(buffer);
+
+			if (this->hasEndBoundary(initialData))
+				break ;
+		}
+	}
+	return (*this);
 }
 
 void HttpRequest::parseHeadersBuffer(std::string & buffer) {
@@ -128,8 +176,9 @@ void HttpRequest::requestStartLineParser(std::string & request) {
 
 void HttpRequest::configureRequestByHeaders(void) {
 	
-	const std::string* contentType = this->headers.getHeader("content-type");
-	const std::string* transferEncoding = this->headers.getHeader("transfer-encoding");
+	const std::string* contentType = this->headers.getHeader(HttpHeaderNames::CONTENT_TYPE);
+	const std::string* transferEncoding = this->headers.getHeader(HttpHeaderNames::TRANSFER_ENCODING);
+	const std::string* contentLength = this->headers.getHeader(HttpHeaderNames::CONTENT_LENGTH);
 
 	if (contentType) {
 		SplitPair splitRes = Util::split(*contentType, ';');
@@ -141,7 +190,7 @@ void HttpRequest::configureRequestByHeaders(void) {
 		if (splitRes.second >= 2
 			&& splitRes.first[0].find("multipart/form-data") != std::string::npos
 			&& splitRes.first[1].find("boundary=") != std::string::npos) {
-				SplitPair boundary = Util::split(Util::trim(splitRes.first[2], RootConfigs::Whitespaces), '=');
+				SplitPair boundary = Util::split(Util::trim(splitRes.first[1], RootConfigs::Whitespaces), '=');
 
 				if (boundary.second == 2) {
 					this->chunking = chunk_type::dataForm_chunk;
@@ -154,6 +203,10 @@ void HttpRequest::configureRequestByHeaders(void) {
 		&& transferEncoding
 		&& *transferEncoding == "chunked") {
 		this->chunking = chunk_type::encoding_chunk; 
+	}
+
+	if (contentLength) {
+		this->contentLength = Util::strToSizeT(*contentLength);
 	}
 }
 
@@ -185,4 +238,23 @@ std::string HttpRequest::getHeader(std::string headerName) const {
 		return ("");
 
 	return (*headerValue);
+}
+
+
+// private stuff
+bool HttpRequest::hasStartBoundary(const std::string& str) {
+	size_t pos = str.find(this->boundary);
+
+	if (pos == std::string::npos || pos)
+		return (false);
+	return (true);
+}
+
+bool HttpRequest::hasEndBoundary(const std::string& str) {
+	std::string searchTail = "--\r\n";
+	size_t pos = str.find(this->boundary + searchTail);
+
+	if (pos == std::string::npos)
+		return (false);
+	return (true);
 }

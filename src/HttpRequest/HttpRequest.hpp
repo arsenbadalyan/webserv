@@ -8,8 +8,9 @@
 #include "Util.hpp"
 #include "RootConfigs.hpp"
 #include "Server.hpp"
+#include "HttpHeaderNames.hpp"
 
-#define READ_BUFFER_SIZE 1024
+#define READ_BUFFER_SIZE 10000
 #define TERMINATION_BUFFER "\r\n\r\n"
 #define SUPPORTED_PROTOCOL ""
 
@@ -30,12 +31,14 @@ class HttpRequest {
 		~HttpRequest();
 
 	public:
-		std::string requestInitialParsing(int fd);
+		HttpRequest& requestInitialParsing(int fd);
 		void parseHeadersBuffer(std::string &);
 		void requestStartLineParser(std::string &);
 		void configureRequestByHeaders(void);
 		void parseMultipartDataForm(int socket);
 		void parseChunkedData(int socket);
+		HttpRequest& extractBody(int sockFd, std::string initialData);
+		HttpRequest& extractChunk(int sockFd, std::string initialData);
 
 	public:
 		Server * getServer(void) const;
@@ -46,6 +49,10 @@ class HttpRequest {
 		const std::string getFullFilePath(void) const;
 		const std::string getMethod(void) const;
 		std::string getHeader(std::string headerName) const;
+
+	private:
+		bool hasStartBoundary(const std::string& str);
+		bool hasEndBoundary(const std::string& str);
 
 	private:
 		HttpRequest(void);
@@ -59,6 +66,7 @@ class HttpRequest {
 		std::string body;
 		std::string boundary;
 		std::string contentType;
+		size_t contentLength;
 		size_t chunking;
 		bool _hasFinishedRead;
 		Server *_server;

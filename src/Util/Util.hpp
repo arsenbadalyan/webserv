@@ -30,6 +30,7 @@ class Util {
 		static std::string extractFileType(const std::string & path);
 		static std::string generateDefaultErrorPage(const int16_t & statusCode);
 		static std::string intToString(int value);
+		static size_t strToSizeT(const std::string& str);
 		static std::string removeAddnSlashes(std::string str);
 
 };

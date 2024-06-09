@@ -214,3 +214,13 @@ std::string Util::removeAddnSlashes(std::string str) {
 
 	return (res);
 }
+
+size_t Util::strToSizeT(const std::string& str) {
+	size_t value = 0;
+    std::stringstream ss(str);
+    
+    // Convert string to size_t
+    ss >> value;
+	
+	return (value);
+}
