@@ -24,7 +24,7 @@ bool RequestPool::sendRequest(int clientSocket, Server & server) {
 		this->requestPool[clientSocket] = request;
 	} else {
 		request = requestIt->second;
-		// TODO: continue reading request
+		request->prepareRead(clientSocket);
 	}
 
 	if (!request)

@@ -27,32 +27,35 @@ HttpRequest::HttpRequest(Server* currentServer, int readSocketFd) :
 	std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
 }
 
-void HttpRequest::parseMultipartDataForm(int socket) {
+void HttpRequest::prepareRead(int socket) {
 
+	std::cout << "<<<<<<< PREPARING READ" << std::endl;
 	ssize_t readBytes;
 	std::string readRes = "";
-	bool hasAlreadyFoundBoundary = false;
 	char buffer[READ_BUFFER_SIZE];
 
-	while (true) {
-		bzero(&buffer, (READ_BUFFER_SIZE * sizeof(char)));
-		readBytes = recv(socket, buffer, READ_BUFFER_SIZE, 0);
+	bzero(&buffer, (READ_BUFFER_SIZE * sizeof(char)));
+	readBytes = recv(socket, buffer, READ_BUFFER_SIZE, 0);
 
-		if (readBytes <= 0)
-			break ;
+	// if (readBytes <= 0)
+	// 	break ;
 
-		readRes += std::string(buffer);
-		if (readRes.find(this->boundary) != std::string::npos) {
-			if (hasAlreadyFoundBoundary) {
-				std::istringstream is(readRes);
-				std::string cutPart;
-				std::getline(is, cutPart);
-				std::cout << cutPart << std::endl;
-			}
-		}
+	readRes += std::string(buffer);
+	
+	std::cout << "<<<<<<<<< NEW CHUNK" << std::endl;
+	std::cout << readRes << "|||||||||||||||" << std::endl;
+	this->makeChunkRegularCheck();
+	std::cout << "HAS FINISHED: " << this->_hasFinishedRead << " <<<<<<<" << std::endl;
+}
 
-	}
+HttpRequest& HttpRequest::makeChunkRegularCheck(void) {
+	if (this->hasEndBoundary(this->body)) {
+		this->_hasFinishedRead = true;
+		Util::cutFirstAndLastLines(this->body);
+		// TODO: MAKE UPLOAD
+	}	
 
+	return (*this);
 }
 
 HttpRequest& HttpRequest::requestInitialParsing(int fd) {
@@ -92,10 +95,15 @@ HttpRequest& HttpRequest::requestInitialParsing(int fd) {
 	}
 
 	if (this->contentLength) {
-		if (this->chunking == chunk_type::no_chunks)
+		if (this->chunking == chunk_type::no_chunks) {
 			this->extractBody(fd, resultStr);
-		else
-			this->extractChunk(fd, resultStr);
+			std::cout << "<<< VALID BODY" << std::endl;
+			std::cout << this->body << std::endl;
+		}
+		else {
+			this->body = resultStr;
+			std::cout << this->body << std::endl;
+		}
 	}
 
 	return (*this);
@@ -253,6 +261,9 @@ bool HttpRequest::hasStartBoundary(const std::string& str) {
 bool HttpRequest::hasEndBoundary(const std::string& str) {
 	std::string searchTail = "--\r\n";
 	size_t pos = str.find(this->boundary + searchTail);
+
+	std::cout << "STR SEARCH: " << str << std::endl;
+	std::cout << "STR: " << (this->boundary + searchTail) << std::endl;
 
 	if (pos == std::string::npos)
 		return (false);

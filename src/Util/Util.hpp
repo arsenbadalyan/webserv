@@ -32,6 +32,7 @@ class Util {
 		static std::string intToString(int value);
 		static size_t strToSizeT(const std::string& str);
 		static std::string removeAddnSlashes(std::string str);
+		static void cutFirstAndLastLines(std::string& str);
 
 };
 

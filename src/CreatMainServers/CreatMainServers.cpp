@@ -157,10 +157,12 @@ void CreatMainServers::readClient(std::vector<Server> &serverlist, fd_set &rfds,
 			if(FD_ISSET(serverlist[j].getReadSocket()[i]._fd, &rfds))
 			{
 				///// sra tex talisa funqcain kardalu hamar <----------------------------------
-				requestPool.sendRequest(serverlist[j].getReadSocket()[i]._fd, serverlist[j]);
+				bool needsToClose = requestPool.sendRequest(serverlist[j].getReadSocket()[i]._fd, serverlist[j]);
 				////
-				serverlist[j].getWritSocket().push_back(serverlist[j].getReadSocket()[i]._fd);
-				serverlist[j].getReadSocket().erase(serverlist[j].getReadSocket().begin() + i);
+				if (needsToClose) {
+					serverlist[j].getWritSocket().push_back(serverlist[j].getReadSocket()[i]._fd);
+					serverlist[j].getReadSocket().erase(serverlist[j].getReadSocket().begin() + i);
+				}
 			}
 			else
 			{

@@ -224,3 +224,30 @@ size_t Util::strToSizeT(const std::string& str) {
 	
 	return (value);
 }
+
+void Util::cutFirstAndLastLines(std::string& str) {
+    // Find the position of the first newline character
+    size_t firstNewlinePos = str.find('\n');
+    if (firstNewlinePos == std::string::npos) {
+        // If no newline found, just clear the string (or handle as needed)
+        str.clear();
+        return;
+    }
+    
+    // Find the position of the last newline character
+    size_t lastNewlinePos = str.rfind('\n');
+    if (lastNewlinePos == std::string::npos) {
+        // If somehow no last newline found, just clear the string (or handle as needed)
+        str.clear();
+        return;
+    }
+    
+    // Find the position right after the last newline character
+    size_t endPos = lastNewlinePos + 1;
+    
+    // Calculate the length of the substring to remove
+    size_t removeLength = endPos - firstNewlinePos;
+    
+    // Erase the substring from the original string
+    str.erase(firstNewlinePos, removeLength);
+}

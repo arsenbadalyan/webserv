@@ -37,6 +37,7 @@ class HttpRequest {
 		void configureRequestByHeaders(void);
 		void parseMultipartDataForm(int socket);
 		void parseChunkedData(int socket);
+		void prepareRead(int socket);
 		HttpRequest& extractBody(int sockFd, std::string initialData);
 		HttpRequest& extractChunk(int sockFd, std::string initialData);
 
@@ -53,6 +54,7 @@ class HttpRequest {
 	private:
 		bool hasStartBoundary(const std::string& str);
 		bool hasEndBoundary(const std::string& str);
+		HttpRequest& makeChunkRegularCheck(void);
 
 	private:
 		HttpRequest(void);
