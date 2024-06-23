@@ -142,6 +142,11 @@ void CreatMainServers::conectClient(std::vector<Server> &serverlist, fd_set &rfd
 					serverlist[j].getReadSocket().erase(serverlist[j].getReadSocket().begin() + serverlist[j].getReadSocket().size() - 1);
 					std::cerr << "ERROR Client 444\n";
 				}
+				else{
+					//new 
+					fcntl((serverlist[j].getReadSocket()[serverlist[j].getReadSocket().size() - 1])._fd, F_SETFL, O_NONBLOCK);
+				}
+
 			}
 		}
 	}
