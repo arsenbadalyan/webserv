@@ -48,7 +48,7 @@ bool LisenStruc::listen()
     if (::listen(this->_server, 1))
 		return (false);
 	//new 
-	fcntl(this->server, F_SETFL, O_NONBLOCK);
+	fcntl(this->_server, F_SETFL, O_NONBLOCK);
     return true;
 }
 

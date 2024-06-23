@@ -1,11 +1,10 @@
 #ifndef _LISEN_STRUC_HPP_
 #define _LISEN_STRUC_HPP_
 
+#include <fcntl.h>
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <iostream>
-
-
 
 class LisenStruc
 {

@@ -59,25 +59,25 @@ HttpRequest& HttpRequest::makeChunkRegularCheck(void) {
 }
 
 HttpRequest& HttpRequest::requestInitialParsing(int fd) {
-	ssize_t readRes;
+	ssize_t readRes = 0;
 	std::string resultStr;
 	char buffer[READ_BUFFER_SIZE];
 	bool isAlreadyReadStartLine = false;
 	char *terminationBufferPtr = NULL;
 	size_t terminationBufferPos = 0;
 
-	while (true) {
+	while (readRes >= 0) {
 		bzero(&buffer, (READ_BUFFER_SIZE * sizeof(char)));
 		readRes = recv(fd, buffer, READ_BUFFER_SIZE, 0);
-
-		if (readRes <= 0)
-			break ;
-
 		resultStr += std::string(buffer);
-		if (!isAlreadyReadStartLine) {
+
+		if (!isAlreadyReadStartLine && resultStr.find("\r\n") != std::string::npos) {
 			this->requestStartLineParser(resultStr);
 			isAlreadyReadStartLine = true;
 		}
+
+		if (!isAlreadyReadStartLine)
+			continue ;
 
 		terminationBufferPtr = strnstr(resultStr.c_str(), TERMINATION_BUFFER, strlen(resultStr.c_str()));
 		if (terminationBufferPtr) {
@@ -88,16 +88,14 @@ HttpRequest& HttpRequest::requestInitialParsing(int fd) {
 			this->configureRequestByHeaders();
 			if (this->contentLength) {
 				terminationBufferPos += strlen(TERMINATION_BUFFER);
-				resultStr = resultStr.substr(terminationBufferPos, strlen(resultStr.c_str() - terminationBufferPos));
+				resultStr = resultStr.substr(terminationBufferPos, strlen(resultStr.c_str()) - terminationBufferPos);
 			}
-			break ;
 		}
 	}
 
 	if (this->contentLength) {
 		if (this->chunking == chunk_type::no_chunks) {
 			this->extractBody(fd, resultStr);
-			std::cout << "<<< VALID BODY" << std::endl;
 			std::cout << this->body << std::endl;
 		}
 		else {

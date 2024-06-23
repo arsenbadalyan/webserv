@@ -10,7 +10,7 @@
 #include "Server.hpp"
 #include "HttpHeaderNames.hpp"
 
-#define READ_BUFFER_SIZE 10000
+#define READ_BUFFER_SIZE 1024
 #define TERMINATION_BUFFER "\r\n\r\n"
 #define SUPPORTED_PROTOCOL ""
 
