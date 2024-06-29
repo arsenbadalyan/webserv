@@ -13,7 +13,7 @@ HttpRequest::HttpRequest(Server* currentServer, int readSocketFd) :
 	_hasFinishedRead(false),
 	_server(currentServer)
 {
-	std::cout << "<<<<<<<<<<<< NEW REQUEST" << std::endl;
+	std::cout << "<<<<<<<<<<<< NEW CONNECTION: " << readSocketFd << std::endl;
 	this->requestInitialParsing(readSocketFd);
 
 	if (this->chunking == chunk_type::no_chunks)
@@ -24,36 +24,38 @@ HttpRequest::HttpRequest(Server* currentServer, int readSocketFd) :
 	std::cout << "isChunked: " << this->chunking << std::endl;
 	std::cout << "boundary: " << this->boundary << std::endl;
 	std::cout << "content type: " << this->contentType << std::endl;
-	std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+	std::cout << "<<<<<<< IS FINISHED READ ?? " << this->_hasFinishedRead << std::endl;
 }
 
-void HttpRequest::prepareRead(int socket) {
+void HttpRequest::prepareRead(int socketFd) {
 
-	std::cout << "<<<<<<< PREPARING READ" << std::endl;
-	ssize_t readBytes;
+	std::cout << "<<<<<<<<<<<<<< NEW CHUNK RECEIVED: " << socketFd << std::endl;
+	ssize_t readBytes = 0;
 	std::string readRes = "";
 	char buffer[READ_BUFFER_SIZE];
 
-	bzero(&buffer, (READ_BUFFER_SIZE * sizeof(char)));
-	readBytes = recv(socket, buffer, READ_BUFFER_SIZE, 0);
 
-	// if (readBytes <= 0)
-	// 	break ;
+	while (true) {
+		bzero(&buffer, (READ_BUFFER_SIZE * sizeof(char)));
+		readBytes = recv(socketFd, buffer, READ_BUFFER_SIZE, 0);
 
-	readRes += std::string(buffer);
+		if (readBytes < 0)
+			break ;
+
+		readRes += std::string(buffer);
+		this->body += std::string(buffer);
+	}
 	
-	std::cout << "<<<<<<<<< NEW CHUNK" << std::endl;
-	std::cout << readRes << "|||||||||||||||" << std::endl;
 	this->makeChunkRegularCheck();
-	std::cout << "HAS FINISHED: " << this->_hasFinishedRead << " <<<<<<<" << std::endl;
+	std::cout << "<<<<<<< IS FINISHED READ ?? " << this->_hasFinishedRead << std::endl;
 }
 
 HttpRequest& HttpRequest::makeChunkRegularCheck(void) {
 	if (this->hasEndBoundary(this->body)) {
 		this->_hasFinishedRead = true;
-		Util::cutFirstAndLastLines(this->body);
+		// Util::cutFirstAndLastLines(this->body);
 		// TODO: MAKE UPLOAD
-	}	
+	}
 
 	return (*this);
 }
@@ -66,9 +68,13 @@ HttpRequest& HttpRequest::requestInitialParsing(int fd) {
 	char *terminationBufferPtr = NULL;
 	size_t terminationBufferPos = 0;
 
-	while (readRes >= 0) {
+	while (true) {
 		bzero(&buffer, (READ_BUFFER_SIZE * sizeof(char)));
 		readRes = recv(fd, buffer, READ_BUFFER_SIZE, 0);
+
+		if (readRes < 0)
+			break ;
+
 		resultStr += std::string(buffer);
 
 		if (!isAlreadyReadStartLine && resultStr.find("\r\n") != std::string::npos) {
@@ -95,12 +101,12 @@ HttpRequest& HttpRequest::requestInitialParsing(int fd) {
 
 	if (this->contentLength) {
 		if (this->chunking == chunk_type::no_chunks) {
-			this->extractBody(fd, resultStr);
-			std::cout << this->body << std::endl;
+			this->extractBody(fd, resultStr).makeChunkRegularCheck();
+			// std::cout << this->body << std::endl;
 		}
 		else {
 			this->body = resultStr;
-			std::cout << this->body << std::endl;
+			// std::cout << this->body << std::endl;
 		}
 	}
 
@@ -259,9 +265,6 @@ bool HttpRequest::hasStartBoundary(const std::string& str) {
 bool HttpRequest::hasEndBoundary(const std::string& str) {
 	std::string searchTail = "--\r\n";
 	size_t pos = str.find(this->boundary + searchTail);
-
-	std::cout << "STR SEARCH: " << str << std::endl;
-	std::cout << "STR: " << (this->boundary + searchTail) << std::endl;
 
 	if (pos == std::string::npos)
 		return (false);

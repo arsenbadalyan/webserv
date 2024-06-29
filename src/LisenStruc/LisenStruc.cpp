@@ -25,7 +25,9 @@ LisenStruc::~LisenStruc()
 
 bool LisenStruc::bind()
 {
+    int option_value = 1;
     this->_server = ::socket(AF_INET, SOCK_STREAM, 0);
+    setsockopt(this->_server, SOL_SOCKET, SO_REUSEADDR, &option_value, sizeof(option_value));
     if(this->_server < 0)
     {
         return (false);
