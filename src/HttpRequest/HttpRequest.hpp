@@ -4,6 +4,7 @@
 #include <sys/socket.h>
 #include <sstream>
 #include <istream>
+#include <fstream>
 #include "HttpHeaders.hpp"
 #include "Util.hpp"
 #include "RootConfigs.hpp"

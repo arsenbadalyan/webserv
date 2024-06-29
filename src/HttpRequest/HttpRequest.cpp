@@ -14,6 +14,7 @@ HttpRequest::HttpRequest(Server* currentServer, int readSocketFd) :
 	_server(currentServer)
 {
 	std::cout << "<<<<<<<<<<<< NEW CONNECTION: " << readSocketFd << std::endl;
+	fcntl(readSocketFd, F_SETFL, O_NONBLOCK);
 	this->requestInitialParsing(readSocketFd);
 
 	if (this->chunking == chunk_type::no_chunks)
@@ -36,17 +37,26 @@ void HttpRequest::prepareRead(int socketFd) {
 
 
 	while (true) {
-		bzero(&buffer, (READ_BUFFER_SIZE * sizeof(char)));
+		bzero(buffer, (READ_BUFFER_SIZE * sizeof(char)));
 		readBytes = recv(socketFd, buffer, READ_BUFFER_SIZE, 0);
-
 		if (readBytes < 0)
 			break ;
 
 		readRes += std::string(buffer);
 		this->body += std::string(buffer);
 	}
-	
+
+	// std::ofstream outFile("testimg.png", std::ios::app);
+
+    // // Check if the file opened successfully
+    // if (outFile.is_open()) {
+	// 	outFile << readRes;
+    // }
+
+    // Write something to the file
+    
 	this->makeChunkRegularCheck();
+	// std::cout << this->body << std::endl;
 	std::cout << "<<<<<<< IS FINISHED READ ?? " << this->_hasFinishedRead << std::endl;
 }
 
@@ -69,7 +79,7 @@ HttpRequest& HttpRequest::requestInitialParsing(int fd) {
 	size_t terminationBufferPos = 0;
 
 	while (true) {
-		bzero(&buffer, (READ_BUFFER_SIZE * sizeof(char)));
+		bzero(buffer, (READ_BUFFER_SIZE * sizeof(char)));
 		readRes = recv(fd, buffer, READ_BUFFER_SIZE, 0);
 
 		if (readRes < 0)

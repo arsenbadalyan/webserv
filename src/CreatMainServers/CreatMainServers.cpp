@@ -20,7 +20,9 @@ bool CreatMainServers::startServer(std::vector<Server> & serverlist)
 		int max = CreatMainServers::bindFD(serverlist, rfds, wfds);
 		// ---------------------------------
 		// (void)tv;
+		std::cout << "<<< START READ" << std::endl;
 		int res = select(max + 1, &rfds, &wfds, 0,0 );
+		std::cout << "<<< FINISH READ" << std::endl;
 		// ---------------------------------
 
 		if (res >= 0)
@@ -142,10 +144,10 @@ void CreatMainServers::conectClient(std::vector<Server> &serverlist, fd_set &rfd
 					serverlist[j].getReadSocket().erase(serverlist[j].getReadSocket().begin() + serverlist[j].getReadSocket().size() - 1);
 					std::cerr << "ERROR Client 444\n";
 				}
-				else{
-					//new 
-					fcntl((serverlist[j].getReadSocket()[serverlist[j].getReadSocket().size() - 1])._fd, F_SETFL, O_NONBLOCK);
-				}
+				// else{
+				// 	//new 
+				// 	fcntl((serverlist[j].getReadSocket()[serverlist[j].getReadSocket().size() - 1])._fd, F_SETFL, O_NONBLOCK);
+				// }
 
 			}
 		}
