@@ -21,6 +21,16 @@ bool CreatMainServers::startServer(std::vector<Server> & serverlist)
 		// ---------------------------------
 		// (void)tv;
 		std::cout << "<<< START READ" << std::endl;
+		for (size_t j = 0; j < serverlist.size(); j++)
+	{
+		for (size_t i = 0; i < serverlist[j].getReadSocket().size(); i++)
+		{
+			std::cout << "--------------------------- SOCKET >>>>> " << (serverlist[j].getReadSocket()[i])._fd << std::endl;
+			char buffer[1];
+			std::cout << "CAN BE READ: " << recv((serverlist[j].getReadSocket()[i])._fd, buffer, 0, 0) << std::endl;
+		}
+		
+	}
 		int res = select(max + 1, &rfds, &wfds, 0,0 );
 		std::cout << "<<< FINISH READ" << std::endl;
 		// ---------------------------------
@@ -138,7 +148,15 @@ void CreatMainServers::conectClient(std::vector<Server> &serverlist, fd_set &rfd
 				socklen_t siz = sizeof(serverlist[j].getMainServer()[i].getServerAddress());
 				serverlist[j].getReadSocket().push_back(Server::ReadSoket(accept(serverlist[j].getMainServer()[i].getServerFD(), \
 				reinterpret_cast<struct sockaddr*>(&(serverlist[j].getMainServer()[i].getServerAddress())), &siz), 1));
+				// struct timeval timeout;
+				// timeout.tv_sec = 30; // 30 секунд таймаут
+				// timeout.tv_usec = 0;
 
+				// // Установка времени таймаута для приема данных на сервере
+				// if (setsockopt((serverlist[j].getReadSocket()[serverlist[j].getReadSocket().size() - 1])._fd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout)) == -1) {
+				// 	std::cerr << "Failed to set receive timeout: " << strerror(errno) << std::endl;
+				// 	// close(this->_server);
+				// }
 				if ((serverlist[j].getReadSocket()[serverlist[j].getReadSocket().size() - 1])._fd < 0)
 				{
 					serverlist[j].getReadSocket().erase(serverlist[j].getReadSocket().begin() + serverlist[j].getReadSocket().size() - 1);
@@ -167,6 +185,7 @@ void CreatMainServers::readClient(std::vector<Server> &serverlist, fd_set &rfds,
 				bool needsToClose = requestPool.sendRequest(serverlist[j].getReadSocket()[i]._fd, serverlist[j]);
 				////
 				if (needsToClose) {
+					std::cout << "<<<<<<<<<< CLOSING SOCKET: " << serverlist[j].getReadSocket()[i]._fd << std::endl;
 					serverlist[j].getWritSocket().push_back(serverlist[j].getReadSocket()[i]._fd);
 					serverlist[j].getReadSocket().erase(serverlist[j].getReadSocket().begin() + i);
 				}
@@ -175,6 +194,8 @@ void CreatMainServers::readClient(std::vector<Server> &serverlist, fd_set &rfds,
 			{
 				if(serverlist[j].getReadSocket()[i]._flag >= COUNT_CHEACK)
 				{
+					std::cout << "_____________+++++++++++++++++++++ CLOSING: " << serverlist[j].getReadSocket()[i]._fd;
+					std::cout << ", FLAG IS: " << serverlist[j].getReadSocket()[i]._flag << std::endl;
 					close(serverlist[j].getReadSocket()[i]._fd);
 					serverlist[j].getReadSocket().erase(serverlist[j].getReadSocket().begin() + i);
 				}

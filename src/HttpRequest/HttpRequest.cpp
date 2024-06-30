@@ -16,6 +16,7 @@ HttpRequest::HttpRequest(Server* currentServer, int readSocketFd) :
 	std::cout << "<<<<<<<<<<<< NEW CONNECTION: " << readSocketFd << std::endl;
 	fcntl(readSocketFd, F_SETFL, O_NONBLOCK);
 	this->requestInitialParsing(readSocketFd);
+	this->makeChunkRegularCheck();
 
 	if (this->chunking == chunk_type::no_chunks)
 		this->_hasFinishedRead = true;
@@ -37,21 +38,16 @@ void HttpRequest::prepareRead(int socketFd) {
 
 
 	while (true) {
-		bzero(buffer, (READ_BUFFER_SIZE * sizeof(char)));
+		bzero(&buffer, (READ_BUFFER_SIZE * sizeof(char)));
 		readBytes = recv(socketFd, buffer, READ_BUFFER_SIZE, 0);
-		if (readBytes < 0)
+		if (readBytes < 0) 
 			break ;
 
 		readRes += std::string(buffer);
 		this->body += std::string(buffer);
 	}
 
-	// std::ofstream outFile("testimg.png", std::ios::app);
-
-    // // Check if the file opened successfully
-    // if (outFile.is_open()) {
-	// 	outFile << readRes;
-    // }
+	
 
     // Write something to the file
     
@@ -65,6 +61,14 @@ HttpRequest& HttpRequest::makeChunkRegularCheck(void) {
 		this->_hasFinishedRead = true;
 		// Util::cutFirstAndLastLines(this->body);
 		// TODO: MAKE UPLOAD
+		std::ofstream outFile("testimg.png", std::ios::app);
+
+		if (outFile.is_open()) {
+					std::string::iterator it;
+			for (it = this->body.begin(); it != this->body.end(); ++it) {
+				outFile.put(*it);
+			}
+		}
 	}
 
 	return (*this);
@@ -77,13 +81,26 @@ HttpRequest& HttpRequest::requestInitialParsing(int fd) {
 	bool isAlreadyReadStartLine = false;
 	char *terminationBufferPtr = NULL;
 	size_t terminationBufferPos = 0;
+	// bool isSlept = false;
+	// size_t testIdx = 0;
 
 	while (true) {
-		bzero(buffer, (READ_BUFFER_SIZE * sizeof(char)));
+		bzero(&buffer, (READ_BUFFER_SIZE * sizeof(char)));
 		readRes = recv(fd, buffer, READ_BUFFER_SIZE, 0);
 
-		if (readRes < 0)
-			break ;
+		if (readRes < 0) {
+			// if (isSlept) {
+				break ;
+			// }
+			// isSlept = true;
+			// sleep(10);
+		}
+
+		// std::cout << "READING... >>> " << (testIdx++) << ", BytesRead: " << readRes << std::endl;
+
+		// if (readRes == 0) {
+		// 	std::cout << "---------------------------- CLOSED CONNECTION" << std::endl;
+		// }
 
 		resultStr += std::string(buffer);
 
