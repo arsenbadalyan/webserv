@@ -73,6 +73,7 @@ class HttpRequest {
 		size_t chunking;
 		bool _hasFinishedRead;
 		Server *_server;
+		double receivedBytes;
 
 };
 

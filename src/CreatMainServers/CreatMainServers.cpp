@@ -21,17 +21,22 @@ bool CreatMainServers::startServer(std::vector<Server> & serverlist)
 		// ---------------------------------
 		// (void)tv;
 		std::cout << "<<< START READ" << std::endl;
-		for (size_t j = 0; j < serverlist.size(); j++)
-	{
-		for (size_t i = 0; i < serverlist[j].getReadSocket().size(); i++)
-		{
-			std::cout << "--------------------------- SOCKET >>>>> " << (serverlist[j].getReadSocket()[i])._fd << std::endl;
-			char buffer[1];
-			std::cout << "CAN BE READ: " << recv((serverlist[j].getReadSocket()[i])._fd, buffer, 0, 0) << std::endl;
-		}
+	// 	for (size_t j = 0; j < serverlist.size(); j++)
+	// {
+	// 	for (size_t i = 0; i < serverlist[j].getReadSocket().size(); i++)
+	// 	{
+	// 		std::cout << "--------------------------- READ SOCKETS >>>>> " << (serverlist[j].getReadSocket()[i])._fd << std::endl;
+	// 		// char buffer[1];
+	// 		// std::cout << "CAN BE READ: " << recv((serverlist[j].getReadSocket()[i])._fd, buffer, 0, 0) << std::endl;
+	// 	}
 		
-	}
-		int res = select(max + 1, &rfds, &wfds, 0,0 );
+	// }
+	struct timeval timeout;
+
+    // Initialize timeout to 5 seconds
+    timeout.tv_sec = 5;
+    timeout.tv_usec = 0;
+		int res = select(max + 1, &rfds, &wfds, 0, 0);
 		std::cout << "<<< FINISH READ" << std::endl;
 		// ---------------------------------
 
@@ -120,6 +125,7 @@ int	CreatMainServers::bindFD(std::vector<Server> &serverlist, fd_set &rfds, fd_s
 			if (serverlist[j].getWritSocket()[i] > max)
 				max = serverlist[j].getWritSocket()[i];
 			FD_SET(serverlist[j].getWritSocket()[i], &wfds);
+			std::cout << "<<<<<<<<<<<<<<<<<<<< WRITE SOCKET: " << serverlist[j].getWritSocket()[i] << std::endl;
 		}
 		
 	}
@@ -130,6 +136,7 @@ int	CreatMainServers::bindFD(std::vector<Server> &serverlist, fd_set &rfds, fd_s
 			if ((serverlist[j].getReadSocket()[i])._fd > max)
 				max = (serverlist[j].getReadSocket()[i])._fd;
 			FD_SET((serverlist[j].getReadSocket()[i])._fd, &rfds);
+			std::cout << "<<<<<<<<<<<<<<<<<<<< READ SOCKET: " << (serverlist[j].getReadSocket()[i])._fd << std::endl;
 		}
 		
 	}
@@ -179,8 +186,10 @@ void CreatMainServers::readClient(std::vector<Server> &serverlist, fd_set &rfds,
 	{
 		for (size_t i = 0; i < serverlist[j].getReadSocket().size(); i++)
 		{
+			std::cout << "CHECKING SOCKET >> " << serverlist[j].getReadSocket()[i]._fd << std::endl;
 			if(FD_ISSET(serverlist[j].getReadSocket()[i]._fd, &rfds))
 			{
+				std::cout << "READS FROM << " << serverlist[j].getReadSocket()[i]._fd << std::endl;
 				///// sra tex talisa funqcain kardalu hamar <----------------------------------
 				bool needsToClose = requestPool.sendRequest(serverlist[j].getReadSocket()[i]._fd, serverlist[j]);
 				////

@@ -28,7 +28,7 @@ bool LisenStruc::bind()
     int option_value = 1;
     this->_server = ::socket(AF_INET, SOCK_STREAM, 0);
     struct timeval timeout;
-    timeout.tv_sec = 300000; // 30 секунд таймаут
+    timeout.tv_sec = 30; // 30 секунд таймаут
     timeout.tv_usec = 0;
 
     // Установка времени таймаута для приема данных на сервере

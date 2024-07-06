@@ -11,7 +11,8 @@ HttpRequest::HttpRequest(Server* currentServer, int readSocketFd) :
 	contentLength(0),
 	chunking(chunk_type::no_chunks),
 	_hasFinishedRead(false),
-	_server(currentServer)
+	_server(currentServer),
+	receivedBytes(0)
 {
 	std::cout << "<<<<<<<<<<<< NEW CONNECTION: " << readSocketFd << std::endl;
 	fcntl(readSocketFd, F_SETFL, O_NONBLOCK);
@@ -40,8 +41,17 @@ void HttpRequest::prepareRead(int socketFd) {
 	while (true) {
 		bzero(&buffer, (READ_BUFFER_SIZE * sizeof(char)));
 		readBytes = recv(socketFd, buffer, READ_BUFFER_SIZE, 0);
-		if (readBytes < 0) 
+		if (readBytes < 0) {
+			std::cout << "CLOSED CONNECTION" << std::endl;
 			break ;
+		}
+
+		if (readBytes == 0) {
+			std::cout << "CLOSED CONNECTION" << std::endl;
+			break ; 
+		}
+
+		receivedBytes += static_cast<double>(readBytes) / 1048576.0;
 
 		readRes += std::string(buffer);
 		this->body += std::string(buffer);
@@ -71,6 +81,8 @@ HttpRequest& HttpRequest::makeChunkRegularCheck(void) {
 		}
 	}
 
+	std::cout << "RECEIVED MBS >>>>>>>>>>>>>>>>>>>>>>>>>>> " << receivedBytes << "MB" << std::endl;
+
 	return (*this);
 }
 
@@ -95,6 +107,11 @@ HttpRequest& HttpRequest::requestInitialParsing(int fd) {
 			// isSlept = true;
 			// sleep(10);
 		}
+
+		if (readRes == 0)
+			break;
+
+		receivedBytes += static_cast<double>(readRes) / 1048576.0;
 
 		// std::cout << "READING... >>> " << (testIdx++) << ", BytesRead: " << readRes << std::endl;
 
