@@ -32,6 +32,8 @@ private:
 	std::vector<ServerListener>	_mainServer;
 	std::vector<int>		_writSocket;
 	std::vector<ReadSoket>	_readSocket;
+	std::map<std::string, std::string> 
+							_cgi_set;
 public:
 	Server();
 	Server(const Server& other);
@@ -45,6 +47,9 @@ public:
 
 	std::string getServerName() const;
 	Server& setServerName(const std::string& server_name);
+
+	std::map<std::string, std::string>& getCgiSet();
+	Server& setCgiSet(const std::map<std::string, std::string>& cgi_set);
 
 	std::string getHost() const;
 	Server& setHost(const std::string& host);

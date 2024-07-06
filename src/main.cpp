@@ -1,20 +1,23 @@
 #include "ParsingConfigFile.hpp"
-#include "CreateMainServers.hpp"
-#include "AutoIndexController.hpp"
+#include "CreatMainServers.hpp"
+#include "ForAutoIndex.hpp"
+#include "CgiExec.hpp"
 #include <string>
 void print_struct(std::vector<Server> & s);
 
 static std::vector<Server> * clo = NULL;
 
-void	sigint_pars(int sig)
-{
-	(void)sig;
-	CreateMainServers::closeFullPorts(clo);
-	exit(0);
-}
+// void	sigint_pars(int sig)
+// {
+// 	(void)sig;
+// 	CreateMainServers::closeFullPorts(clo);
+// 	exit(0);
+// }
 
 int main(int argc, char ** argv) 
 {
+
+
 	ParsingConfigFile  conf_file;
 	std::vector<Server> list_server;
 	if (argc == 2)
@@ -38,8 +41,8 @@ int main(int argc, char ** argv)
 	}
 	print_struct(list_server);
 	clo = &list_server;
-	signal(SIGINT, sigint_pars);
-	signal(SIGQUIT, SIG_IGN);
+	// signal(SIGINT, sigint_pars);
+	// signal(SIGQUIT, SIG_IGN);
 	CreateMainServers::startServer(list_server);
 	// CreateMainServers::closeFullPorts(list_server);
 
@@ -67,8 +70,12 @@ void print_struct(std::vector<Server> & s)
         << " " << s[i].getServerConfig().getAllow_methods().getPost() << " " << \
         s[i].getServerConfig().getAllow_methods().getDelete() << std::endl;
         std::cout << "Server " << i << " Autoindex = " << s[i].getServerConfig().getAutoindex() << std::endl;
-        std::cout << "Server " << i << " CGI = " << s[i].getServerConfig().getCgi() << std::endl;
         std::cout << "Server " << i << " max_body_size = " << s[i].getServerConfig().getClient_max_body_size() << std::endl;
+        for (std::map<std::string, std::string>::iterator h = s[i].getCgiSet().begin();\
+         h != s[i].getCgiSet().end(); h++)
+        {
+                    std::cout << "Server " << i << " CGI = " << h->first << "  " << h->second  << std::endl;
+        }
         for (std::map<int, std::string>::iterator h = s[i].getServerConfig().getError_page().begin();\
          h != s[i].getServerConfig().getError_page().end(); h++)
         {
@@ -94,7 +101,6 @@ void print_struct(std::vector<Server> & s)
             << " " << s[i].getLocations()[j].getAllow_methods().getPost() << " " << \
             s[i].getLocations()[j].getAllow_methods().getDelete() << std::endl;
             std::cout << "  Server " << i << " Autoindex = " << s[i].getLocations()[j].getAutoindex() << std::endl;
-            std::cout << "  Server " << i << " CGI = " << s[i].getLocations()[j].getCgi() << std::endl;
             std::cout << "  Server " << i << " max_body_size = " << s[i].getLocations()[j].getClient_max_body_size() << std::endl;
             for (std::map<int, std::string>::iterator h = s[i].getLocations()[j].getError_page().begin();\
             h != s[i].getLocations()[j].getError_page().end(); h++)

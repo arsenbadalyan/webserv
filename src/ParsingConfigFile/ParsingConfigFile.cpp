@@ -317,9 +317,10 @@ size_t	ParsingConfigFile::CheckCorecktConfig(std::string config, size_t pos_star
 		if (SIZE_MAX != res)
 			return (res);
 	}
-	else if (std::string("cgi") == config)
+	else if (std::string("cgi_set") == config)
 	{
-
+		if (controlFlag)
+			throw MyException("Error cgi_set in location" + this->getErrorline(pos_start));
 		res = checkCgi(pos_start, pos_end, controlFlag);
 		if (SIZE_MAX != res)
 			return (res);
@@ -771,6 +772,7 @@ size_t ParsingConfigFile::checkReturn(size_t pos_start, size_t pos_end, bool con
 
 size_t ParsingConfigFile::checkCgi(size_t pos_start, size_t pos_end, bool controlFlag)
 {
+	(void)controlFlag;
 	size_t end = 0;
 	size_t i = pos_start;
 	for (; i < pos_end; i++)
@@ -786,24 +788,43 @@ size_t ParsingConfigFile::checkCgi(size_t pos_start, size_t pos_end, bool contro
 	if (i >= pos_end)
 		throw MyException("Syntax Error Upload_Dir" + this->getErrorline(pos_start));
 	std::stringstream str(std::string(this->_data.begin() + pos_start, this->_data.begin() + end));
-	std::string val, check;
-	str >> val;
+	std::string patch, key, check;
+	str >> patch;
+	str >> key;
 	str >> check;
 	if (check.size())
-		throw MyException("Syntax Error Upload_Dir arguments" + this->getErrorline(pos_start));
-	bool *res;
-	if (controlFlag)
-		res = &(this->_serverList[this->_serverList.size() - 1].getLocations()\
-		[this->_serverList[this->_serverList.size() - 1].getLocations().size() - 1].getCgi());
-	else
-		res = &(this->_serverList[this->_serverList.size() - 1].getServerConfig().getCgi());
-	std::transform(val.begin(), val.end(), val.begin(), ::tolower);
-	if (val == std::string("on"))
-		*res = (true);
-	else if(val == std::string("off"))
-		*res = (false);
-	else
-		throw MyException("Syntax Error Upload_Dir arguments" + this->getErrorline(pos_start));
+		throw MyException("Syntax Error cgi_set arguments" + this->getErrorline(pos_start));
+	for (size_t i = 0; i < patch.size(); i++)
+	{
+		if(i + 1 < patch.size() && patch[i] == '/' && patch[i + 1] == '/')
+			throw MyException("Syntax Error cgi_set \"double /\"  arguments" + this->getErrorline(pos_start));
+	}
+	for (size_t i = 0; i < key.size(); i++)
+	{
+		if(i == 0 && key[i] != '.')
+			throw MyException("Syntax Error cgi_set " + key + " arguments" + this->getErrorline(pos_start));
+		else if((key[i] > 64 && key[i] < 91) || (key[i] > 96 && key[i] < 123))
+			continue;
+		else if (i != 0)
+			throw MyException("Syntax a Error cgi_set " + key + " arguments" + this->getErrorline(pos_start));
+	}
+	std::map<std::string, std::string> *cgi = &(this->_serverList[this->_serverList.size() - 1].getCgiSet());
+	cgi->insert(std::pair<std::string, std::string>(key, patch));
+	// std::cout << "size 1 === " << cgi->size() << std::endl;
+	// std::cout << "size 2 === " << this->_serverList[this->_serverList.size() - 1].getCgiSet().size() << std::endl;
+	// bool *res;
+	// if (controlFlag)
+	// 	res = &(this->_serverList[this->_serverList.size() - 1].getLocations()\
+	// 	[this->_serverList[this->_serverList.size() - 1].getLocations().size() - 1].getCgi());
+	// else
+	// 	res = &(this->_serverList[this->_serverList.size() - 1].getServerConfig().getCgi());
+	// std::transform(val.begin(), val.end(), val.begin(), ::tolower);
+	// if (val == std::string("on"))
+	// 	*res = (true);
+	// else if(val == std::string("off"))
+	// 	*res = (false);
+	// else
+	// 	throw MyException("Syntax Error Upload_Dir arguments" + this->getErrorline(pos_start));
 	return (end + 1);
 }
 
