@@ -16,7 +16,8 @@ Config::Config(const Config& other):
 	_allow_methods(other._allow_methods),
 	_upload_dir(other._upload_dir),
 	_error_page(other._error_page),
-	_return(other._return), _cgi(other._cgi) ,
+	_return(other._return),
+	//  _cgi(other._cgi) ,
 	_index(other._index),_location_name(other._location_name),
 	_autoindex(other._autoindex),
 	_cmbs_flaf(other._cmbs_flaf),
@@ -32,7 +33,7 @@ Config& Config::operator= (const Config& other)
 		this->_upload_dir = other._upload_dir;
 		this->_error_page = other._error_page;
 		this->_return = other._return;
-		this->_cgi = other._cgi;
+		// this->_cgi = other._cgi;
 		this->_index = other._index;
 		this->_location_name = other._location_name;
 		this->_autoindex = other._autoindex;
@@ -110,16 +111,16 @@ Config& Config::setReturn(const StatusCollection& _return)
 	return (*this);
 }
 
-bool&  Config::getCgi()
-{
-	return (this->_cgi);
-}
+// bool&  Config::getCgi()
+// {
+// 	return (this->_cgi);
+// }
 
-Config& Config::setCgi(const bool& cgi)
-{
-	this->_cgi = cgi;
-	return (*this);
-}
+// Config& Config::setCgi(const bool& cgi)
+// {
+// 	this->_cgi = cgi;
+// 	return (*this);
+// }
 
 std::vector<std::string>& Config::getIndex()
 {

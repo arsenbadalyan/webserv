@@ -8,7 +8,8 @@ Server::Server():_host("127.0.0.1"),_host_flag(false),_port_flag(false)
 
 Server::Server(const Server& other):
 	_serverConfig(other._serverConfig), _serverName(other._serverName),
-	_host(other._host),_host_flag(other._host_flag), _port(other._port), _port_flag(other._port_flag),_locations(other._locations) {}
+	_host(other._host),_host_flag(other._host_flag), _port(other._port), _port_flag(other._port_flag),_locations(other._locations),
+	 _cgi_set(other._cgi_set) {}
 
 Server& Server::operator= (const Server& other)
 {
@@ -18,6 +19,7 @@ Server& Server::operator= (const Server& other)
 		this-> _serverName = other._serverName;
 		this->_host = other._host;
 		this->_host_flag = other._host_flag;
+		this->_cgi_set = other._cgi_set;
 		this->_port = other._port;
 		this->_port_flag = other._port_flag;
 		this->_locations = other._locations;
@@ -64,6 +66,17 @@ std::string Server::getServerName() const
 Server& Server::setServerName(const std::string& server_name)
 {
 	this->_serverName = server_name;
+	return (*this);
+}
+
+std::map<std::string, std::string>& Server::getCgiSet()
+{
+	return (this->_cgi_set);
+}
+
+Server& Server::setCgiSet(const std::map<std::string, std::string>& cgi_set)
+{
+	this->_cgi_set = cgi_set;
 	return (*this);
 }
 

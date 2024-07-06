@@ -17,7 +17,7 @@ private:
 	std::string					_upload_dir;
 	std::map<int, std::string>	_error_page;
 	StatusCollection			_return;
-	bool						_cgi;
+	// bool						_cgi;
 	std::vector<std::string>	_index;
 	std::string					_location_name;
 	bool						_autoindex;

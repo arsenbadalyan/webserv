@@ -13,5 +13,4 @@ server
 	{
 		index test.html test2.html yey.php;
 	}
-
 }
