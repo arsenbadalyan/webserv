@@ -13,7 +13,8 @@ HttpRequest::HttpRequest(Server* currentServer, int readSocketFd) :
 	chunking(chunk_type::no_chunks),
 	_hasFinishedRead(false),
 	_server(currentServer),
-	receivedBytes(0)
+	receivedBytes(0),
+	_hasReadChunkedDataHeaders(false)
 {
 	std::cout << "<<<<<<<<<<<< NEW CONNECTION: " << readSocketFd << std::endl;
 	fcntl(readSocketFd, F_SETFL, O_NONBLOCK);
@@ -68,6 +69,41 @@ void HttpRequest::prepareRead(int socketFd) {
 }
 
 HttpRequest& HttpRequest::makeChunkRegularCheck(void) {
+
+	if (!this->_hasReadChunkedDataHeaders) {
+		size_t terminationBufferPos = this->body.find(TERMINATION_BUFFER);
+
+		if (terminationBufferPos != std::string::npos) {
+			std::string fileHeaders = this->body.substr(0, terminationBufferPos + std::string(TERMINATION_BUFFER).length());
+			this->body.erase(0, terminationBufferPos + std::string(TERMINATION_BUFFER).length());
+			size_t cursorPos = 0;
+			size_t cursorPrevPos = cursorPos;
+			bool alreadyFoundBoundary = false;
+			std::string headersLineStr = "";
+
+			while (cursorPos <= fileHeaders.length() || cursorPos != cursorPrevPos) {
+				cursorPrevPos = cursorPos;
+				cursorPos = fileHeaders.find(TERMINATION_CHARS);
+
+				if (cursorPos != std::string::npos && cursorPrevPos != cursorPos) {
+					cursorPos += 2;
+					if (alreadyFoundBoundary) {
+
+						std::cout << "<<<<<<<<< CHUNKED DATA HEADER: " << std::endl;
+						std::cout << fileHeaders.substr(cursorPrevPos, cursorPos - cursorPrevPos);
+						std::cout << "<<<<<<<<< END" << std::endl;
+						// headersLineStr = this->_chunkedDataHeaders.setHeader(fileHeaders)
+
+					} else alreadyFoundBoundary = true;
+				}
+
+				std::cout << "---> CHECK: " << cursorPos << " - " << cursorPrevPos << std::endl;
+			}
+			// std::cout << "|->" << mainMetadata << "<-|" << std::endl;
+			this->_hasReadChunkedDataHeaders = true;
+		}
+	}
+
 	if (this->hasEndBoundary(this->body)) {
 		this->_hasFinishedRead = true;
 		// Util::cutFirstAndLastLines(this->body);
@@ -137,6 +173,9 @@ HttpRequest& HttpRequest::requestInitialParsing(int fd) {
 			if (this->contentLength) {
 				terminationBufferPos += strlen(TERMINATION_BUFFER);
 				resultStr = resultStr.substr(terminationBufferPos, strlen(resultStr.c_str()) - terminationBufferPos);
+				// std::cout << "READ THIS <<<<<<<<" << std::endl;
+				// std::cout << resultStr << std::endl;
+				// std::cout << "<<<<<<<<<<<<<<<<<<" << std::endl;
 			}
 		}
 	}
@@ -144,11 +183,9 @@ HttpRequest& HttpRequest::requestInitialParsing(int fd) {
 	if (this->contentLength) {
 		if (this->chunking == chunk_type::no_chunks) {
 			this->extractBody(fd, resultStr).makeChunkRegularCheck();
-			// std::cout << this->body << std::endl;
 		}
 		else {
 			this->body.append(resultStr, resultStr.length());
-			// std::cout << this->body << std::endl;
 		}
 	}
 
@@ -191,7 +228,7 @@ void HttpRequest::parseHeadersBuffer(std::string & buffer) {
 	std::string readlineOutput;
 
 	while (std::getline(is, readlineOutput)) {
-		headers.setHeader(readlineOutput);
+		this->headers.setHeader(readlineOutput);
 	}
 }
 

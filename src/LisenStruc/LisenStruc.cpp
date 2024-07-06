@@ -25,7 +25,7 @@ LisenStruc::~LisenStruc()
 
 bool LisenStruc::bind()
 {
-    int option_value = 1;
+    // int option_value = 1;
     this->_server = ::socket(AF_INET, SOCK_STREAM, 0);
     struct timeval timeout;
     timeout.tv_sec = 30; // 30 секунд таймаут

@@ -12,6 +12,7 @@
 #include "HttpHeaderNames.hpp"
 
 #define READ_BUFFER_SIZE (1024 * 1024)
+#define TERMINATION_CHARS "\r\n"
 #define TERMINATION_BUFFER "\r\n\r\n"
 #define SUPPORTED_PROTOCOL ""
 
@@ -64,6 +65,7 @@ class HttpRequest {
 
 	private:
 		HttpHeaders headers;
+		HttpHeaders _chunkedDataHeaders;
 		std::string method;
 		std::string endpoint;
 		std::string body;
@@ -74,6 +76,7 @@ class HttpRequest {
 		bool _hasFinishedRead;
 		Server *_server;
 		double receivedBytes;
+		bool _hasReadChunkedDataHeaders;
 
 };
 
