@@ -37,7 +37,7 @@ bool LisenStruc::bind()
         // close(this->_server);
         return 1;
     }
-    setsockopt(this->_server, SOL_SOCKET, SO_REUSEADDR, &option_value, sizeof(option_value));
+    // setsockopt(this->_server, SOL_SOCKET, SO_REUSEADDR, &option_value, sizeof(option_value));
     if(this->_server < 0)
     {
         return (false);

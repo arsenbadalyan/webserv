@@ -7,6 +7,7 @@ HttpRequest::~HttpRequest() {}
 HttpRequest& HttpRequest::operator=(const HttpRequest &) { return (*this); }
 
 HttpRequest::HttpRequest(Server* currentServer, int readSocketFd) :
+	body(""),
 	boundary(""),
 	contentLength(0),
 	chunking(chunk_type::no_chunks),
@@ -53,8 +54,8 @@ void HttpRequest::prepareRead(int socketFd) {
 
 		receivedBytes += static_cast<double>(readBytes) / 1048576.0;
 
-		readRes += std::string(buffer);
-		this->body += std::string(buffer);
+		// readRes += std::string(buffer);
+		this->body.append(buffer, readBytes);
 	}
 
 	
@@ -71,13 +72,14 @@ HttpRequest& HttpRequest::makeChunkRegularCheck(void) {
 		this->_hasFinishedRead = true;
 		// Util::cutFirstAndLastLines(this->body);
 		// TODO: MAKE UPLOAD
-		std::ofstream outFile("testimg.png", std::ios::app);
+		std::ofstream outFile("test123.pdf", std::ios::app);
 
 		if (outFile.is_open()) {
-					std::string::iterator it;
-			for (it = this->body.begin(); it != this->body.end(); ++it) {
-				outFile.put(*it);
-			}
+			outFile << this->body;
+			// 		std::string::iterator it;
+			// for (it = this->body.begin(); it != this->body.end(); ++it) {
+			// 	outFile.put(*it);
+			// }
 		}
 	}
 
@@ -101,15 +103,11 @@ HttpRequest& HttpRequest::requestInitialParsing(int fd) {
 		readRes = recv(fd, buffer, READ_BUFFER_SIZE, 0);
 
 		if (readRes < 0) {
-			// if (isSlept) {
-				break ;
-			// }
-			// isSlept = true;
-			// sleep(10);
+			break ;
 		}
 
 		if (readRes == 0)
-			break;
+			break ;
 
 		receivedBytes += static_cast<double>(readRes) / 1048576.0;
 
@@ -119,7 +117,7 @@ HttpRequest& HttpRequest::requestInitialParsing(int fd) {
 		// 	std::cout << "---------------------------- CLOSED CONNECTION" << std::endl;
 		// }
 
-		resultStr += std::string(buffer);
+		resultStr.append(buffer, readRes);
 
 		if (!isAlreadyReadStartLine && resultStr.find("\r\n") != std::string::npos) {
 			this->requestStartLineParser(resultStr);
@@ -149,7 +147,7 @@ HttpRequest& HttpRequest::requestInitialParsing(int fd) {
 			// std::cout << this->body << std::endl;
 		}
 		else {
-			this->body = resultStr;
+			this->body.append(resultStr, resultStr.length());
 			// std::cout << this->body << std::endl;
 		}
 	}
