@@ -1,5 +1,9 @@
 #include "ActiveMetods.hpp"
 
+const std::string SupportedMethods::POST = "post";
+const std::string SupportedMethods::GET = "get";
+const std::string SupportedMethods::DELETE = "delete";
+
 ActiveMetods::ActiveMetods():_post(true), _get(true), _delete(true) {}
 
 ActiveMetods::ActiveMetods(bool post, bool get, bool del):_post(post),_get(get),_delete(del) {}
@@ -55,4 +59,22 @@ ActiveMetods& ActiveMetods::setDelete(const bool DeleteData)
 {
 	this->_delete = DeleteData;
 	return (*this);
+}
+
+bool ActiveMetods::isAvailableMethod(std::string methodName) {
+	methodName = Util::toLower(methodName);
+
+	if (RootConfigs::AvailableMethods.find(methodName) == RootConfigs::AvailableMethods.end())
+		return (false);
+
+	if (methodName == SupportedMethods::POST)
+		return (this->getPost());
+
+	if (methodName == SupportedMethods::GET)
+		return (this->getGet());
+
+	if (methodName == SupportedMethods::DELETE)
+		return (this->getDelete());
+
+	return (false);
 }

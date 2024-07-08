@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 #include "Config.hpp"
-#include "LisenStruc.hpp"
+#include "ServerListener.hpp"
 #include <vector>
 #include "Util.hpp"
 
@@ -29,7 +29,7 @@ private:
 	std::vector<size_t> 	_port;
 	bool					_port_flag;
 	std::vector<Config> 	_locations;
-	std::vector<LisenStruc>	_mainServer;
+	std::vector<ServerListener>	_mainServer;
 	std::vector<int>		_writSocket;
 	std::vector<ReadSoket>	_readSocket;
 public:
@@ -61,8 +61,8 @@ public:
 	std::vector<Config>& getLocations();
 	Server& setLocations(const std::vector<Config>& locations);
 
-	std::vector<LisenStruc>& getMainServer();
-	Server& setMainServer(const std::vector<LisenStruc>& fd);
+	std::vector<ServerListener>& getMainServer();
+	Server& setMainServer(const std::vector<ServerListener>& fd);
 
 	std::vector<int>& getWritSocket();
 	Server& setWritSocket(const std::vector<int>& fd);

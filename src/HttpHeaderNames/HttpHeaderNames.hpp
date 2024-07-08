@@ -12,6 +12,11 @@ class HttpHeaderNames {
 		static const std::string SERVER;
 		static const std::string EXPIRES;
 		static const std::string LAST_MODIFIED;
+		static const std::string LOCATION;
+		static const std::string CONNECTION;
+		static const std::string COOKIE;
+		static const std::string TRANSFER_ENCODING;
+		static const std::string CONTENT_DISPOSITION;
 
 	private:
 		HttpHeaderNames(void);

@@ -3,6 +3,11 @@
 
 #include <iostream>
 #include <fstream>
+#include <map>
+#include <list>
+#include "AutoIndexController.hpp"
+#include "ActiveMetods.hpp"
+#include "ExceptionHandler.hpp"
 #include "HttpRequest.hpp"
 #include "RootConfigs.hpp"
 #include "HttpStatusCode.hpp"
@@ -10,6 +15,7 @@
 #include "Server.hpp"
 #include "Config.hpp"
 #include "HttpHeaderNames.hpp"
+#include "Logger.hpp"
 
 class HttpResponse {
 
@@ -21,10 +27,12 @@ class HttpResponse {
 		void getResponse(void);
 
 	private:
-		std::string configureStatusLine();
-		std::string configureHeaders();
+		void configureStatusLine(void);
+		void configureHeaders(void);
 		void configureDefaultHeaders(void);
-		void sendBody();
+		void sendBody(void);
+		void sendFailedRequest(void);
+		void sendResponseRootSlice(void);
 	
 	private:
 		HttpResponse(const HttpResponse&);
@@ -38,6 +46,10 @@ class HttpResponse {
 		int _writeSocketFd;
 		bool _isReturnTerminatedResponse;
 		std::ifstream _requestedFile;
+		std::string _requestedFileType;
+		std::string _requestedFilePath;
+		int16_t _statusCode;
+		std::string *_folderStructure;
 };
 
 #endif // !__HTTP_REQUEST__HPP__

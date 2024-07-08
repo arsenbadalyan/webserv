@@ -2,28 +2,31 @@
 #define _PARSINGCONFIGFILE_HPP_
 
 #include "Server.hpp"
-#include "ReadFile.hpp"
+#include "FileReader.hpp"
 #include <dirent.h>
 #include <sstream>
 #include <cstdint>
 #include <algorithm>
+#include <set>
 
 class ParsingConfigFile {
 private:
 
 	// std::string	_filename;
-	ReadFile			_file;
+	FileReader			_file;
 	std::string			_data;
 	std::vector<Server>	_serverList;
+	std::set<int>		_statusCode;
 	// size_t				_sizeList;
 
 public:
-
+	ParsingConfigFile();
 	ParsingConfigFile(const std::string & filename);
 	ParsingConfigFile( const ParsingConfigFile & other);
 	ParsingConfigFile & operator=(const ParsingConfigFile & other);
 	~ParsingConfigFile();
 
+	void				setFile(const std::string & filename);
 	std::vector<Server>	startPars();
 
 private:
@@ -48,6 +51,7 @@ private:
 	size_t	checkUploadDir(size_t pos_start, size_t pos_end, bool controlFlag);
 
 	size_t	checkErrorPage(size_t pos_start, size_t pos_end, bool controlFlag);
+	
 	size_t	statusCodes(std::string number);
 
 	size_t	checkReturn(size_t pos_start, size_t pos_end, bool controlFlag);
@@ -77,7 +81,9 @@ private:
 	size_t findSimbol(std::string &BodySize, size_t pos_start);
 
 	bool	checkSinv(const std::string &sin);
-	bool	checkLocName(const std::string &sin);
+	void	CleaningTheLocationName(std::string &loc_name);
+	bool	checkLocName(const std::string sin);
+	void	addErrorPathForLocation();
 
 	class MyException : public std::exception
 	{
@@ -91,5 +97,7 @@ private:
 	};
 
 };
+
+
 
 #endif

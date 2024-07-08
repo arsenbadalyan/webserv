@@ -7,6 +7,7 @@ void HttpStatusCode::operator=(const HttpStatusCode &) {}
 
 // Define the enumeration values
 const int16_t HttpStatusCode::OK;
+const int16_t HttpStatusCode::CREATED;
 const int16_t HttpStatusCode::BAD_GATEWAY;
 const int16_t HttpStatusCode::NOT_ALLOWED;
 const int16_t HttpStatusCode::CONTENT_TOO_LARGE;
@@ -17,6 +18,7 @@ const int16_t HttpStatusCode::NOT_FOUND;
 
 const std::pair<int, std::string> statusCodesKeyValuePairs[] = {
     std::make_pair(HttpStatusCode::OK, "OK"),
+    std::make_pair(HttpStatusCode::CREATED, "Created"),
     std::make_pair(HttpStatusCode::MOVED_PERMANENTLY, "Moved Permanently"),
     std::make_pair(HttpStatusCode::FORBIDDEN, "Forbidden"),
     std::make_pair(HttpStatusCode::NOT_FOUND, "Not Found"),
@@ -33,4 +35,12 @@ const StatusCodesMap HttpStatusCode::StatusCode(
 
 std::string HttpStatusCode::getStatusCode(const int16_t& code) {
     return (HttpStatusCode::StatusCode.find(code)->second);
+}
+
+bool HttpStatusCode::isErrorStatusCode(const int16_t& code) {
+    return (code >= 400 && code <= 599);
+}
+
+bool HttpStatusCode::isRedirectStatusCode(const int16_t& code) {
+    return (code >= 300 && code < 400);
 }

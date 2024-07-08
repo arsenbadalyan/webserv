@@ -23,3 +23,11 @@ void ExceptionHandler::CannotDestroyRequest(void) {
 void ExceptionHandler::InvalidFileInfo(void) {
     throw std::runtime_error("Unable to get file information.");
 }
+
+void ExceptionHandler::OutOfMaxBodyRange(void) {
+	throw std::out_of_range("Body size is bigger than max body size.");
+}
+
+void ExceptionHandler::FailedToReadDir(void) {
+	throw std::runtime_error("Failed to read specified directory.");
+}
