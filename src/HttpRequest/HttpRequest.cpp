@@ -14,9 +14,11 @@ HttpRequest::HttpRequest(Server* currentServer, int readSocketFd) :
 	_hasFinishedRead(false),
 	_server(currentServer),
 	receivedBytes(0),
-	_hasReadChunkedDataHeaders(false)
+	_hasReadChunkedDataHeaders(false),
+	_isUploadedFile(false),
+	_fd(readSocketFd)
 {
-	std::cout << "<<<<<<<<<<<< NEW CONNECTION: " << readSocketFd << std::endl;
+	::logRequest(LOGGER_INFO, "New Connection received from socket " + Util::intToString(readSocketFd));
 	fcntl(readSocketFd, F_SETFL, O_NONBLOCK);
 	this->requestInitialParsing(readSocketFd);
 	this->makeChunkRegularCheck();
@@ -24,102 +26,84 @@ HttpRequest::HttpRequest(Server* currentServer, int readSocketFd) :
 	if (this->chunking == chunk_type::no_chunks)
 		this->_hasFinishedRead = true;
 
-	std::cout << "method: " << this->method << std::endl;
-	std::cout << "endpoint: " << this->endpoint << std::endl;
-	std::cout << "isChunked: " << this->chunking << std::endl;
-	std::cout << "boundary: " << this->boundary << std::endl;
-	std::cout << "content type: " << this->contentType << std::endl;
-	std::cout << "<<<<<<< IS FINISHED READ ?? " << this->_hasFinishedRead << std::endl;
+	// std::cout << "method: " << this->method << std::endl;
+	// std::cout << "endpoint: " << this->endpoint << std::endl;
+	// std::cout << "isChunked: " << this->chunking << std::endl;
+	// std::cout << "boundary: " << this->boundary << std::endl;
+	// std::cout << "content type: " << this->contentType << std::endl;
+	// std::cout << "<<<<<<< IS FINISHED READ ?? " << this->_hasFinishedRead << std::endl;
 }
 
 void HttpRequest::prepareRead(int socketFd) {
 
-	std::cout << "<<<<<<<<<<<<<< NEW CHUNK RECEIVED: " << socketFd << std::endl;
+	::logRequest(LOGGER_INFO, "New Chunk received from socket " + Util::intToString(socketFd));
 	ssize_t readBytes = 0;
 	std::string readRes = "";
 	char buffer[READ_BUFFER_SIZE];
-
 
 	while (true) {
 		bzero(&buffer, (READ_BUFFER_SIZE * sizeof(char)));
 		readBytes = recv(socketFd, buffer, READ_BUFFER_SIZE, 0);
 		if (readBytes < 0) {
-			std::cout << "CLOSED CONNECTION" << std::endl;
 			break ;
 		}
 
 		if (readBytes == 0) {
-			std::cout << "CLOSED CONNECTION" << std::endl;
 			break ; 
 		}
 
 		receivedBytes += static_cast<double>(readBytes) / 1048576.0;
 
-		// readRes += std::string(buffer);
 		this->body.append(buffer, readBytes);
 	}
 
-	
-
-    // Write something to the file
-    
 	this->makeChunkRegularCheck();
-	// std::cout << this->body << std::endl;
-	std::cout << "<<<<<<< IS FINISHED READ ?? " << this->_hasFinishedRead << std::endl;
+	// std::cout << "<<<<<<< IS FINISHED READ ?? " << this->_hasFinishedRead << std::endl;
 }
 
 HttpRequest& HttpRequest::makeChunkRegularCheck(void) {
 
-	if (!this->_hasReadChunkedDataHeaders) {
-		size_t terminationBufferPos = this->body.find(TERMINATION_BUFFER);
+	if (this->chunking == chunk_type::dataForm_chunk) {
+		if (!this->_hasReadChunkedDataHeaders) {
 
-		if (terminationBufferPos != std::string::npos) {
-			std::string fileHeaders = this->body.substr(0, terminationBufferPos + std::string(TERMINATION_BUFFER).length());
-			this->body.erase(0, terminationBufferPos + std::string(TERMINATION_BUFFER).length());
-			size_t cursorPos = 0;
-			size_t cursorPrevPos = cursorPos;
-			bool alreadyFoundBoundary = false;
-			std::string headersLineStr = "";
+			size_t terminationBufferPos = this->body.find(RootConfigs::TERMINATION_BUFFER);
 
-			while (cursorPos <= fileHeaders.length() || cursorPos != cursorPrevPos) {
-				cursorPrevPos = cursorPos;
-				cursorPos = fileHeaders.find(TERMINATION_CHARS);
+			if (terminationBufferPos != std::string::npos) {
+				std::string fileHeaders = this->body.substr(0, terminationBufferPos + RootConfigs::TERMINATION_BUFFER.length());
+				size_t cursorPos = 0, cursorPrevPos = 0;
+				bool alreadyFoundBoundary = false;
+				std::string headersLineStr = "", tempHeader = "";
 
-				if (cursorPos != std::string::npos && cursorPrevPos != cursorPos) {
-					cursorPos += 2;
-					if (alreadyFoundBoundary) {
+				this->body.erase(0, terminationBufferPos + RootConfigs::TERMINATION_BUFFER.length());
+				do {
 
-						std::cout << "<<<<<<<<< CHUNKED DATA HEADER: " << std::endl;
-						std::cout << fileHeaders.substr(cursorPrevPos, cursorPos - cursorPrevPos);
-						std::cout << "<<<<<<<<< END" << std::endl;
-						// headersLineStr = this->_chunkedDataHeaders.setHeader(fileHeaders)
+					cursorPrevPos = cursorPos;
+					cursorPos = fileHeaders.find(RootConfigs::TERMINATION_CHARS, cursorPos);
 
-					} else alreadyFoundBoundary = true;
-				}
+					if (cursorPos != std::string::npos && cursorPrevPos != cursorPos) {
+						cursorPos += RootConfigs::TERMINATION_CHARS.length();
+						if (alreadyFoundBoundary) {
+							
+							tempHeader = fileHeaders.substr(cursorPrevPos, cursorPos - cursorPrevPos - RootConfigs::TERMINATION_CHARS.length());
+							this->_chunkedDataHeaders.setHeader(tempHeader);
 
-				std::cout << "---> CHECK: " << cursorPos << " - " << cursorPrevPos << std::endl;
+						} else alreadyFoundBoundary = true;
+					}
+
+				} while (cursorPos <= fileHeaders.length() && cursorPos != cursorPrevPos);
+
+				this->_hasReadChunkedDataHeaders = true;
 			}
-			// std::cout << "|->" << mainMetadata << "<-|" << std::endl;
-			this->_hasReadChunkedDataHeaders = true;
 		}
-	}
 
-	if (this->hasEndBoundary(this->body)) {
-		this->_hasFinishedRead = true;
-		// Util::cutFirstAndLastLines(this->body);
-		// TODO: MAKE UPLOAD
-		std::ofstream outFile("test123.pdf", std::ios::app);
-
-		if (outFile.is_open()) {
-			outFile << this->body;
-			// 		std::string::iterator it;
-			// for (it = this->body.begin(); it != this->body.end(); ++it) {
-			// 	outFile.put(*it);
-			// }
+		size_t endBoundaryPos = this->hasEndBoundary(this->body);
+		if (endBoundaryPos != std::string::npos) {
+			this->body.erase(endBoundaryPos, std::string::npos);
+			this->_hasFinishedRead = true;
+			this->_isUploadedFile = true;
 		}
+		::logRequest(LOGGER_INFO, "From client " + Util::intToString(this->_fd) + " received " + Util::intToString(receivedBytes) + "mb");
 	}
-
-	std::cout << "RECEIVED MBS >>>>>>>>>>>>>>>>>>>>>>>>>>> " << receivedBytes << "MB" << std::endl;
 
 	return (*this);
 }
@@ -128,11 +112,9 @@ HttpRequest& HttpRequest::requestInitialParsing(int fd) {
 	ssize_t readRes = 0;
 	std::string resultStr;
 	char buffer[READ_BUFFER_SIZE];
-	bool isAlreadyReadStartLine = false;
-	char *terminationBufferPtr = NULL;
+	bool isAlreadyReadStartLine = false, isAlreadyFoundHeaders = false;
 	size_t terminationBufferPos = 0;
-	// bool isSlept = false;
-	// size_t testIdx = 0;
+
 
 	while (true) {
 		bzero(&buffer, (READ_BUFFER_SIZE * sizeof(char)));
@@ -147,45 +129,27 @@ HttpRequest& HttpRequest::requestInitialParsing(int fd) {
 
 		receivedBytes += static_cast<double>(readRes) / 1048576.0;
 
-		// std::cout << "READING... >>> " << (testIdx++) << ", BytesRead: " << readRes << std::endl;
+		this->body.append(buffer, readRes);
 
-		// if (readRes == 0) {
-		// 	std::cout << "---------------------------- CLOSED CONNECTION" << std::endl;
-		// }
-
-		resultStr.append(buffer, readRes);
-
-		if (!isAlreadyReadStartLine && resultStr.find("\r\n") != std::string::npos) {
-			this->requestStartLineParser(resultStr);
+		if (!isAlreadyReadStartLine && this->body.find("\r\n") != std::string::npos) {
+			this->requestStartLineParser(this->body);
 			isAlreadyReadStartLine = true;
 		}
 
 		if (!isAlreadyReadStartLine)
 			continue ;
 
-		terminationBufferPtr = strnstr(resultStr.c_str(), TERMINATION_BUFFER, strlen(resultStr.c_str()));
-		if (terminationBufferPtr) {
-			terminationBufferPos = terminationBufferPtr - resultStr.c_str();
-			std::string headersSection = resultStr.substr(0, terminationBufferPos);
+		if (isAlreadyFoundHeaders)
+			continue ;
 
+		terminationBufferPos = this->body.find(RootConfigs::TERMINATION_BUFFER);
+
+		if (terminationBufferPos != std::string::npos) {
+			std::string headersSection = this->body.substr(0, terminationBufferPos);
 			this->parseHeadersBuffer(headersSection);
 			this->configureRequestByHeaders();
-			if (this->contentLength) {
-				terminationBufferPos += strlen(TERMINATION_BUFFER);
-				resultStr = resultStr.substr(terminationBufferPos, strlen(resultStr.c_str()) - terminationBufferPos);
-				// std::cout << "READ THIS <<<<<<<<" << std::endl;
-				// std::cout << resultStr << std::endl;
-				// std::cout << "<<<<<<<<<<<<<<<<<<" << std::endl;
-			}
-		}
-	}
-
-	if (this->contentLength) {
-		if (this->chunking == chunk_type::no_chunks) {
-			this->extractBody(fd, resultStr).makeChunkRegularCheck();
-		}
-		else {
-			this->body.append(resultStr, resultStr.length());
+			this->body.erase(0, terminationBufferPos + RootConfigs::TERMINATION_BUFFER.length());
+			isAlreadyFoundHeaders = true;
 		}
 	}
 
@@ -241,7 +205,6 @@ void HttpRequest::requestStartLineParser(std::string & request) {
 
 	lineSize = firstLine.length();
 	Util::trim(firstLine, RootConfigs::Whitespaces);
-	std::cout << firstLine << std::endl;
 	SplitPair splittedFirstLinePair = Util::split(firstLine, ' ');
 	std::string *splittedFirstLine = splittedFirstLinePair.first;
 	size_t splittedFirstLineSize = splittedFirstLinePair.second;
@@ -261,6 +224,8 @@ void HttpRequest::requestStartLineParser(std::string & request) {
 	
 	this->method = splittedFirstLine[0];
 	this->endpoint = splittedFirstLine[1];
+
+	::logRequest(LOGGER_DEBUG, "Client " + Util::intToString(this->_fd) + " requested [" + this->method + "] " + this->endpoint);
 
 	request.erase(0, lineSize + 1);
 }
@@ -341,11 +306,21 @@ bool HttpRequest::hasStartBoundary(const std::string& str) {
 	return (true);
 }
 
-bool HttpRequest::hasEndBoundary(const std::string& str) {
+size_t HttpRequest::hasEndBoundary(const std::string& str) {
 	std::string searchTail = "--\r\n";
 	size_t pos = str.find(this->boundary + searchTail);
 
-	if (pos == std::string::npos)
-		return (false);
-	return (true);
+	return (pos);
+}
+
+bool HttpRequest::isFileUpload(void) const {
+	return (this->_isUploadedFile);
+}
+
+const std::string& HttpRequest::getBody(void) const {
+	return (this->body);
+}
+
+const HttpHeaders& HttpRequest::getChunkedDataHeaders(void) const {
+	return  (this->_chunkedDataHeaders);
 }

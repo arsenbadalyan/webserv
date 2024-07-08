@@ -66,3 +66,64 @@ std::string HttpHeaders::toString(void) {
 
 	return (result);
 }
+
+// ------- Static Methods
+std::map<std::string, std::string> HttpHeaders::getContentDispositionData(std::string input) {
+
+	std::map<std::string, std::string> Data;
+	SplitPair splittedInput = Util::split(input, ';');
+	bool isFoundName = false, isFoundFileName = false;
+
+	std::string *tempStrPtr = NULL;
+	std::string tempStr = "";
+	std::string *splittedInputArr = splittedInput.first;
+	size_t splittedInputSize = splittedInput.second;
+
+	while (splittedInputSize > 0) {
+		splittedInputSize--;
+
+		if (!isFoundFileName) {
+			tempStrPtr = HttpHeaders::parseDispositionDataLinePart(splittedInputArr[splittedInputSize], "filename");
+			if (tempStrPtr) {
+				isFoundFileName = true;
+				tempStr = *tempStrPtr;
+				delete tempStrPtr;
+				Data["filename"] = tempStr;
+			}
+			continue ;
+		}
+
+		if (!isFoundName) {
+			tempStrPtr = HttpHeaders::parseDispositionDataLinePart(splittedInputArr[splittedInputSize], "name");
+			if (tempStrPtr) {
+				isFoundName = true;
+				tempStr = *tempStrPtr;
+				delete tempStrPtr;
+				Data["name"] = tempStr;
+			}
+		}
+
+	}
+
+	if (!isFoundFileName || !isFoundName)
+		throw std::runtime_error("Invalid parsing");
+
+	return (Data);
+}
+
+// ---------- Static methods helpers
+std::string* HttpHeaders::parseDispositionDataLinePart(std::string haystack, std::string needle) {
+	size_t doubleQuoteStartPos = 0, doubleQuoteEndPos = 0;
+
+	doubleQuoteStartPos = haystack.find(needle + "=\"");
+	if (doubleQuoteEndPos != std::string::npos) {
+		doubleQuoteStartPos += std::string(needle + "\"").length();
+		doubleQuoteEndPos = haystack.find("\"", doubleQuoteStartPos + 1);
+
+		if (doubleQuoteEndPos != std::string::npos) {
+			return (new std::string(haystack.substr(doubleQuoteStartPos + 1, doubleQuoteEndPos - doubleQuoteStartPos - 1)));
+		}
+	}
+
+	return (NULL);
+}

@@ -11,6 +11,8 @@ struct RootConfigs {
     static const std::string InvalidHeaderKeys;
     static const std::string Whitespaces;
     static const std::string SERVER_NAME;
+    static const std::string TERMINATION_BUFFER;
+    static const std::string TERMINATION_CHARS;
 
 };
 

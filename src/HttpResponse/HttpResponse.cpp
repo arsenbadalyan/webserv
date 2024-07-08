@@ -11,8 +11,14 @@ HttpResponse::HttpResponse(const HttpRequest * request, int writeSocketFd)
 	_statusCode(HttpStatusCode::INVALID_STATUS_CODE),
 	_folderStructure(NULL)
 {
-	std::cout << "FULL PATH -> " << request->getFullFilePath() << std::endl;
-	std::cout << "ENDPOINT -> " << request->getEndpoint() << std::endl;
+	::logRequest(LOGGER_INFO,
+		"Sending response -> Client: "
+		+ Util::intToString(writeSocketFd) + ", "
+		+ "Full path: "
+		+ request->getFullFilePath() + ", "
+		+ "Endpoint: "
+		+ request->getEndpoint());
+
 	this->_requestedFilePath = request->getFullFilePath();
 	this->_configs = this->_server->findLocations(request->getEndpoint());
 	this->_isReturnTerminatedResponse = !(this->_configs->getReturn().getStatusTypes() == NO_CUSTOM_STATUS_CODE);
@@ -28,6 +34,35 @@ HttpResponse::~HttpResponse() {
 void HttpResponse::getResponse(void) {
 
 	try {
+
+		if (this->_request->isFileUpload()) {
+			try {
+				HttpResponse::configureDefaultHeaders();
+				this->_statusCode = HttpStatusCode::CREATED;
+				const std::string* contentDisposition = this->_request->getChunkedDataHeaders().getHeader(HttpHeaderNames::CONTENT_DISPOSITION);
+
+				if (contentDisposition) {
+					std::map<std::string, std::string> UploadFileData = HttpHeaders::getContentDispositionData(*contentDisposition);
+
+					std::string fileName = (*UploadFileData.find("filename")).second;
+					std::ofstream uploadedFile(fileName);
+
+					if (uploadedFile.is_open()) {
+						uploadedFile << this->_request->getBody();
+					} else {
+						this->_statusCode = HttpStatusCode::INTERNAL_SERVER_ERROR;
+					}
+
+				} else {
+					this->_statusCode = HttpStatusCode::INTERNAL_SERVER_ERROR;
+				}
+			} catch(std::exception &exc) {
+				this->_statusCode = HttpStatusCode::INTERNAL_SERVER_ERROR;
+			}
+			this->sendResponseRootSlice();
+			return ;
+		}
+
 		if (this->_isReturnTerminatedResponse) {
 			this->_statusCode = this->_configs->getReturn().getStatusTypes();
 			HttpResponse::configureDefaultHeaders();
@@ -39,7 +74,6 @@ void HttpResponse::getResponse(void) {
 		}
 
 		HttpResponse::configureStatusLine();
-		// this->_requestedFileType = Util::extractFileType(this->_requestedFilePath);
 		HttpResponse::configureHeaders();
 
 		if (HttpStatusCode::isErrorStatusCode(this->_statusCode)) {
@@ -62,7 +96,7 @@ void HttpResponse::getResponse(void) {
 			this->sendBody();
 		}
 	} catch (std::exception &reason) {
-		std::cout << reason.what() << std::endl;
+		::logRequest(LOGGER_ERROR, reason.what());
 	}
 
 }
@@ -92,6 +126,8 @@ void HttpResponse::sendResponseRootSlice(void) {
 	} else {
 		response += HttpStatusCode::getStatusCode(this->_statusCode) + "\r\n";
 	}
+
+	::logRequest(HttpStatusCode::isErrorStatusCode(this->_statusCode) ? LOGGER_ERROR : LOGGER_INFO, "Responding to client " + Util::intToString(this->_writeSocketFd) + " with -> " + Util::intToString(this->_statusCode) + " " + HttpStatusCode::getStatusCode(this->_statusCode));
 	response += this->_headers.toString() + "\r\n";
 
 	send(this->_writeSocketFd, response.c_str(), response.length() * sizeof(char), 0);
@@ -129,7 +165,7 @@ void HttpResponse::configureStatusLine(void) {
 			if (statusCode == HttpStatusCode::INVALID_STATUS_CODE) {
 				if (this->_configs->getAutoindex()) {
 					try {
-						this->_folderStructure = new std::string(ForAutoIndex::CreatHtmlFile(this->_request->getFullFilePath(), this->_request->getEndpoint()));
+						this->_folderStructure = new std::string(AutoIndexController::CreatHtmlFile(this->_request->getFullFilePath(), this->_request->getEndpoint()));
 						statusCode = HttpStatusCode::OK;
 					} catch (std::exception & reason) {
 						statusCode = HttpStatusCode::FORBIDDEN;

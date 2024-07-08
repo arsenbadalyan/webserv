@@ -15,3 +15,4 @@ const std::string HttpHeaderNames::LOCATION = "Location";
 const std::string HttpHeaderNames::CONNECTION = "Connection";
 const std::string HttpHeaderNames::COOKIE = "Cookie";
 const std::string HttpHeaderNames::TRANSFER_ENCODING = "Transfer-Encoding";
+const std::string HttpHeaderNames::CONTENT_DISPOSITION = "Content-Disposition";

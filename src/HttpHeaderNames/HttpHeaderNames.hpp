@@ -16,6 +16,7 @@ class HttpHeaderNames {
 		static const std::string CONNECTION;
 		static const std::string COOKIE;
 		static const std::string TRANSFER_ENCODING;
+		static const std::string CONTENT_DISPOSITION;
 
 	private:
 		HttpHeaderNames(void);

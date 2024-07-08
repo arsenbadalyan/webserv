@@ -2,7 +2,7 @@
 #define _PARSINGCONFIGFILE_HPP_
 
 #include "Server.hpp"
-#include "ReadFile.hpp"
+#include "FileReader.hpp"
 #include <dirent.h>
 #include <sstream>
 #include <cstdint>
@@ -13,7 +13,7 @@ class ParsingConfigFile {
 private:
 
 	// std::string	_filename;
-	ReadFile			_file;
+	FileReader			_file;
 	std::string			_data;
 	std::vector<Server>	_serverList;
 	std::set<int>		_statusCode;

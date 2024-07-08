@@ -5,7 +5,7 @@
 #include <fstream>
 #include <map>
 #include <list>
-#include "ForAutoIndex.hpp"
+#include "AutoIndexController.hpp"
 #include "ActiveMetods.hpp"
 #include "ExceptionHandler.hpp"
 #include "HttpRequest.hpp"
@@ -15,6 +15,7 @@
 #include "Server.hpp"
 #include "Config.hpp"
 #include "HttpHeaderNames.hpp"
+#include "Logger.hpp"
 
 class HttpResponse {
 

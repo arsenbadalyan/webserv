@@ -15,7 +15,6 @@ RequestPool::~RequestPool() {
 }
 
 bool RequestPool::sendRequest(int clientSocket, Server & server) {
-	std::cout << "SOCKET: " << clientSocket << std::endl;
 	HttpRequest *request = NULL;
 	RequestPoolMap::iterator requestIt = this->requestPool.find(clientSocket);
 
@@ -34,7 +33,6 @@ bool RequestPool::sendRequest(int clientSocket, Server & server) {
 }
 
 void RequestPool::getResponse(int clientSocket) {
-	std::cout << "GET RESPONSE SOCKET: " << clientSocket << std::endl;
 	RequestPoolMap::iterator targetRequest = this->requestPool.find(clientSocket);
 
 	if (targetRequest == this->requestPool.end())

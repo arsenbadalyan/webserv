@@ -122,12 +122,12 @@ Server& Server::setLocations(const std::vector<Config>& locations)
 	return (*this);
 }
 
-std::vector<LisenStruc> &Server::getMainServer()
+std::vector<ServerListener> &Server::getMainServer()
 {
     return (this->_mainServer);
 }
 
-Server &Server::setMainServer(const std::vector<LisenStruc> &fd)
+Server &Server::setMainServer(const std::vector<ServerListener> &fd)
 {
 	this->_mainServer = fd;
 	return (*this);

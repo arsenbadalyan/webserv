@@ -201,6 +201,12 @@ std::string Util::intToString(int value) {
     return ss.str();
 }
 
+std::string Util::sizeTToString(size_t value) {
+    std::stringstream ss;
+    ss << value;
+    return ss.str();
+}
+
 std::string Util::removeAddnSlashes(std::string str) {
 	std::string res = "";
 	char prevChr = 0;

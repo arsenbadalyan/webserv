@@ -1,6 +1,6 @@
 #include "ParsingConfigFile.hpp"
-#include "CreatMainServers.hpp"
-#include "ForAutoIndex.hpp"
+#include "CreateMainServers.hpp"
+#include "AutoIndexController.hpp"
 #include <string>
 void print_struct(std::vector<Server> & s);
 
@@ -9,7 +9,7 @@ static std::vector<Server> * clo = NULL;
 void	sigint_pars(int sig)
 {
 	(void)sig;
-	CreatMainServers::closeFullPorts(clo);
+	CreateMainServers::closeFullPorts(clo);
 	exit(0);
 }
 
@@ -40,10 +40,10 @@ int main(int argc, char ** argv)
 	clo = &list_server;
 	signal(SIGINT, sigint_pars);
 	signal(SIGQUIT, SIG_IGN);
-	CreatMainServers::startServer(list_server);
-	// CreatMainServers::closeFullPorts(list_server);
+	CreateMainServers::startServer(list_server);
+	// CreateMainServers::closeFullPorts(list_server);
 
-	// ReadFile fi("./in.html", ForAutoIndex::CreatHtmlFile("./temp","./temp"));
+	// FileReader fi("./in.html", AutoIndexController::CreatHtmlFile("./temp","./temp"));
 	// fi.cleanFile();
 	// fi.Write();
     return (0);

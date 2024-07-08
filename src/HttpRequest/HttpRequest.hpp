@@ -10,10 +10,9 @@
 #include "RootConfigs.hpp"
 #include "Server.hpp"
 #include "HttpHeaderNames.hpp"
+#include "Logger.hpp"
 
 #define READ_BUFFER_SIZE (1024 * 1024)
-#define TERMINATION_CHARS "\r\n"
-#define TERMINATION_BUFFER "\r\n\r\n"
 #define SUPPORTED_PROTOCOL ""
 
 #define ERR_INVALID_REQUEST "request startline is invalid"
@@ -48,14 +47,17 @@ class HttpRequest {
 
 	public:
 		bool hasFinishedReceivingRequest(void) const;
+		bool isFileUpload(void) const;
+		const HttpHeaders& getChunkedDataHeaders(void) const;
 		const std::string getEndpoint(void) const;
 		const std::string getFullFilePath(void) const;
 		const std::string getMethod(void) const;
+		const std::string& getBody(void) const;
 		std::string getHeader(std::string headerName) const;
 
 	private:
 		bool hasStartBoundary(const std::string& str);
-		bool hasEndBoundary(const std::string& str);
+		size_t hasEndBoundary(const std::string& str);
 		HttpRequest& makeChunkRegularCheck(void);
 
 	private:
@@ -77,6 +79,8 @@ class HttpRequest {
 		Server *_server;
 		double receivedBytes;
 		bool _hasReadChunkedDataHeaders;
+		bool _isUploadedFile;
+		int _fd;
 
 };
 
