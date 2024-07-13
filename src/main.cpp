@@ -7,12 +7,12 @@ void print_struct(std::vector<Server> & s);
 
 static std::vector<Server> * clo = NULL;
 
-void	sigint_pars(int sig)
-{
-	(void)sig;
-	CreatMainServers::closeFullPorts(clo);
-	exit(0);
-}
+// void	sigint_pars(int sig)
+// {
+// 	(void)sig;
+// 	CreatMainServers::closeFullPorts(clo);
+// 	exit(0);
+// }
 
 int main(int argc, char ** argv) 
 {
@@ -40,16 +40,26 @@ int main(int argc, char ** argv)
 		std::cerr << "Another Error ??" << std::endl;
 	}
 
-	(void)argc;
-	(void)argv;
-	std::cout << "CgiExec::executeCGI = " << CgiExec::executeCGI("./w.py", list_server[0].getCgiSet()) << std::endl;
+	// (void)argc;
+	// (void)argv;
+	// try
+	// {
+	// 	std::cout << "CgiExec::executeCGI = " << CgiExec::executeCGI("./w.py", list_server[0].getCgiSet()) << std::endl;
+	// }
+	// catch(const std::exception& e)
+	// {
+	// 	std::cout << "----------" << std::endl;
+	// 	std::cerr << e.what() << std::endl;
+	// 	std::cout << "----------" << std::endl;
+
+	// }
 
 
-	// print_struct(list_server);
-	// clo = &list_server;
+	print_struct(list_server);
+	clo = &list_server;
 	// signal(SIGINT, sigint_pars);
 	// signal(SIGQUIT, SIG_IGN);
-	// CreatMainServers::startServer(list_server);
+	CreatMainServers::startServer(list_server);
 
 
 
