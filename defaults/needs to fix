@@ -1,0 +1,2 @@
+- error_page only from 400-599
+- error_page concat locations to error page

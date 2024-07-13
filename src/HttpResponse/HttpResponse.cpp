@@ -46,7 +46,7 @@ void HttpResponse::getResponse(void) {
 					std::map<std::string, std::string> UploadFileData = HttpHeaders::getContentDispositionData(*contentDisposition);
 
 					std::string fileName = (*UploadFileData.find("filename")).second;
-					std::ofstream uploadedFile(fileName);
+					std::ofstream uploadedFile(this->_server->getServerConfig().getUpload_dir() + "/" + fileName);
 
 					if (uploadedFile.is_open()) {
 						uploadedFile << this->_request->getBody();
