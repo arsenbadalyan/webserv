@@ -7,9 +7,10 @@ HttpResponse::HttpResponse(const HttpRequest * request, int writeSocketFd)
 	: _server(request->getServer()),
 	_request(request),
 	_writeSocketFd(writeSocketFd),
-	_requestedFile(request->getFullFilePath()),
+	_requestedFile(HttpResponse::URLFragmentCutter(request->getFullFilePath())),
 	_statusCode(HttpStatusCode::INVALID_STATUS_CODE),
-	_folderStructure(NULL)
+	_folderStructure(NULL),
+	_cgiAnswerPair(false, "")
 {
 	::logRequest(LOGGER_INFO,
 		"Sending response -> Client: "
@@ -19,8 +20,8 @@ HttpResponse::HttpResponse(const HttpRequest * request, int writeSocketFd)
 		+ "Endpoint: "
 		+ request->getEndpoint());
 
-	this->_requestedFilePath = request->getFullFilePath();
-	this->_configs = this->_server->findLocations(request->getEndpoint());
+	this->_requestedFilePath = HttpResponse::URLFragmentCutter(request->getFullFilePath());
+	this->_configs = this->_server->findLocations(HttpResponse::URLFragmentCutter(request->getEndpoint()));
 	this->_isReturnTerminatedResponse = !(this->_configs->getReturn().getStatusTypes() == NO_CUSTOM_STATUS_CODE);
 }
 
@@ -175,6 +176,12 @@ void HttpResponse::configureStatusLine(void) {
 				}
 			}
 		} else {
+			try {
+				statusCode = HttpStatusCode::OK;
+				this->_cgiAnswerPair = CgiHandler::executeCGI(this->_request->getFullFilePath(), this->_server->getCgiSet());
+			} catch(std::exception & reason) {
+				statusCode = HttpStatusCode::INTERNAL_SERVER_ERROR;
+			}
 			ss << HttpStatusCode::OK;
 		}
 
@@ -205,7 +212,9 @@ void HttpResponse::configureDefaultHeaders(void) {
 void HttpResponse::configureHeaders() {
 	this->configureDefaultHeaders();
 
-	if (this->_requestedFile.is_open()) {
+	if (this->_cgiAnswerPair.first) {
+		this->_headers.setHeader(HttpHeaderNames::CONTENT_LENGTH, Util::sizeTToString(this->_cgiAnswerPair.second.length()));
+	} else if (this->_requestedFile.is_open()) {
 
 		std::stringstream ss;
 		std::string key, value;
@@ -223,6 +232,11 @@ void HttpResponse::configureHeaders() {
 void HttpResponse::sendBody() {
 	if (this->_folderStructure) {
 		send(this->_writeSocketFd, this->_folderStructure->c_str(), this->_folderStructure->length() * sizeof(char), 0);
+		return ;
+	}
+
+	if (this->_cgiAnswerPair.first) {
+		send(this->_writeSocketFd, this->_cgiAnswerPair.second.c_str(), this->_cgiAnswerPair.second.length() * sizeof(char), 0);
 		return ;
 	}
 
@@ -247,4 +261,24 @@ void HttpResponse::sendFailedRequest(void) {
 	this->_headers.setHeader(HttpHeaderNames::CONTENT_LENGTH, Util::intToString(errorPageHtml.length()));
 	this->sendResponseRootSlice();
 	send(this->_writeSocketFd, errorPageHtml.c_str(), errorPageHtml.length() * sizeof(char), 0);
+}
+
+
+// Static Methods
+std::string HttpResponse::URLFragmentCutter(const std::string& URL) {
+
+	std::string finalResultStr = URL;
+	size_t fragmentSymbolPos = std::string::npos;
+	std::string fragmentSymbols = "?#";
+	size_t i = fragmentSymbols.length();
+
+	while (i--) {
+		fragmentSymbolPos = finalResultStr.find(fragmentSymbols[i]);
+
+		if (fragmentSymbolPos != std::string::npos)
+			finalResultStr = finalResultStr.substr(0, fragmentSymbolPos);
+	}
+
+	return (finalResultStr);
+	
 }

@@ -6,7 +6,6 @@
 #include <map>
 #include "ActiveMetods.hpp"
 #include "StatusCollection.hpp"
-#include "CgiHandler.hpp"
 
 class Config
 {

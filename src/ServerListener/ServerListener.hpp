@@ -5,6 +5,7 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <iostream>
+#include "Logger.hpp"
 
 class ServerListener
 {

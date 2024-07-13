@@ -2,22 +2,27 @@
 #define _CGIHANDLER_HPP_
 
 #include <iostream>
+#include <string>
+#include <unistd.h>
+#include <utility>
+#include <map>
+
+typedef std::pair<bool, std::string> CGIAnswerPair;
 
 class CgiHandler
 {
 private:
-	std::string _php;
-	std::string _python;
-public:
 	CgiHandler();
-	CgiHandler(std::string php, std::string python);
 	CgiHandler(const CgiHandler& other);
 	CgiHandler& operator= (const CgiHandler& other);
 	~CgiHandler();
-	std::string getPhp() const;
-	std::string getPython() const;
-	CgiHandler& setPhp(const std::string php);
-	CgiHandler& setPython(const std::string python);
+
+private:
+	static void cp(char* cp, std::string a);
+
+public:
+	static CGIAnswerPair executeCGI(std::string file, std::map<std::string, std::string> &ma);
+
 };
 
 #endif

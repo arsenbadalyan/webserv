@@ -1,7 +1,7 @@
 #include "ParsingConfigFile.hpp"
-#include "CreatMainServers.hpp"
-#include "ForAutoIndex.hpp"
-#include "CgiExec.hpp"
+#include "CreateMainServers.hpp"
+#include "AutoIndexController.hpp"
+#include "CgiHandler.hpp"
 #include <string>
 void print_struct(std::vector<Server> & s);
 
@@ -16,8 +16,6 @@ static std::vector<Server> * clo = NULL;
 
 int main(int argc, char ** argv) 
 {
-
-
 	ParsingConfigFile  conf_file;
 	std::vector<Server> list_server;
 	if (argc == 2)

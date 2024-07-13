@@ -297,7 +297,8 @@ size_t	ParsingConfigFile::CheckCorecktConfig(std::string config, size_t pos_star
 	}
 	else if (std::string("upload_dir") == config)
 	{
-
+		if (controlFlag)
+			throw MyException("Error upload_dir in server " + this->getErrorline(pos_start));
 		res = checkUploadDir(pos_start, pos_end, controlFlag);
 		if (SIZE_MAX != res)
 			return (res);
@@ -363,6 +364,8 @@ void ParsingConfigFile::CheckAndCreatCorektPath()
 				throw MyException("Syntax Error Upload_Dir not directory Server " + it->getServerName());
 			closedir(dir);
 		}
+		else
+			throw MyException("No Upload dir in server " + it->getServerName());
 		for (std::vector<Config>::iterator itc = it->getLocations().begin(); itc != it->getLocations().end(); ++itc)
 		{
 			if (itc->getUpload_dir().size())

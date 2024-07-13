@@ -16,6 +16,7 @@
 #include "Config.hpp"
 #include "HttpHeaderNames.hpp"
 #include "Logger.hpp"
+#include "CgiHandler.hpp"
 
 class HttpResponse {
 
@@ -25,6 +26,9 @@ class HttpResponse {
 
 	public:
 		void getResponse(void);
+
+	public:
+		static std::string URLFragmentCutter(const std::string &);
 
 	private:
 		void configureStatusLine(void);
@@ -50,6 +54,7 @@ class HttpResponse {
 		std::string _requestedFilePath;
 		int16_t _statusCode;
 		std::string *_folderStructure;
+		CGIAnswerPair _cgiAnswerPair;
 };
 
 #endif // !__HTTP_REQUEST__HPP__

@@ -25,28 +25,15 @@ ServerListener::~ServerListener()
 
 bool ServerListener::bind()
 {
-    // int option_value = 1;
+    int option_value = 1;
     this->_server = ::socket(AF_INET, SOCK_STREAM, 0);
-    struct timeval timeout;
-    timeout.tv_sec = 30; // 30 секунд таймаут
-    timeout.tv_usec = 0;
 
-    // Установка времени таймаута для приема данных на сервере
-    if (setsockopt(this->_server, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout)) == -1) {
-        std::cerr << "Failed to set receive timeout: " << strerror(errno) << std::endl;
-        // close(this->_server);
-        return 1;
-    }
-    // setsockopt(this->_server, SOL_SOCKET, SO_REUSEADDR, &option_value, sizeof(option_value));
+    setsockopt(this->_server, SOL_SOCKET, SO_REUSEADDR, &option_value, sizeof(option_value));
     if(this->_server < 0)
     {
         return (false);
     }
-	// int opt = 1;
-	// if(setsockopt(this->_server, SOL_SOCKET, SO_REUSEADDR , &opt, sizeof(opt)))
-	// {
-	// 	return (false);
-	// }
+
     if (::bind(this->_server, reinterpret_cast<struct \
     sockaddr*>(&this->_serverAddress), sizeof(this->_serverAddress)) < 0)
     {
@@ -59,9 +46,17 @@ bool ServerListener::listen()
 {
     if (::listen(this->_server, 1))
 		return (false);
-	//new 
-	// fcntl(this->_server, F_SETFL, O_NONBLOCK);
-    return true;
+
+    // Set socket receive timeout
+    struct timeval tv;
+    tv.tv_sec = 30;
+    tv.tv_usec = 0;
+
+    if (setsockopt(this->_server, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof(tv)) < 0) {
+        ::logRequest(LOGGER_ERROR, "Cannot set timeout for server, closing server");
+        return (false);
+    }
+    return (true);
 }
 
 void ServerListener::close()

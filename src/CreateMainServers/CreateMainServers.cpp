@@ -1,7 +1,7 @@
 #include "CreateMainServers.hpp"
 
 #define BUFFER_SIZE 10000
-#define COUNT_CHEACK 150
+#define COUNT_CHEACK 500
 
 bool CreateMainServers::startServer(std::vector<Server> & serverlist)
 {
@@ -135,24 +135,19 @@ void CreateMainServers::conectClient(std::vector<Server> &serverlist, fd_set &rf
 				socklen_t siz = sizeof(serverlist[j].getMainServer()[i].getServerAddress());
 				serverlist[j].getReadSocket().push_back(Server::ReadSoket(accept(serverlist[j].getMainServer()[i].getServerFD(), \
 				reinterpret_cast<struct sockaddr*>(&(serverlist[j].getMainServer()[i].getServerAddress())), &siz), 1));
-				// struct timeval timeout;
-				// timeout.tv_sec = 30; // 30 секунд таймаут
-				// timeout.tv_usec = 0;
 
-				// // Установка времени таймаута для приема данных на сервере
-				// if (setsockopt((serverlist[j].getReadSocket()[serverlist[j].getReadSocket().size() - 1])._fd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout)) == -1) {
-				// 	std::cerr << "Failed to set receive timeout: " << strerror(errno) << std::endl;
-				// 	// close(this->_server);
-				// }
+				struct timeval timeout;
+				timeout.tv_sec = 3000;
+				timeout.tv_usec = 0;
+
+				// Установка времени таймаута для приема данных на сервере
+				setsockopt((serverlist[j].getReadSocket()[serverlist[j].getReadSocket().size() - 1])._fd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout));
+
 				if ((serverlist[j].getReadSocket()[serverlist[j].getReadSocket().size() - 1])._fd < 0)
 				{
 					serverlist[j].getReadSocket().erase(serverlist[j].getReadSocket().begin() + serverlist[j].getReadSocket().size() - 1);
 					std::cerr << "ERROR Client 444\n";
 				}
-				// else{
-				// 	//new 
-				// 	fcntl((serverlist[j].getReadSocket()[serverlist[j].getReadSocket().size() - 1])._fd, F_SETFL, O_NONBLOCK);
-				// }
 
 			}
 		}
