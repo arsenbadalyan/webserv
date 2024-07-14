@@ -38,6 +38,7 @@ class HttpResponse {
 		void sendBody(void);
 		void sendFailedRequest(void);
 		void sendResponseRootSlice(void);
+		void sendResponse(void);
 	
 	private:
 		HttpResponse(const HttpResponse&);
@@ -56,6 +57,7 @@ class HttpResponse {
 		int16_t _statusCode;
 		std::string *_folderStructure;
 		CGIAnswerPair _cgiAnswerPair;
+		std::string _responseResult;
 };
 
 #endif // !__HTTP_REQUEST__HPP__

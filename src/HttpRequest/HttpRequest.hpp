@@ -36,11 +36,7 @@ class HttpRequest {
 		void parseHeadersBuffer(std::string &);
 		void requestStartLineParser(std::string &);
 		void configureRequestByHeaders(void);
-		void parseMultipartDataForm(int socket);
-		void parseChunkedData(int socket);
 		void prepareRead(int socket);
-		HttpRequest& extractBody(int sockFd, std::string initialData);
-		HttpRequest& extractChunk(int sockFd, std::string initialData);
 
 	public:
 		Server * getServer(void) const;

@@ -156,37 +156,6 @@ HttpRequest& HttpRequest::requestInitialParsing(int fd) {
 	return (*this);
 }
 
-HttpRequest& HttpRequest::extractBody(int sockFd, std::string initialData) {
-	if (initialData.length() > this->contentLength)
-		this->body = initialData.substr(0, this->contentLength);
-	else if (initialData.length() == this->contentLength)
-		this->body = initialData;
-	else {
-		size_t remainingBytes = this->contentLength - initialData.length();
-		char *buffer = new char[remainingBytes];
-		recv(sockFd, buffer, remainingBytes, 0);
-		this->body = initialData + std::string(buffer);
-		delete[] buffer;
-	}
-
-	return (*this);
-}
-
-HttpRequest& HttpRequest::extractChunk(int sockFd, std::string initialData) {
-	if (!this->hasEndBoundary(initialData)) {
-		char buffer[READ_BUFFER_SIZE];
-
-		while (true) {
-			recv(sockFd, buffer, READ_BUFFER_SIZE, 0);
-			initialData += std::string(buffer);
-
-			if (this->hasEndBoundary(initialData))
-				break ;
-		}
-	}
-	return (*this);
-}
-
 void HttpRequest::parseHeadersBuffer(std::string & buffer) {
 	std::stringstream is(buffer);
 	std::string readlineOutput;
