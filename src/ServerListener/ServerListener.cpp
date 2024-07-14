@@ -1,10 +1,11 @@
 #include "ServerListener.hpp"
 
-ServerListener::ServerListener(size_t port)
+ServerListener::ServerListener(size_t port, std::string host)
 {
     this->_serverAddress.sin_port = htons(port);
     this->_serverAddress.sin_family = AF_INET;
-    this->_serverAddress.sin_addr.s_addr = INADDR_ANY;
+    this->_serverAddress.sin_addr.s_addr = inet_addr(host.c_str());
+    // this->_serverAddress.sin_addr.s_addr = INADDR_ANY;
 }
 
 ServerListener::ServerListener(const ServerListener &other) :_server(other._server) , _serverAddress(other._serverAddress)
@@ -44,16 +45,6 @@ bool ServerListener::listen()
 {
     if (::listen(this->_server, 1))
 		return (false);
-
-    // Set socket receive timeout
-    struct timeval tv;
-    tv.tv_sec = 30;
-    tv.tv_usec = 0;
-
-    if (setsockopt(this->_server, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof(tv)) < 0) {
-        ::logRequest(LOGGER_ERROR, "Cannot set timeout for server, closing server");
-        return (false);
-    }
     return (true);
 }
 

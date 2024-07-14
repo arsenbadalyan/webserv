@@ -7,7 +7,7 @@ HttpResponse::HttpResponse(const HttpRequest * request, int writeSocketFd)
 	: _server(request->getServer()),
 	_request(request),
 	_writeSocketFd(writeSocketFd),
-	_requestedFile(HttpResponse::URLFragmentCutter(request->getFullFilePath())),
+	_requestedFile(HttpResponse::URLFragmentCutter(request->getFullFilePath()), std::ios::binary),
 	_statusCode(HttpStatusCode::INVALID_STATUS_CODE),
 	_folderStructure(NULL),
 	_cgiAnswerPair(false, ""),
@@ -304,4 +304,4 @@ void HttpResponse::sendResponse(void) {
 	// std::cout << "SENDING ANSWER" << std::endl;
 	// std::cout << this->_responseResult << std::endl;
 	send(this->_writeSocketFd, this->_responseResult.c_str(), this->_responseResult.length() * sizeof(char), 0);
-}
+	}

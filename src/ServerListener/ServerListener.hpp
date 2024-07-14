@@ -13,7 +13,7 @@ private:
 	int					_server;
 	struct sockaddr_in	_serverAddress;
 public:
-	ServerListener(size_t port);
+	ServerListener(size_t port, std::string host);
 	ServerListener(const ServerListener& other);
 	ServerListener & operator=(const ServerListener& other);
 	~ServerListener();

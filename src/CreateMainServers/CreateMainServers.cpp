@@ -58,7 +58,7 @@ bool CreateMainServers::starting(std::vector<Server> &serverlist)
     {
 		for (size_t i = 0; i < serverlist[j].getPort().size(); i++)
 		{
-			serverlist[j].getMainServer().push_back(serverlist[j].getPort()[i]);
+			serverlist[j].getMainServer().push_back(ServerListener(serverlist[j].getPort()[i],serverlist[j].getHost()));
 		}
         for (size_t i = 0; i < serverlist[j].getMainServer().size(); i++)
         {
@@ -137,7 +137,7 @@ void CreateMainServers::conectClient(std::vector<Server> &serverlist, fd_set &rf
 				reinterpret_cast<struct sockaddr*>(&(serverlist[j].getMainServer()[i].getServerAddress())), &siz), 1));
 
 				struct timeval timeout;
-				timeout.tv_sec = 3000;
+				timeout.tv_sec = 10;
 				timeout.tv_usec = 0;
 
 				// Установка времени таймаута для приема данных на сервере
