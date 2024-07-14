@@ -5,6 +5,7 @@
 #include <fstream>
 #include <map>
 #include <list>
+#include <cstdio>
 #include "AutoIndexController.hpp"
 #include "ActiveMetods.hpp"
 #include "ExceptionHandler.hpp"

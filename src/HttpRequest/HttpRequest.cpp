@@ -307,8 +307,7 @@ bool HttpRequest::hasStartBoundary(const std::string& str) {
 }
 
 size_t HttpRequest::hasEndBoundary(const std::string& str) {
-	std::string searchTail = "--\r\n";
-	size_t pos = str.find(this->boundary + searchTail);
+	size_t pos = str.find("\r\n--" + this->boundary + "--\r\n");
 
 	return (pos);
 }

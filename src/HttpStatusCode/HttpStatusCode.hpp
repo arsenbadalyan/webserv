@@ -12,7 +12,7 @@ struct HttpStatusCode {
 
 	static const int16_t OK = 200;
 	static const int16_t CREATED = 201;
-	// static const int16_t NO_CONTENT = 204;
+	static const int16_t NO_CONTENT = 204;
 	static const int16_t MOVED_PERMANENTLY = 301;
 	static const int16_t BAD_REQUEST = 400;
 	// static const int16_t UNAUTHORIZED = 401;

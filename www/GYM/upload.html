@@ -43,7 +43,7 @@
             <ul>
                 <li><a href="./index.html">Home</a></li>
                 <li><a href="./about-us.html">About Us</a></li>
-                <li><a href="./upload.html">Upload File</a></li>
+                <li><a href="./upload.html">Upload File/Login</a></li>
             </ul>
         </nav>
         <div id="mobile-menu-wrap"></div>
@@ -55,6 +55,10 @@
         </div>
     </div>
     <!-- Offcanvas Menu Section End -->
+
+    <div style="font-weight: bold;" id="set-user">
+        GUEST MODE
+    </div>
 
     <!-- Header Section Begin -->
     <header class="header-section">
@@ -72,7 +76,7 @@
                         <ul>
                             <li><a href="./index.html">Home</a></li>
                             <li><a href="./about-us.html">About Us</a></li>
-                            <li class="active"><a href="./upload.html">Upload File</a></li>
+                            <li class="active"><a href="./upload.html">Upload File/Login</a></li>
                         </ul>
                     </nav>
                 </div>
@@ -145,12 +149,12 @@
                 </div>
                 <div class="col-lg-6">
                     <div class="leave-comment">
-                        <form action="#">
-                            <input type="text" placeholder="Name">
-                            <input type="text" placeholder="Email">
-                            <input type="text" placeholder="Website">
-                            <textarea placeholder="Comment"></textarea>
-                            <button type="submit">Submit</button>
+                        <form id="login-form" style="display: none;">
+                            <input type="text" name="username" placeholder="Enter Login">
+                            <button type="submit">Login</button>
+                        </form>
+                        <form id="logout-form" style="display: none;">
+                            <button type="submit">Logout</button>
                         </form>
                     </div>
                 </div>
@@ -306,6 +310,7 @@
     <script src="js/jquery.slicknav.js"></script>
     <script src="js/owl.carousel.min.js"></script>
     <script src="js/main.js"></script>
+    <script src="js/index.js"></script>
 
     <script type="text/javascript">
         document.addEventListener('DOMContentLoaded', () => {

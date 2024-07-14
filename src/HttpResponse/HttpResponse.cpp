@@ -92,6 +92,15 @@ void HttpResponse::getResponse(void) {
 				}
 			}
 			this->sendFailedRequest();
+		} else if (Util::toLower(this->_request->getMethod()) == SupportedMethods::DELETE) {
+			const char* filename = this->_request->getFullFilePath().c_str();
+
+			if (!remove(filename)) {
+				this->_statusCode = HttpStatusCode::NO_CONTENT;
+			} else {
+				this->_statusCode = HttpStatusCode::INTERNAL_SERVER_ERROR;
+			}
+			this->sendResponseRootSlice();
 		} else {
 			this->sendResponseRootSlice();
 			this->sendBody();
