@@ -269,7 +269,7 @@ size_t	ParsingConfigFile::CheckCorecktConfig(std::string config, size_t pos_star
 		if (SIZE_MAX != res)
 			return (res);
 	} 
-	else if (std::string("server_name") == config)
+	else if (std::string("server_names") == config)
 	{
 
 		if (controlFlag)
@@ -365,22 +365,30 @@ void ParsingConfigFile::CheckAndCreatCorektPath()
 	// error_pag
 	for (std::vector<Server>::iterator it = this->_serverList.begin(); it != this->_serverList.end(); ++it)
 	{
-		for (std::map<int, std::string>::iterator itm = it->getServerConfig().getError_page().begin();\
-			itm != it->getServerConfig().getError_page().end(); ++itm)
-		{
-			itm->second = it->getServerConfig().getRoot() + "/" + itm->second;
-			if (access(itm->second.c_str(), F_OK))
-				throw MyException("Syntax error ErrorPage no file in Server " + it->getServerName());
-		}
 		for (std::vector<Config>::iterator itc = it->getLocations().begin(); itc != it->getLocations().end(); ++itc)
 		{
 			for (std::map<int, std::string>::iterator itm = itc->getError_page().begin();\
 				itm != itc->getError_page().end(); ++itm)
 			{
-				itm->second = it->getServerConfig().getRoot() + "/" + itm->second;
-				if (access(itm->second.c_str(), F_OK))
-					throw MyException("Syntax error ErrorPage no file in Server " + it->getServerName() + " location " + itc->getLocation_name());
+				itm->second = it->getServerConfig().getRoot() + "/" + itc->getLocation_name() +"/" + itm->second;
+				// if (access(itm->second.c_str(), F_OK))
+				// 	throw MyException("Syntax error ErrorPage no file in Server " + it->getServerName() + " location " + itc->getLocation_name());
 			}
+		}
+		for (std::map<int, std::string>::iterator itm = it->getServerConfig().getError_page().begin();\
+			itm != it->getServerConfig().getError_page().end(); ++itm)
+		{
+			// if (!it->getLocations().size())
+			// {
+				for (std::vector<Config>::iterator itt = it->getLocations().begin(); itt != it->getLocations().end() ; ++itt)
+				{
+					itt->getError_page().insert(std::pair<size_t, std::string>(itm->first, it->getServerConfig().getRoot() + "/" + itt->getLocation_name() +"/" + itm->second));
+						// itt->setError_page(it->getServerConfig().getError_page());
+				}
+			// }
+			itm->second = it->getServerConfig().getRoot() + "/" + itm->second;
+			// if (access(itm->second.c_str(), F_OK))
+			// 	throw MyException("Syntax error ErrorPage no file in Server " + it->getServerName());
 		}
 		
 	}
@@ -620,21 +628,24 @@ size_t ParsingConfigFile::checkErrorPage(size_t pos_start, size_t pos_end, bool 
 	std::vector<size_t> statCod;
 	for (; !str.eof() ;)
 	{
+		std::cout << "ttt" << std::endl;
 		str >> val;
 		if (!val.size())
 			continue;
 		try
 		{
-			statCod.push_back(statusCodes(val));
+			statCod.push_back(statusCodesErrorPage(val));
 		}
 		catch(...)
 		{
+			std::cout << "pag = " << page.size() << std::endl << "status.size = " << statCod.size() << std::endl;
 			if(page.size() || !statCod.size())
 				throw MyException("Syntax error ErrorPage" + this->getErrorline(pos_start));
 	
 			// if (access(val.c_str(), F_OK))
 			// 	throw MyException("Syntax error ErrorPage no file" + this->getErrorline(pos_start)); // verchum em stugelu
 			page = val;
+			std::cout << "ttt" << std::endl;
 		}
 	}
 	if (!statCod.size() || !page.size())
@@ -653,6 +664,42 @@ size_t ParsingConfigFile::checkErrorPage(size_t pos_start, size_t pos_end, bool 
 		_map->insert(std::pair<size_t, std::string>(statCod[i],val));
 	}
 	return (end + 1);
+}
+
+size_t ParsingConfigFile::statusCodesErrorPage(std::string number)
+{
+	size_t  size = number.size();
+	int num;
+	if (!size)
+		throw MyException(" ");
+	try
+	{
+		num = std::stoi(number, &size);
+	}
+	catch(...)
+	{
+		throw MyException(" ");
+	}
+	if (size != number.size() || num < 100 || num > 599)
+		throw MyException(" ");
+	// if (num != 200 && num != 301 && num != 400 && num != 404 && \
+	// 					num != 405 && num != 413 && num != 502 )
+	// 	throw MyException(" ");
+	// std::set<int>::iterator it = this->_statusCode.begin();
+	// for (; it != this->_statusCode.end(); ++it)
+	// {
+	// 	if (*it == num)
+	// 		break;
+	// }
+	// if (size != number.size() || it == this->_statusCode.end())
+	// 	throw MyException(" ");
+	// 400 - 599
+	// std::cout << "ttt" << std::endl;
+	if (num > 399 && num < 600)
+		return (static_cast<size_t>(num));
+	else
+		throw MyException(" ");
+	return (0);
 }
 
 size_t ParsingConfigFile::statusCodes(std::string number)
@@ -1000,14 +1047,6 @@ bool ParsingConfigFile::checkLocName(const std::string sin)
 
 void ParsingConfigFile::addErrorPathForLocation()
 {
-	for(std::vector<Server>::iterator it = this->_serverList.begin(); it != this->_serverList.end();++it)
-	{
-		for (std::vector<Config>::iterator itm = it->getLocations().begin(); itm != it->getLocations().end() ; ++itm)
-		{
-			if (!itm->getError_page().size())
-				itm->setError_page(it->getServerConfig().getError_page());
-		}
-	}
 	for(std::vector<Server>::iterator it = this->_serverList.begin(); it != this->_serverList.end();++it)
 	{
 		for (std::vector<Config>::iterator itm = it->getLocations().begin(); itm != it->getLocations().end() ; ++itm)

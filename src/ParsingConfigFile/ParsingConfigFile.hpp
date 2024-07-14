@@ -52,6 +52,8 @@ private:
 
 	size_t	checkErrorPage(size_t pos_start, size_t pos_end, bool controlFlag);
 	
+	size_t statusCodesErrorPage(std::string number);
+
 	size_t	statusCodes(std::string number);
 
 	size_t	checkReturn(size_t pos_start, size_t pos_end, bool controlFlag);
