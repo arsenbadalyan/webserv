@@ -299,15 +299,19 @@ std::string HttpResponse::URLFragmentCutter(const std::string& URL) {
 }
 
 bool HttpResponse::sendResponse(void) {
-	int result = send(this->_writeSocketFd, this->_responseResult.substr(this->_alreadySentBytes).c_str(), this->_responseResult.length() * sizeof(char), 0);
+	std::string toBeSent = this->_responseResult.substr(this->_alreadySentBytes, std::string::npos);
+	int result = write(this->_writeSocketFd, toBeSent.c_str(), toBeSent.length() * sizeof(char));
 
-	if (result == -1)
+	if (result == -1) {
 		::logRequest(LOGGER_ERROR, "Something went wrong when sending request to client -> " + Util::intToString(this->_writeSocketFd));
-	else
+		return (true);
+	} else {
 		this->_alreadySentBytes += result;
+	}
 
-	if (this->_alreadySentBytes != this->_responseResult.length())
+	if (this->_alreadySentBytes != this->_responseResult.length()) {
 		return (false);
+	}
 
 	return (true);
 }

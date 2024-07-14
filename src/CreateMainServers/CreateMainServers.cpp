@@ -163,13 +163,22 @@ void CreateMainServers::readClient(std::vector<Server> &serverlist, fd_set &rfds
 		{
 			if(FD_ISSET(serverlist[j].getReadSocket()[i]._fd, &rfds))
 			{
+				bool needsToClose ;
 				///// sra tex talisa funqcain kardalu hamar <----------------------------------
-				bool needsToClose = requestPool.sendRequest(serverlist[j].getReadSocket()[i]._fd, serverlist[j]);
-				////
-				if (needsToClose) {
-					serverlist[j].getWritSocket().push_back(serverlist[j].getReadSocket()[i]._fd);
+				try
+				{
+					needsToClose = requestPool.sendRequest(serverlist[j].getReadSocket()[i]._fd, serverlist[j]);
+					if (needsToClose) {
+						serverlist[j].getWritSocket().push_back(serverlist[j].getReadSocket()[i]._fd);
+						serverlist[j].getReadSocket().erase(serverlist[j].getReadSocket().begin() + i);
+					}
+				}
+				catch(...)
+				{
+					close(serverlist[j].getReadSocket()[i]._fd);
 					serverlist[j].getReadSocket().erase(serverlist[j].getReadSocket().begin() + i);
 				}
+
 			}
 			else
 			{
@@ -197,9 +206,22 @@ void CreateMainServers::writeClient(std::vector<Server> &serverlist, fd_set &wfd
 		{
 			if(FD_ISSET(serverlist[j].getWritSocket()[i], &wfds))
 			{
+				try
+				{
 				///// sra tex talisa funqcain grelu hamar <-------------------------------
-				requestPool.getResponse(serverlist[j].getWritSocket()[i]);
-				requestPool.destroyRequest(serverlist[j].getWritSocket()[i]);
+					if(requestPool.getResponse(serverlist[j].getWritSocket()[i]))
+					{
+						requestPool.destroyRequest(serverlist[j].getWritSocket()[i]);
+						close(serverlist[j].getWritSocket()[i]);
+						serverlist[j].getWritSocket().erase(serverlist[j].getWritSocket().begin() + i);
+					}
+				}
+				catch(...)
+				{
+					close(serverlist[j].getWritSocket()[i]);
+					serverlist[j].getWritSocket().erase(serverlist[j].getWritSocket().begin() + i);
+				}
+
 				// int file = open("index.html", O_RDONLY);
 				// bzero(buffer,BUFFER_SIZE);
 				// if (file >= 0)
@@ -212,8 +234,8 @@ void CreateMainServers::writeClient(std::vector<Server> &serverlist, fd_set &wfd
 				// }
 				//////
 			}
-			close(serverlist[j].getWritSocket()[i]);
-			serverlist[j].getWritSocket().erase(serverlist[j].getWritSocket().begin() + i);
+			// close(serverlist[j].getWritSocket()[i]);
+			// serverlist[j].getWritSocket().erase(serverlist[j].getWritSocket().begin() + i);
 		}
 	}
 }

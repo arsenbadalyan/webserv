@@ -16,6 +16,7 @@ static std::vector<Server> * clo = NULL;
 
 int main(int argc, char ** argv) 
 {
+	signal(SIGPIPE, SIG_IGN);
 	ParsingConfigFile  conf_file;
 	std::vector<Server> list_server;
 	if (argc == 2)

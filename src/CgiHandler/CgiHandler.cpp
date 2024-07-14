@@ -55,7 +55,6 @@ CGIAnswerPair CgiHandler::executeCGI(std::string file, std::map<std::string, std
 		dup2(fd[1], 1);
 		execve(args[0], args, env);
 
-		// perror("execve");
 		exit(-1);
 	}else{
 		close(fd[1]);
