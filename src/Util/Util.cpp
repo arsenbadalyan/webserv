@@ -144,8 +144,10 @@ bool Util::isDirectory(const char *path) {
 
 std::string Util::extractFileType(const std::string & path) {
 	SplitPair splittedPath = Util::split(path, '.');
+	std::string result = splittedPath.first[splittedPath.second - 1];
 
-	return (splittedPath.first[splittedPath.second - 1]);
+	delete[] splittedPath.first;
+	return (result);
 }
 
 std::string Util::generateDefaultErrorPage(const int16_t & statusCode) {

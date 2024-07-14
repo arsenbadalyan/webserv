@@ -39,10 +39,12 @@ Config *Server::findLocations(const std::string &name)
 			std::string joined = Util::joinSplittedPartsBy(splittedLocationName.first, splittedLocationName.second, '/');
 
 			if (this->_locations[i].getLocation_name() == joined) {
+				delete[] splittedLocationName.first;
 				return &(this->_locations[i]);
 			}
 			splittedLocationName.second--;
 		}
+		delete[] splittedLocationName.first;
 	}
 	return &(this->getServerConfig());
 }

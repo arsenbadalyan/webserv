@@ -628,7 +628,6 @@ size_t ParsingConfigFile::checkErrorPage(size_t pos_start, size_t pos_end, bool 
 	std::vector<size_t> statCod;
 	for (; !str.eof() ;)
 	{
-		std::cout << "ttt" << std::endl;
 		str >> val;
 		if (!val.size())
 			continue;
@@ -638,14 +637,12 @@ size_t ParsingConfigFile::checkErrorPage(size_t pos_start, size_t pos_end, bool 
 		}
 		catch(...)
 		{
-			std::cout << "pag = " << page.size() << std::endl << "status.size = " << statCod.size() << std::endl;
 			if(page.size() || !statCod.size())
 				throw MyException("Syntax error ErrorPage" + this->getErrorline(pos_start));
 	
 			// if (access(val.c_str(), F_OK))
 			// 	throw MyException("Syntax error ErrorPage no file" + this->getErrorline(pos_start)); // verchum em stugelu
 			page = val;
-			std::cout << "ttt" << std::endl;
 		}
 	}
 	if (!statCod.size() || !page.size())
@@ -694,7 +691,6 @@ size_t ParsingConfigFile::statusCodesErrorPage(std::string number)
 	// if (size != number.size() || it == this->_statusCode.end())
 	// 	throw MyException(" ");
 	// 400 - 599
-	// std::cout << "ttt" << std::endl;
 	if (num > 399 && num < 600)
 		return (static_cast<size_t>(num));
 	else

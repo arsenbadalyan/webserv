@@ -179,20 +179,24 @@ void HttpRequest::requestStartLineParser(std::string & request) {
 	size_t splittedFirstLineSize = splittedFirstLinePair.second;
 
 	if (splittedFirstLineSize < 2) {
+		delete[] splittedFirstLinePair.first;
 		throw std::runtime_error(ERR_INVALID_REQUEST);
 	}
 
 	if (RootConfigs::AvailableMethods.find(Util::toLower(splittedFirstLine[0])) == RootConfigs::AvailableMethods.end()) {
+		delete[] splittedFirstLinePair.first;
 		throw std::runtime_error(ERR_NOT_SUPPORTED_HTTP_METHOD);
 	}
 
 	if (splittedFirstLineSize >= 3
 		&& Util::toLower(splittedFirstLine[2]) != RootConfigs::SupportedHttpProtocol) {
+			delete[] splittedFirstLinePair.first;
 			throw std::runtime_error(std::string(ERR_NOT_SUPPORTED_HTTP_PROTOCOL) + Util::toLower(splittedFirstLine[2]));
 		}
 	
 	this->method = splittedFirstLine[0];
 	this->endpoint = splittedFirstLine[1];
+	delete[] splittedFirstLinePair.first;
 
 	::logRequest(LOGGER_DEBUG, "Client " + Util::intToString(this->_fd) + " requested [" + this->method + "] " + this->endpoint);
 
@@ -221,7 +225,10 @@ void HttpRequest::configureRequestByHeaders(void) {
 					this->chunking = chunk_type::dataForm_chunk;
 					this->boundary = boundary.first[1];
 				}
+				delete[] boundary.first;
 		}
+
+		delete[] splitRes.first;
 	}
 
 	if (this->chunking == chunk_type::no_chunks

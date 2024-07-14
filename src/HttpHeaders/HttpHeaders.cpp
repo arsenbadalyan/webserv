@@ -105,6 +105,8 @@ std::map<std::string, std::string> HttpHeaders::getContentDispositionData(std::s
 
 	}
 
+	delete[] splittedInput.first;
+
 	if (!isFoundFileName || !isFoundName)
 		throw std::runtime_error("Invalid parsing");
 

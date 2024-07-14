@@ -21,33 +21,25 @@ int main(int argc, char ** argv)
 	std::vector<Server> list_server;
 	if (argc == 2)
 		conf_file.setFile(argv[1]);
-	if (argc > 2)
-	{
-		std::cerr << "Shat argumentner" << std::endl;
+
+	if (argc > 2) {
+		std::cerr << "Too many arguments!" << std::endl;
 		return (1);
 	}
-	try
-	{
+
+	try {
 		list_server = conf_file.startPars();
-	}
-	catch(const std::exception& e)
-	{
+	} catch(const std::exception& e) {
 		std::cerr << e.what() << std::endl;
-	}
-	catch(...)
-	{
+	} catch(...) {
 		std::cerr << "Another Error ??" << std::endl;
 	}
-	print_struct(list_server);
-	clo = &list_server;
-	// signal(SIGINT, sigint_pars);
-	// signal(SIGQUIT, SIG_IGN);
-	CreateMainServers::startServer(list_server);
-	// CreateMainServers::closeFullPorts(list_server);
 
-	// FileReader fi("./in.html", AutoIndexController::CreatHtmlFile("./temp","./temp"));
-	// fi.cleanFile();
-	// fi.Write();
+	// print_struct(list_server);
+	clo = &list_server;
+
+	CreateMainServers::startServer(list_server);
+
     return (0);
 }
 

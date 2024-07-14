@@ -242,8 +242,9 @@ void HttpResponse::configureHeaders() {
 
 void HttpResponse::sendBody() {
 	if (this->_folderStructure) {
+		std::string folderStructureStr = *this->_folderStructure;
 		// send(this->_writeSocketFd, this->_folderStructure->c_str(), this->_folderStructure->length() * sizeof(char), 0);
-		this->_responseResult.append((*this->_folderStructure).c_str(), (*this->_folderStructure).length() * sizeof(char));
+		this->_responseResult.append(folderStructureStr.c_str(), folderStructureStr.length() * sizeof(char));
 		return ;
 	}
 
@@ -256,15 +257,10 @@ void HttpResponse::sendBody() {
 	std::string line;
 	std::streamsize bytesRead;
 	char buffer[1024];
-	size_t length = 0;
 
-	(void)length;
-	(void)this->_request;
 	bzero(&buffer, sizeof(buffer));
 	while ((bytesRead = this->_requestedFile.read(buffer, sizeof(buffer)).gcount()) > 0) {
-		length += strlen(buffer);
-		// send(this->_writeSocketFd, &buffer, sizeof(buffer), 0);
-		this->_responseResult.append(buffer, bytesRead);	
+		this->_responseResult.append(buffer, bytesRead);
 		bzero(&buffer, sizeof(buffer));
 	}
 }
