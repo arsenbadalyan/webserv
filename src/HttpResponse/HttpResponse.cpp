@@ -11,7 +11,8 @@ HttpResponse::HttpResponse(const HttpRequest * request, int writeSocketFd)
 	_statusCode(HttpStatusCode::INVALID_STATUS_CODE),
 	_folderStructure(NULL),
 	_cgiAnswerPair(false, ""),
-	_responseResult("")
+	_responseResult(""),
+	_alreadySentBytes(0)
 {
 	::logRequest(LOGGER_INFO,
 		"Sending response -> Client: "
@@ -33,7 +34,7 @@ HttpResponse::~HttpResponse() {
 	}
 }
 
-void HttpResponse::getResponse(void) {
+bool HttpResponse::getResponse(void) {
 
 	try {
 
@@ -62,8 +63,7 @@ void HttpResponse::getResponse(void) {
 				this->_statusCode = HttpStatusCode::INTERNAL_SERVER_ERROR;
 			}
 			this->sendResponseRootSlice();
-			this->sendResponse();
-			return ;
+			return (this->sendResponse());
 		}
 
 		if (this->_isReturnTerminatedResponse) {
@@ -73,8 +73,7 @@ void HttpResponse::getResponse(void) {
 				&& this->_configs->getReturn().getPath())
 				this->_headers.setHeader(HttpHeaderNames::LOCATION, *this->_configs->getReturn().getPath());
 			this->sendResponseRootSlice();
-			this->sendResponse();
-			return ;
+			return (this->sendResponse());
 		}
 
 		HttpResponse::configureStatusLine();
@@ -91,8 +90,7 @@ void HttpResponse::getResponse(void) {
 					this->_headers.setHeader(HttpHeaderNames::CONTENT_LENGTH, Util::intToString(Util::getFileSize(this->_requestedFile)));
 					this->sendResponseRootSlice();
 					this->sendBody();
-					this->sendResponse();
-					return ;
+					return (this->sendResponse());
 				}
 			}
 			this->sendFailedRequest();
@@ -109,11 +107,11 @@ void HttpResponse::getResponse(void) {
 			this->sendResponseRootSlice();
 			this->sendBody();
 		}
-		this->sendResponse();
 	} catch (std::exception &reason) {
 		::logRequest(LOGGER_ERROR, reason.what());
 	}
 
+	return (this->sendResponse());
 }
 
 void HttpResponse::sendResponseRootSlice(void) {
@@ -300,8 +298,16 @@ std::string HttpResponse::URLFragmentCutter(const std::string& URL) {
 	
 }
 
-void HttpResponse::sendResponse(void) {
-	// std::cout << "SENDING ANSWER" << std::endl;
-	// std::cout << this->_responseResult << std::endl;
-	send(this->_writeSocketFd, this->_responseResult.c_str(), this->_responseResult.length() * sizeof(char), 0);
-	}
+bool HttpResponse::sendResponse(void) {
+	int result = send(this->_writeSocketFd, this->_responseResult.substr(this->_alreadySentBytes).c_str(), this->_responseResult.length() * sizeof(char), 0);
+
+	if (result == -1)
+		::logRequest(LOGGER_ERROR, "Something went wrong when sending request to client -> " + Util::intToString(this->_writeSocketFd));
+	else
+		this->_alreadySentBytes += result;
+
+	if (this->_alreadySentBytes != this->_responseResult.length())
+		return (false);
+
+	return (true);
+}

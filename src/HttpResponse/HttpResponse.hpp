@@ -26,7 +26,8 @@ class HttpResponse {
 		~HttpResponse();
 
 	public:
-		void getResponse(void);
+		bool getResponse(void);
+		bool sendResponse(void);
 
 	public:
 		static std::string URLFragmentCutter(const std::string &);
@@ -38,7 +39,6 @@ class HttpResponse {
 		void sendBody(void);
 		void sendFailedRequest(void);
 		void sendResponseRootSlice(void);
-		void sendResponse(void);
 	
 	private:
 		HttpResponse(const HttpResponse&);
@@ -58,6 +58,7 @@ class HttpResponse {
 		std::string *_folderStructure;
 		CGIAnswerPair _cgiAnswerPair;
 		std::string _responseResult;
+		size_t _alreadySentBytes;
 };
 
 #endif // !__HTTP_REQUEST__HPP__

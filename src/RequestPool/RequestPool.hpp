@@ -9,6 +9,7 @@
 #include "ExceptionHandler.hpp"
 
 typedef std::map<int, HttpRequest*> RequestPoolMap;
+typedef std::map<int, HttpResponse*> ResponsePoolMap;
 
 class RequestPool {
 
@@ -18,7 +19,7 @@ class RequestPool {
 
     public:
         bool sendRequest(int clientSocket, Server & server); // --- if request has finished returns false, otherwise true
-        void getResponse(int clientSocket);
+        bool getResponse(int clientSocket);
         void destroyRequest(int clientSocket);
 
     private:
@@ -28,6 +29,7 @@ class RequestPool {
     public:
         Server *server;
         RequestPoolMap requestPool;
+        ResponsePoolMap responsePool;
 };
 
 #endif // !__REQUEST_POOL__

@@ -32,16 +32,31 @@ bool RequestPool::sendRequest(int clientSocket, Server & server) {
 	return (request->hasFinishedReceivingRequest());
 }
 
-void RequestPool::getResponse(int clientSocket) {
-	RequestPoolMap::iterator targetRequest = this->requestPool.find(clientSocket);
+bool RequestPool::getResponse(int clientSocket) {
+	bool isFinishedWrite;
 
-	if (targetRequest == this->requestPool.end())
-		ExceptionHandler::CannotGetRequestToSendResponse();
+	if (this->responsePool.find(clientSocket) == this->responsePool.end()) {
 
-	HttpResponse *response = new HttpResponse(targetRequest->second, targetRequest->first);
+		RequestPoolMap::iterator targetRequest = this->requestPool.find(clientSocket);
+
+		if (targetRequest == this->requestPool.end())
+			ExceptionHandler::CannotGetRequestToSendResponse();
+
+		HttpResponse *response = new HttpResponse(targetRequest->second, targetRequest->first);
+
+		this->responsePool[clientSocket] = response;
+		isFinishedWrite = this->responsePool[clientSocket]->getResponse();
+	} else {
+		isFinishedWrite = this->responsePool[clientSocket]->sendResponse();
+	}
+
+	if (isFinishedWrite) {
+		delete this->responsePool[clientSocket];
+		this->responsePool.erase(clientSocket);
+	}
+
+	return (isFinishedWrite);
 	
-	response->getResponse();
-	delete response;
 }
 
 void RequestPool::destroyRequest(int clientSocket) {
