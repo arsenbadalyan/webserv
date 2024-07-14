@@ -145,8 +145,7 @@ void HttpResponse::sendResponseRootSlice(void) {
 	::logRequest(HttpStatusCode::isErrorStatusCode(this->_statusCode) ? LOGGER_ERROR : LOGGER_INFO, "Responding to client " + Util::intToString(this->_writeSocketFd) + " with -> " + Util::intToString(this->_statusCode) + " " + HttpStatusCode::getStatusCode(this->_statusCode));
 	response += this->_headers.toString() + "\r\n";
 
-	// send(this->_writeSocketFd, response.c_str(), response.length() * sizeof(char), 0);
-	this->_responseResult.append(response, response.length() * sizeof(char));
+	this->_responseResult.append(response.c_str(), response.length() * sizeof(char));
 }
 
 void HttpResponse::configureStatusLine(void) {
@@ -246,13 +245,13 @@ void HttpResponse::configureHeaders() {
 void HttpResponse::sendBody() {
 	if (this->_folderStructure) {
 		// send(this->_writeSocketFd, this->_folderStructure->c_str(), this->_folderStructure->length() * sizeof(char), 0);
-		this->_responseResult.append(*this->_folderStructure, this->_folderStructure->length() * sizeof(char));
+		this->_responseResult.append((*this->_folderStructure).c_str(), (*this->_folderStructure).length() * sizeof(char));
 		return ;
 	}
 
 	if (this->_cgiAnswerPair.first) {
 		// send(this->_writeSocketFd, this->_cgiAnswerPair.second.c_str(), this->_cgiAnswerPair.second.length() * sizeof(char), 0);
-		this->_responseResult.append(this->_cgiAnswerPair.second, this->_cgiAnswerPair.second.length() * sizeof(char));
+		this->_responseResult.append(this->_cgiAnswerPair.second.c_str(), this->_cgiAnswerPair.second.length() * sizeof(char));
 		return ;
 	}
 
@@ -278,7 +277,7 @@ void HttpResponse::sendFailedRequest(void) {
 	this->_headers.setHeader(HttpHeaderNames::CONTENT_LENGTH, Util::intToString(errorPageHtml.length()));
 	this->sendResponseRootSlice();
 	// send(this->_writeSocketFd, errorPageHtml.c_str(), errorPageHtml.length() * sizeof(char), 0);
-	this->_responseResult.append(errorPageHtml, errorPageHtml.length() * sizeof(char));
+	this->_responseResult.append(errorPageHtml.c_str(), errorPageHtml.length() * sizeof(char));
 }
 
 
@@ -302,5 +301,7 @@ std::string HttpResponse::URLFragmentCutter(const std::string& URL) {
 }
 
 void HttpResponse::sendResponse(void) {
+	// std::cout << "SENDING ANSWER" << std::endl;
+	// std::cout << this->_responseResult << std::endl;
 	send(this->_writeSocketFd, this->_responseResult.c_str(), this->_responseResult.length() * sizeof(char), 0);
 }
